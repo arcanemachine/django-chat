@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Conversation List{% endblock title %}
+{% block body_title %}Conversation List{% endblock body_title %}
+
+{% block content %}
+
+{% if conversation_list %}
+<ul>
+  {% for conversation in conversation_list %}
+  <li>
+    <a href="{% url 'chat:conversation_view' pk=conversation.pk %}">{{ conversation }}</a>
+  </li>
+  {% endfor %}
+{% else %}
+<p>- There are no conversations available.</p>
+{% endif %}
+
+<ul style="margin-top: 2rem;">
+  <li><a href="{% url 'chat:conversation_create' %}">Create new conversation</a></li>
+  <li><a href="{% url 'chat:chat_root' %}">Return to chat root</a></li>
+</ul>
+
+{% endblock content %}

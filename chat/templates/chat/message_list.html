@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}{% endblock title %}
+{% block body_title %}{% endblock body_title %}
+
+{% block content %}
+
+<h1>Message List</h1>
+
+{% if message_list %}
+<ul>
+  {% for message in message_list %}
+    {{ message }}
+  {% endfor %}
+</ul>
+{% else %}
+<p>- There are no messages available.</p>
+{% endif %}
+
+<ul style="margin-top: 2rem;">
+  <li><a href="{% url 'chat:chat_root' %}">Return to chat root</a></li>
+</ul>
+
+{% endblock content %}

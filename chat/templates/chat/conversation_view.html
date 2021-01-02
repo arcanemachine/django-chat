@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Conversation Detail - {{ conversation.pk }} - {{ conversation.subject }}{% endblock title %}
+{% block body_title %}Conversation Detail{% endblock body_title %}
+{% block body_subheading %}#{{ conversation.pk }} -- {{ conversation.subject }}{% endblock body_subheading %}
+
+{% block content %}
+
+{% if not conversation.message_set.count %}
+<p>Say something to get the ball rolling!</p>
+{% else %}
+<ul>
+  {% for message in conversation.message_set.all %}
+  <li>{{ message.sender.username }}: {{ message.content }}</li>
+  {% endfor %}
+{% endif %}
+
+{% include 'base_form.html' %}
+
+{% endblock content %}

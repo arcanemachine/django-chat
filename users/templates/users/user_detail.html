@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}User Info - {{ user.username }}{% endblock title %}
+{% block body_title %}User Info{% endblock body_title %}
+{% block body_subheading %}User Info{% endblock body_subheading %}
+
+{% block content %}
+
+<h3>Your Conversations</h3>
+
+{% if user.conversation_set.count %}
+<ul>
+  {% for conversation in user.conversation_set.all %}
+  <li><a href="{% url 'chat:conversation_view' pk=conversation.pk %}">{{ conversation }}</a></li>
+  {% endfor %}
+</ul>
+{% else %}
+{% endif %}
+
+{% endblock content %}

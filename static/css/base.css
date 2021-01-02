@@ -1,0 +1,16 @@
+body {
+  margin: 2rem;
+}
+
+.info-message {
+  font-weight: bold;
+  margin: 1rem;
+}
+
+#body-title {
+  margin-bottom: 0;
+}
+
+#body-subheading {
+  margin-top: 0.5rem;
+}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block body_title %}Chat Root{% endblock body_title %}
+
+{% block content %}
+
+<ul>
+  <li><a href="{% url 'chat:conversation_list' %}">Conversation List</a></li>
+  <li><a href="{% url 'chat:message_list' %}">Message List</a></li>
+</ul>
+
+{% endblock content %}

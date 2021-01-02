@@ -1,0 +1,35 @@
+{% load static %}<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock title %} - Django Chat</title>
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+  </head>
+  <body>
+
+    <section id="login-box" style="position: absolute; top: 1rem; right: 1rem">
+      {% if not user.is_authenticated %}
+      <span><a href="{% url 'users:login' %}">Login</a></span>
+      <span style="margin-left: 1rem;"><a href="{% url 'users:register' %}">Register</a></span>
+      {% else %}
+      <span><a href="{% url 'users:user_detail' %}">{{ user.username }}</a></span>
+      <span style="margin-left: 1rem;"><a href="{% url 'users:logout' %}">Logout</a></span>
+      {% endif %}
+    </section>
+
+    <h1 id="body-title">{% block body_title %}{% endblock body_title %}</h1>
+    <h3 id="body-subheading">{% block body_subheading %}{% endblock body_subheading %}</h3>
+
+    {% if messages %}
+      {% for message in messages %}
+          <div class="info-message"><strong>{{ message }}</strong></div>
+      {% endfor %}
+    {% endif %}
+
+
+    {% block content %}{% endblock content %}
+       
+	</body>
+</html>
