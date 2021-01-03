@@ -1,10 +1,14 @@
+import json
+from django.core import serializers
+from django.contrib.auth import get_user_model
 from django.shortcuts import render
-from django.views.generic import CreateView, ListView, DetailView
-from django.contrib.messages.views import SuccessMessageMixin
+from django.views.generic import CreateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from . import forms
 from .models import Conversation, Message
+
+UserModel = get_user_model()
 
 
 def chat_root(request):
@@ -24,7 +28,7 @@ class ConversationCreateView(CreateView):
 
     def form_valid(self, form):
         self.object = form.save()
-        if not self.request.user in self.object.participants.all():
+        if self.request.user not in self.object.participants.all():
             self.object.participants.add(self.request.user)
         return super().form_valid(form)
 
@@ -40,7 +44,25 @@ class ConversationView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({'conversation': self.conversation})
+
+        conversation_messages = self.conversation.message_set.all()
+        conversation_messages_serialized = \
+            serializers.serialize('json', conversation_messages)
+        conversation_messages_json = \
+            json.loads(conversation_messages_serialized)
+
+        conversation_users = UserModel.objects.filter(pk__in=
+            [user.pk for user in 
+                [message.sender for message in conversation_messages]])
+        conversation_users_serialized = \
+            serializers.serialize('json', conversation_users)
+        conversation_users_json = \
+            json.loads(conversation_users_serialized)
+
+
+        context.update({
+            'conversation_messages': conversation_messages_json,
+            'conversation_users': conversation_users_json})
         return context
 
     def form_valid(self, form):

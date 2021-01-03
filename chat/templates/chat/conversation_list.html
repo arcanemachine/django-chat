@@ -12,6 +12,7 @@
     <a href="{% url 'chat:conversation_view' pk=conversation.pk %}">{{ conversation }}</a>
   </li>
   {% endfor %}
+</ul>
 {% else %}
 <p>- There are no conversations available.</p>
 {% endif %}

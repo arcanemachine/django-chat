@@ -1,20 +1,56 @@
 {% extends 'base.html' %}
 
-{% block title %}Conversation Detail - {{ conversation.pk }} - {{ conversation.subject }}{% endblock title %}
+{% block title %}Conversation Detail - {{ conversation.pk }} - {{ conversation.subject }}{% endblock %}
+
+{% block head_script %}{% include 'vue_script.html' %}{% endblock %}
+
 {% block body_title %}Conversation Detail{% endblock body_title %}
-{% block body_subheading %}#{{ conversation.pk }} -- {{ conversation.subject }}{% endblock body_subheading %}
+{% block body_subheading %}#{{ conversation.pk }} -- {{ conversation.subject }}{% endblock %}
 
 {% block content %}
+<div id="app">
 
-{% if not conversation.message_set.count %}
-<p>Say something to get the ball rolling!</p>
+  <p>[[ helloWorld ]]</p>
+  
+
+{% if not conversation_messages %}
+  <p>Say something to get the ball rolling!</p>
 {% else %}
 <ul>
+  <li v-for="message in messages" :key="message.pk">[[ message.fields.sender ]]: [[ message.fields.content ]]</li>
+  {% comment %}
   {% for message in conversation.message_set.all %}
   <li>{{ message.sender.username }}: {{ message.content }}</li>
   {% endfor %}
+  {% endcomment %}
 {% endif %}
 
 {% include 'base_form.html' %}
 
+</div>
 {% endblock content %}
+
+{% block body_end_script %}
+
+{{ conversation_messages|json_script:'conversation-messages' }}
+{{ conversation_users|json_script:'conversation-users' }}
+
+<script>
+
+let messages = document.querySelector('#conversation-messages');
+let users = document.querySelector('#conversation-users');
+
+let app = new Vue({
+  el: '#app',
+  delimiters: ['[[', ']]'],
+  data: {
+    helloWorld: 'Hello, Django/Vue!',
+    messages: JSON.parse(messages.textContent),
+    users: JSON.parse(users.textContent)
+  },
+  computed: {
+  }
+})
+
+</script>
+{% endblock body_end_script %}

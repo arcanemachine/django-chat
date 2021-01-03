@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # local
     'chat.apps.ChatConfig',
     'users.apps.UsersConfig',
+    # third-party
 ]
 
 MIDDLEWARE = [
@@ -134,3 +135,11 @@ STATIC_ROOT = server_config.STATIC_ROOT
 LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = 'users:user_detail'
 LOGOUT_REDIRECT_URL = 'root'
+
+# csp
+CSP_DEFAULT_SRC = ("'none'",)
+CSP_STYLE_SRC = ("'self'")
+CSP_SCRIPT_SRC = ("'self'", 'cdn.jsdelivr.net')
+CSP_FONT_SRC = ("'self'",)
+CSP_MEDIA_SRC = ("'self'",)
+CSP_IMG_SRC = ("'self'",)
