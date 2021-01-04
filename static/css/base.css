@@ -14,3 +14,12 @@ body {
 #body-subheading {
   margin-top: 0.5rem;
 }
+
+/* formatting */
+.bold {
+  font-weight: bold;
+}
+
+.cursor-url {
+  cursor: pointer;
+}

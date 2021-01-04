@@ -46,11 +46,14 @@ INSTALLED_APPS = [
     'chat.apps.ChatConfig',
     'users.apps.UsersConfig',
     # third-party
+    'rest_framework',
+    #'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -143,3 +146,13 @@ CSP_SCRIPT_SRC = ("'self'", 'cdn.jsdelivr.net')
 CSP_FONT_SRC = ("'self'",)
 CSP_MEDIA_SRC = ("'self'",)
 CSP_IMG_SRC = ("'self'",)
+
+# rest_framework
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+}
+
+# django-cors-headers
+#CORS_ALLOW_ALL_ORIGINS = True

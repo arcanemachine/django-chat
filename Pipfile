@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 Django = "*"
 ipython = "*"
+djangorestframework = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 

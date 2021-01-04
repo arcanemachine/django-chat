@@ -34,6 +34,7 @@ class Message(models.Model):
         models.ForeignKey('Conversation', on_delete=models.CASCADE)
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    sender_username = models.CharField(max_length=150, default='')
     content = models.TextField()
 
     created_at = models.DateTimeField(auto_now_add=True, null=True)
@@ -42,3 +43,8 @@ class Message(models.Model):
     def get_absolute_url(self):
         return reverse(
             'chat:conversation_view', kwargs={'pk': self.conversation.pk})
+
+    def save(self, *args, **kwargs):
+        if not self.sender_username:
+            self.sender_username = self.sender.username
+        super().save(*args, **kwargs)

@@ -2,7 +2,9 @@
 
 {% block title %}Conversation Detail - {{ conversation.pk }} - {{ conversation.subject }}{% endblock %}
 
-{% block head_script %}{% include 'vue_script.html' %}{% endblock %}
+{% block head_script %}
+  {% include 'scripts.html' with vue=True js_cookie=True %}
+{% endblock %}
 
 {% block body_title %}Conversation Detail{% endblock body_title %}
 {% block body_subheading %}#{{ conversation.pk }} -- {{ conversation.subject }}{% endblock %}
@@ -10,47 +12,169 @@
 {% block content %}
 <div id="app">
 
-  <p>[[ helloWorld ]]</p>
-  
-
 {% if not conversation_messages %}
   <p>Say something to get the ball rolling!</p>
 {% else %}
-<ul>
-  <li v-for="message in messages" :key="message.pk">[[ message.fields.sender ]]: [[ message.fields.content ]]</li>
-  {% comment %}
-  {% for message in conversation.message_set.all %}
-  <li>{{ message.sender.username }}: {{ message.content }}</li>
-  {% endfor %}
-  {% endcomment %}
+  <ul>
+    <li v-for="message in messages" :key="message.pk" :class="{'cursor-url': userCanEdit(message)}">
+      [[ message.pk ]]. [[ message.fields.sender_username ]]: 
+      <span>
+
+        <span @click="messageUpdatePanelSelect(message.pk)" :class="{'bold': userCanEdit(message)}">
+          [[ message.fields.content ]]
+        </span>
+
+        <transition>
+          <span v-if="messageUpdatePanelValue === message.pk && userCanEdit(message)">
+            <input type="text"
+                   v-model="messageUpdatedContent"
+                   @keyup.enter="messageUpdate(message.pk)">
+            <button @click="messageUpdate(message.pk)">
+              Update
+            </button>
+            <button @click="messageUpdatePanelSelect(message.pk)">
+              Cancel
+            </button>
+
+            <span v-if="userCanEdit(message)">
+              <strong v-if="!messageUpdateStatus && userIsStaff && message.fields.sender != {{ user.pk }}">&lt;-- Using admin privileges to edit</strong>
+            </span>
+            <span v-if="!userCanEdit(message)">
+              You do not have permission to edit this message.
+            </span>
+
+          </span>
+
+        </span>
+      </transition>
+
+
+    </li>
+  </ul>
 {% endif %}
 
 {% include 'base_form.html' %}
+
+  <div id="json-messages" style="margin-top: 3rem;">
+    <button @click="getMessages">Reload messages</button>
+  </div>
+
+  <transition>
+    <div v-if="messageUpdateStatus" style="margin-top: 2rem; font-weight: bold; font-size: 1.3rem;">[[ messageUpdateStatus ]]</div>
+  </transition>
 
 </div>
 {% endblock content %}
 
 {% block body_end_script %}
-
-{{ conversation_messages|json_script:'conversation-messages' }}
-{{ conversation_users|json_script:'conversation-users' }}
-
 <script>
 
-let messages = document.querySelector('#conversation-messages');
-let users = document.querySelector('#conversation-users');
+"use strict";
 
 let app = new Vue({
   el: '#app',
   delimiters: ['[[', ']]'],
   data: {
-    helloWorld: 'Hello, Django/Vue!',
-    messages: JSON.parse(messages.textContent),
-    users: JSON.parse(users.textContent)
+    userUsername: '{{ user.username }}',
+    userIsStaff: '{{ user.is_staff }}' === 'True',
+    messages: '',
+    messageUpdatePanelValue: undefined,
+    messageUpdateStatus: '',
+    messageUpdatedContent: '',
   },
-  computed: {
+  mounted() {
+    this.getMessages();
+  },
+  methods: {
+    userCanEdit: function (message) {
+      if (this.userIsStaff) {
+        return true;
+      }
+      else if ({{ user.pk }} === message.fields.sender) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    },
+    messageUpdatePanelSelect: function (messagePk) {
+      if (this.messageUpdatePanelValue != messagePk) {
+        this.messageUpdatePanelValue = messagePk;
+        this.messageUpdatedContent = this.messages[messagePk-1].fields.content;
+      } else {
+        this.messageUpdatePanelValue = undefined;
+        this.messageUpdatedContent = '';
+      }
+    },
+    getMessages: function () {
+      /* REPLACE WITH DRF URL */
+      fetch('/chat/api/conversations/{{ conversation.pk }}/messages/')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("HTTP error, status = " + response.status);
+          }
+        return response.json();
+      })
+      .then(data => this.messages = data)
+      .catch(error => console.log('Error: ' + error.message))
+    },
+    messageUpdate: function (messagePk) {
+
+      const csrfToken = Cookies.get('csrftoken');
+
+      const postData = {
+        "id": this.messagePk,
+        "content": this.messageUpdatedContent
+      }
+
+      fetch(`/api/v1/messages/${messagePk}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify(postData)
+      })
+      .then(response => {
+        if (!response.ok) {
+          if (response.status === 403) {
+            this.displayStatusMessage('You do not have permission to modify this message.');
+          }
+          throw new Error("HTTP error, status = " + response.status);
+          }
+        return response.json();
+      })
+      .then(() => {
+        this.displayStatusMessage('Message updated successfully.');
+        this.getMessages();
+      })
+      .catch(error => {
+        console.log('Error: ' + error.message)
+      })
+      this.messageUpdatePanelValue = undefined;
+    },
+    displayStatusMessage: function (message) {
+      this.messageUpdateStatus = message;
+      setTimeout(() => {
+        this.messageUpdateStatus = '';
+        this.messageUpdatePanelValue = undefined;
+      }, 3000)
+    }
   }
 })
 
 </script>
+
+<style>
+
+.v-enter-active, .v-leave-active {
+    transition: opacity .5s;
+}
+
+.v-enter, .v-leave-to {
+    opacity: 0;
+}
+
+</style>
+
 {% endblock body_end_script %}

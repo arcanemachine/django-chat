@@ -1,6 +1,7 @@
 import json
 from django.core import serializers
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic import CreateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -51,18 +52,10 @@ class ConversationView(LoginRequiredMixin, CreateView):
         conversation_messages_json = \
             json.loads(conversation_messages_serialized)
 
-        conversation_users = UserModel.objects.filter(pk__in=
-            [user.pk for user in 
-                [message.sender for message in conversation_messages]])
-        conversation_users_serialized = \
-            serializers.serialize('json', conversation_users)
-        conversation_users_json = \
-            json.loads(conversation_users_serialized)
-
-
         context.update({
-            'conversation_messages': conversation_messages_json,
-            'conversation_users': conversation_users_json})
+            'conversation': self.conversation,
+            'conversation_messages': conversation_messages_json
+            })
         return context
 
     def form_valid(self, form):
@@ -71,6 +64,18 @@ class ConversationView(LoginRequiredMixin, CreateView):
         self.object.sender = self.request.user
         return super().form_valid(form)
 
+def test_message(request):
+    result = {'hello': 'world'}
+    return JsonResponse(result)
+
+def get_conversation_messages(request, conversation_pk):
+    conversation = Conversation.objects.get(pk=conversation_pk)
+
+    messages = conversation.message_set.all()
+    messages_serialized = serializers.serialize('json', messages)
+    messages_json = json.loads(messages_serialized)
+
+    return JsonResponse(messages_json, safe=False)
 
 class MessageListView(ListView):
     model = Message
