@@ -26,6 +26,7 @@
 
         <transition>
           <span v-if="messageUpdatePanelValue === message.pk && userCanEdit(message)">
+
             <input type="text"
                    v-model="messageUpdatedContent"
                    @keyup.enter="messageUpdate(message.pk)">
@@ -44,10 +45,9 @@
             </span>
 
           </span>
+        </transition>
 
-        </span>
-      </transition>
-
+      </span>
 
     </li>
   </ul>
