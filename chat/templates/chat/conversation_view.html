@@ -84,6 +84,7 @@ let app = new Vue({
   },
   mounted() {
     this.getMessages();
+    setInterval(() => {this.getMessages();}, 5000)
   },
   methods: {
     userCanEdit: function (message) {
