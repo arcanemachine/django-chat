@@ -15,12 +15,21 @@
 {% if not conversation_messages %}
   <p>Say something to get the ball rolling!</p>
 {% else %}
-  <ul>
-    <li v-for="message in messages" :key="message.pk" :class="{'cursor-url': userCanEdit(message)}">
-      [[ message.pk ]]. [[ message.fields.sender_username ]]: 
+  <ul style="list-style-type: none;">
+    <li v-for="message in messages"
+        :key="message.pk"
+        class="conversation-item"
+        :class="messageContentClass(message)"
+        :style="messageContentStyle(message)">
+
       <span>
 
-        <span @click="messageUpdatePanelSelect(message.pk)" :class="{'bold': userCanEdit(message)}">
+        <span class="show-on-hover">([[ message.pk ]])</span>
+
+        <span v-if="message.fields.sender !== userPk">[[ message.fields.sender_username ]]:</span>
+        <span v-else style="font-weight: regular;">You:</span>
+
+        <span @click="messageUpdatePanelSelect(message.pk)">
           [[ message.fields.content ]]
         </span>
 
@@ -38,7 +47,7 @@
             </button>
 
             <span v-if="userCanEdit(message)">
-              <strong v-if="!messageUpdateStatus && userIsStaff && message.fields.sender != {{ user.pk }}">&lt;-- Using admin privileges to edit</strong>
+              <strong v-if="!messageUpdateStatus && userIsStaff && message.fields.sender != userPk">&lt;-- Using admin privileges to edit</strong>
             </span>
             <span v-if="!userCanEdit(message)">
               You do not have permission to edit this message.
@@ -60,7 +69,7 @@
   </div>
 
   <transition>
-    <div v-if="messageUpdateStatus" style="margin-top: 2rem; font-weight: bold; font-size: 1.3rem;">[[ messageUpdateStatus ]]</div>
+    <div v-if="messageUpdateStatus" class="messageUpdateStatus">[[ messageUpdateStatus ]]</div>
   </transition>
 
 </div>
@@ -76,6 +85,7 @@ let app = new Vue({
   delimiters: ['[[', ']]'],
   data: {
     userUsername: '{{ user.username }}',
+    userPk: {{ user.pk }},
     userIsStaff: '{{ user.is_staff }}' === 'True',
     messages: '',
     messageUpdatePanelValue: undefined,
@@ -87,11 +97,40 @@ let app = new Vue({
     setInterval(() => {this.getMessages();}, 5000)
   },
   methods: {
+    messageContentClass: function (message) {
+      return {
+        'bold': this.userCanEdit(message),
+        'cursor-url': this.userCanEdit(message),
+        'item-current-user': this.userIsSender(message),
+        'item-other-user': !this.userIsSender(message),
+      }
+    },
+    messageContentStyle: function (message) {
+      return {
+        'background-color': this.getBackgroundColor(message.fields.sender_username),
+      }
+    },
+    getBackgroundColor(username) {
+      let result = 0;
+      for (let i = 0; i < username.length; i++) {
+        result += username.codePointAt(i);
+      }
+      result = result % 14;
+      if (result % 14 < 9) {
+        result += 5;
+      }
+      return '#' + result.toString(16).repeat(6);
+    },
+    userIsSender: function (message) {
+      if (message.fields.sender === this.userPk) {
+        return true;
+      } else return false;
+    },
     userCanEdit: function (message) {
       if (this.userIsStaff) {
         return true;
       }
-      else if ({{ user.pk }} === message.fields.sender) {
+      else if (this.userPk === message.fields.sender) {
         return true;
       }
       else {
@@ -169,11 +208,43 @@ let app = new Vue({
 <style>
 
 .v-enter-active, .v-leave-active {
-    transition: opacity .5s;
+  transition: opacity .5s;
 }
 
 .v-enter, .v-leave-to {
-    opacity: 0;
+  opacity: 0;
+}
+
+.show-on-hover {
+  opacity: 0;
+}
+
+.show-on-hover:hover {
+  opacity: 1;
+}
+
+.conversation-item {
+  margin: 1rem 0;
+  border-radius: 1rem;
+  max-width: 50%;
+}
+
+.message-update-status {
+  margin-top: 2rem;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+.item-current-user {
+  margin-left: auto;
+  text-align: right;
+  padding: 2rem 1rem 1rem 1rem;
+  background-color: #999;
+}
+
+.item-other-user {
+  margin-right: auto;
+  padding: 1rem 1rem 2rem 1rem;
 }
 
 </style>
