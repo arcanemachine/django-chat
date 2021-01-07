@@ -13,6 +13,21 @@
 {% block content %}
 <div id="app">
 
+  <transition>
+    <div v-if="menuShow" id="menu-overlay-parent-container" v-if="menuShow">
+      <div key="overlayBackground" id="menu-overlay-background"></div>
+      <div key="overlayMenu" id="menu-overlay-container">
+        <div id="menu-overlay">
+          <div @click="menuShow = !menuShow" class="menu-close-button-icon">X</div>
+          <div id="menu-overlay-title">More Options</div>
+          <div id="menu-overlay-item-container">
+            <div @click="getUserList" class="menu-overlay-item bold underline cursor-url">List conversation members</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
+
 {% if not conversation_messages %}
   <p>Say something to get the ball rolling!</p>
 {% else %}
@@ -65,9 +80,16 @@
 
   <div id="message-container">
     <input id="message-input" type="text" v-model="messageInputText">
+    <button @click="toggleMenu"
+            id="menu-button"
+            class="cursor-url"
+            alt="Menu button"
+            :style="{'background-color': menuShow ? '#33f' : '#555'}">
+      &#9776;  <!-- hamburger menu icon -->
+    </button>
     <button id="send-button"
             class="cursor-url"
-            alt="send"
+            alt="Send button"
             :style="{'background-color': messageInputText ? '#33f' : '#555'}">
       &#9992; <!-- airplane emoji -->
     </button>

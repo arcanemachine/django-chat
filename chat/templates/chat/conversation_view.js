@@ -12,6 +12,7 @@ let app = new Vue({
     messageUpdatePanelValue: undefined,
     messageUpdateStatus: '',
     messageUpdatedContent: '',
+    menuShow: true
   },
   mounted() {
     this.getMessages();
@@ -21,6 +22,9 @@ let app = new Vue({
     setInterval(() => {this.getMessages();}, 5000);
   },
   methods: {
+    toggleMenu() {
+      this.menuShow = !this.menuShow;
+    },
     messageContentClass: function (message) {
       return {
         'bold': this.userCanEdit(message),
@@ -106,6 +110,9 @@ let app = new Vue({
         .catch(error => console.log('Error: ' + error.message))
       
     },
+    getUserList() {
+      window.alert('hello!');
+    },
     messageUpdate: function (messagePk) {
 
       const csrfToken = Cookies.get('csrftoken');
@@ -151,3 +158,8 @@ let app = new Vue({
   }
 })
 
+document.addEventListener('keyup', function keyPress (e) {
+  if (e.key === 'Escape') {
+    app.menuShow = !app.menuShow;
+  }
+})
