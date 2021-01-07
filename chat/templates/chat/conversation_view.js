@@ -1,5 +1,13 @@
 "use strict";
 
+  </script>
+  {{ conversation_messages|json_script:'conversation-messages' }}
+  <script>
+  let conversationMessages = document.querySelector('#conversation-messages').textContent;
+
+  // hide non-js form
+  document.querySelector('#non-js-form').style['display'] = 'none';
+
 let app = new Vue({
   el: '#app',
   delimiters: ['[[', ']]'],
@@ -7,23 +15,25 @@ let app = new Vue({
     userUsername: '{{ user.username }}',
     userPk: {{ user.pk }},
     userIsStaff: '{{ user.is_staff }}' === 'True',
-    messages: '',
+    messages: JSON.parse(conversationMessages),
+    messageDisplayCount: 10,
     messageInputText: '',
     messageUpdatePanelValue: undefined,
     messageUpdateStatus: '',
     messageUpdatedContent: '',
-    menuShow: true,
+    menuShow: false,
     
-    deleteMe: undefined
   },
   mounted() {
-    this.getMessages();
     this.$nextTick(() => {
       this.scrollToBottom();
     })
-    // setInterval(() => {this.getMessages();}, 5000);
+    setInterval(() => {this.getMessages();}, 5000);
   },
   methods: {
+    sayHello() {
+      console.log('This works outside Vue!');
+    },
     toggleMenu() {
       this.menuShow = !this.menuShow;
     },
@@ -87,12 +97,14 @@ let app = new Vue({
       }
     },
     scrollToBottom() {
-      this.$refs.chatList.scrollTo(0, this.$refs.chatList.scrollHeight);
+      this.$nextTick(() => {
+        this.$refs.chatList.scrollTo(0, this.$refs.chatList.scrollHeight);
+      })
     },
     getMessages: function () {
 
       // REPLACE WITH DRF URL
-      fetch('/chat/api/conversations/{{ conversation.pk }}/messages/')
+      fetch(`/chat/api/conversations/{{ conversation.pk }}/messages/${this.messageDisplayCount}`)
         .then(response => {
           if (!response.ok) {
               throw new Error("HTTP error, status = " + response.status);
@@ -101,11 +113,11 @@ let app = new Vue({
         })
         .then(data => {
           this.messages = data;
-          if (this.scrolledToBottomOfElement(this.$refs.chatList)) {
-            this.$nextTick(() => {
-              this.scrollToBottom();
-            });
-          }
+          this.$nextTick(() => {
+            if (this.scrolledToBottomOfElement(this.$refs.chatList)) {
+                this.scrollToBottom();
+            }
+          })
         })
         .catch(error => console.log('Error: ' + error.message))
       
@@ -174,8 +186,10 @@ let app = new Vue({
   }
 })
 
+// toggle the options menu with Esc
 document.addEventListener('keyup', function keyPress (e) {
   if (e.key === 'Escape') {
     app.menuShow = !app.menuShow;
   }
 })
+

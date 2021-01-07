@@ -13,7 +13,8 @@ urlpatterns = [
     path('api/test/',
          views.test_message,
          name='test_message'),
-    path('api/conversations/<int:conversation_pk>/messages/',
+    path('api/conversations/<int:conversation_pk>/messages/'
+         '<int:number_of_messages>/',
          views.get_conversation_messages,
          name='get_conversation_messages'),
     path('api/conversations/<int:conversation_pk>/users/',

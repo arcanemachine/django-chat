@@ -33,7 +33,7 @@ class Message(models.Model):
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     sender_username = models.CharField(max_length=150, default='')
-    content = models.TextField()
+    content = models.TextField("Message Content")
 
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     modified_at = models.DateTimeField(auto_now=True, null=True)

@@ -52,7 +52,8 @@ class ConversationView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        conversation_messages = self.conversation.message_set.all()
+        conversation_messages = \
+            self.conversation.message_set.order_by('-pk')[:10]
         conversation_messages_serialized = \
             serializers.serialize('json', conversation_messages)
         conversation_messages_json = \
@@ -99,10 +100,10 @@ def test_message(request):
     return JsonResponse(result)
 
 
-def get_conversation_messages(request, conversation_pk):
+def get_conversation_messages(request, conversation_pk, number_of_messages):
     conversation = Conversation.objects.get(pk=conversation_pk)
 
-    messages = conversation.message_set.all()
+    messages = conversation.message_set.order_by('-pk')[:number_of_messages]
     messages_serialized = serializers.serialize('json', messages)
     messages_json = json.loads(messages_serialized)
 

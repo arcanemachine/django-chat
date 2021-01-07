@@ -3,7 +3,7 @@
 {% block title %}Conversation Detail - {{ conversation.pk }} - {{ conversation.subject }}{% endblock %}
 
 {% block head_script %}
-  {% include 'scripts.html' with vue=True js_cookie=True %}
+  {% include 'scripts.html' with vue=True js_cookie=True debounce=True %}
   {% include 'chat/conversation_view.css' %}
 {% endblock %}
 
@@ -31,12 +31,11 @@
     </div>
   </transition>
 
-{% if not conversation_messages %}
-  <p>Say something to get the ball rolling!</p>
-{% else %}
-  <ul class="chat-list" ref="chatList">
-    <li v-for="message in messages"
+  <p v-if="!messages.length">Say something to get the ball rolling!</p>
+  <ul v-else-if="messages.length" class="chat-list" ref="chatList">
+    <li v-for="message in messages.slice().reverse()"
         :key="message.pk"
+        :id="'message' + message.pk"
         class="conversation-item"
         :class="messageContentClass(message)"
         :style="messageContentStyle(message)">
@@ -79,7 +78,6 @@
 
     </li>
   </ul>
-{% endif %}
 
   <div id="message-container">
     <input id="message-input" type="text" v-model="messageInputText">
@@ -98,7 +96,9 @@
     </button>
   </div>
 
+  <div id="non-js-form">
   {% include 'base_form.html' %}
+  </div>
 
   <transition>
     <div v-if="messageUpdateStatus" class="messageUpdateStatus">[[ messageUpdateStatus ]]</div>
