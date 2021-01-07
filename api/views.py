@@ -4,9 +4,17 @@ from rest_framework.permissions import IsAuthenticated
 
 from . import serializers
 from .permissions import HasMessagePermissionsOrReadOnly
-from chat.models import Message
+from chat.models import Conversation, Message
 
 UserModel = get_user_model()
+
+#class MessageCreate(generics.APIView):
+#    permission_classes = [HasMessagePermissionsOrReadOnly]
+#    serializer_class = serializers.MessageSerializer
+#
+#    def get_queryset(self):
+#        return Conversation.objects.filter(pk=self.kwargs['conversation_pk'])
+
 
 class MessageDetail(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes = [IsAuthenticated]

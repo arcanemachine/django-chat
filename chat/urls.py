@@ -9,10 +9,23 @@ urlpatterns = [
          views.chat_root,
          name="chat_root"),
 
-    # deleteme
-    path('api/test/',
-         views.test_message,
-         name='test_message'),
+    # api helpers
+    path('api/urls/reverse/<str:reverse_string>/',
+         views.json_reverse_url,
+         name='json_reverse_url'),
+    path('api/test/hello-world/',
+         views.json_hello_world,
+         name='json_hello_world'),
+    path('api/test/user-is-logged-in/',
+         views.json_user_is_logged_in,
+         name='json_user_is_logged_in'),
+    path('api/test/debug/',
+         views.json_debug,
+         name='json_debug'),
+
+    path('api/conversations/<int:conversation_pk>/messages/create/',
+         views.create_conversation_message,
+         name='create_conversation_message'),
     path('api/conversations/<int:conversation_pk>/messages/'
          '<int:number_of_messages>/',
          views.get_conversation_messages,

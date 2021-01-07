@@ -4,7 +4,8 @@ from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
+from django.urls import reverse
 from django.shortcuts import render
 from django.views.generic import CreateView, ListView
 from django.views.generic.edit import UpdateView
@@ -95,10 +96,34 @@ class ConversationUpdateParticipantsView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-def test_message(request):
+def json_hello_world(request):
     result = {'hello': 'world'}
     return JsonResponse(result)
 
+
+def json_debug(request):
+    if request.user.username == 'admin':
+        breakpoint()
+        return JsonResponse({'username':request.user.username})
+    return HttpResponseForbidden()
+
+
+def json_user_is_logged_in(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'message': 'You are not logged in.'})
+    elif request.user.is_authenticated:
+        return JsonResponse(
+            {'message': f"You are logged in as {request.user.username}"})
+
+def json_reverse_url(request, reverse_string):
+    try:
+        request_get_dict = dict(request.GET)
+        for item in request_get_dict.keys():
+            request_get_dict[item] = request_get_dict[item][0]
+        url = reverse(reverse_string, kwargs=request_get_dict)
+        return JsonResponse({'url': url})
+    except Exception as e:
+        return JsonResponse({'error': str(e)})
 
 def get_conversation_messages(request, conversation_pk, number_of_messages):
     conversation = Conversation.objects.get(pk=conversation_pk)
@@ -123,6 +148,14 @@ def get_conversation_users(request, conversation_pk):
     users_json = json.loads(users_serialized)
 
     return JsonResponse(users_json, safe=False)
+
+
+def create_conversation_message(request, conversation_pk):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Please login first'})
+    if request.method == 'GET':
+        return JsonResponse({'error': 'This view supports POST requests only'})
+    return JsonResponse({'message': ''})
 
 
 class MessageListView(ListView):

@@ -55,8 +55,8 @@ let app = new Vue({
 
   },
   methods: {
-    sayHello() {
-      console.log('This works outside Vue!');
+    reverseUrl(view_name) {
+      return `/chat/api/urls/reverse/f{view_name}/`
     },
     toggleMenu() {
       this.menuShow = !this.menuShow;
@@ -179,6 +179,20 @@ let app = new Vue({
         })
         .catch(error => console.log('getUserList(): Error: ' + error.message))
 
+    },
+    messageSend() {
+      fetch('/chat/api/conversations/1/messages/create/')
+        .then(response => {
+          if (!response.ok) {
+            if (response.status === 403) {
+              this.displayStatusMessage('You do not have permission to modify this message.');
+            }
+            throw new Error("HTTP error, status = " + response.status);
+            }
+          return response.json();
+        })
+         .then(data => {console.log(data)})
+      this.getMessages();
     },
     messageUpdate: function (messagePk) {
 

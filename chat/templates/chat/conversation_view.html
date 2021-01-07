@@ -83,7 +83,10 @@
   </ul>
 
   <div id="message-container">
-    <input id="message-input" type="text" v-model="messageInputText">
+    <input @keyup.enter="sendMessage"
+           id="message-input"
+           type="text"
+           v-model="messageInputText">
     <button @click="toggleMenu"
             id="menu-button"
             class="cursor-url"
@@ -91,11 +94,12 @@
             :style="{'background-color': menuShow ? '#33f' : '#555'}">
       &#9776;  <!-- hamburger menu icon -->
     </button>
-    <button id="send-button"
+    <button @click="messageSend"
+            id="send-button"
             class="cursor-url"
             alt="Send button"
             :style="{'background-color': messageInputText ? '#33f' : '#555'}">
-      &#9992; <!-- airplane emoji -->
+      &#9992; <!-- airplane icon -->
     </button>
   </div>
 
