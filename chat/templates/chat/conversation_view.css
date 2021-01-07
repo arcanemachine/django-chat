@@ -22,7 +22,7 @@
 #menu-overlay-parent-container {
   position: fixed;
   height: 100vh;
-  width: 100vh;
+  width: 100vw;
   z-index: 1;
 }
 
@@ -33,7 +33,7 @@
   top: 0;
   left: 0;
   height: 100vh;
-  width: 100vh;
+  width: 100vw;
 
   opacity: 0.5;
 }

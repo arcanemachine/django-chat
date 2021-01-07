@@ -1,4 +1,5 @@
 body {
+  font-family: Helvetica;
   margin: 0;
 }
 
@@ -47,4 +48,10 @@ body {
 
 .cursor-url {
   cursor: pointer;
+}
+
+.unstyled-link {
+  color: black;
+  text-decoration: none;
+  font-weight: bold;
 }

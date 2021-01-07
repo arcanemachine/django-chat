@@ -12,14 +12,16 @@ let app = new Vue({
     messageUpdatePanelValue: undefined,
     messageUpdateStatus: '',
     messageUpdatedContent: '',
-    menuShow: true
+    menuShow: true,
+    
+    deleteMe: undefined
   },
   mounted() {
     this.getMessages();
     this.$nextTick(() => {
       this.scrollToBottom();
     })
-    setInterval(() => {this.getMessages();}, 5000);
+    // setInterval(() => {this.getMessages();}, 5000);
   },
   methods: {
     toggleMenu() {
@@ -79,10 +81,8 @@ let app = new Vue({
       let elementVisibleHeight = el.clientHeight;
       let elementScrollHeight = el.scrollHeight - el.clientHeight;
       if (el.scrollTop === elementScrollHeight) {
-        console.log('is on bottom');
         return true;
       } else {
-        console.log('is not on bottom');
         return false;
       }
     },
@@ -111,7 +111,23 @@ let app = new Vue({
       
     },
     getUserList() {
-      window.alert('hello!');
+      let message = "Users in this conversation: \n\n";
+
+      fetch('/chat/api/conversations/{{ conversation.pk }}/users/')
+        .then(response => {
+          if (!response.ok) {
+              throw new Error("getUserList(): HTTP error, status = " + response.status);
+            }
+          return response.json();
+        })
+        .then(data => {
+          for (let i in data) {
+            message += `${Number(i) + 1}. ${data[i].fields.username}\n`
+          }
+          window.alert(message);
+        })
+        .catch(error => console.log('getUserList(): Error: ' + error.message))
+
     },
     messageUpdate: function (messagePk) {
 

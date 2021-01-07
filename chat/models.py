@@ -1,5 +1,3 @@
-import random
-
 from django.db import models
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -26,7 +24,7 @@ class Conversation(models.Model):
 
     def get_absolute_url(self):
         return reverse(
-            'chat:conversation_view', kwargs={'pk': self.pk})
+            'chat:conversation_view', kwargs={'conversation_pk': self.pk})
 
 
 class Message(models.Model):
@@ -42,7 +40,8 @@ class Message(models.Model):
 
     def get_absolute_url(self):
         return reverse(
-            'chat:conversation_view', kwargs={'pk': self.conversation.pk})
+            'chat:conversation_view', kwargs={
+                'conversation_pk': self.conversation.pk})
 
     def save(self, *args, **kwargs):
         if not self.sender_username:

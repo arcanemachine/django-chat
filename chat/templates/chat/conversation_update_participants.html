@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Create New Conversation{% endblock title %}
+{% block body_title %}Create New Conversation{% endblock body_title %}
+
+{% block content %}
+
+<p>Please enter the details for this new conversation:</p>
+
+{% include 'base_form.html' %}
+
+<div class="bottom-links">
+  <p>
+    <a href="{% url 'chat:conversation_list' %}">
+      Return to conversation list
+    </a>
+  </p>
+</div>
+
+{% endblock content %}

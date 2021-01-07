@@ -9,7 +9,7 @@
 <ul>
   {% for conversation in conversation_list %}
   <li>
-    <a href="{% url 'chat:conversation_view' pk=conversation.pk %}">{{ conversation }}</a>
+    <a href="{% url 'chat:conversation_view' conversation_pk=conversation.pk %}">{{ conversation }}</a>
   </li>
   {% endfor %}
 </ul>

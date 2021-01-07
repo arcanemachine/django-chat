@@ -16,6 +16,9 @@ urlpatterns = [
     path('api/conversations/<int:conversation_pk>/messages/',
          views.get_conversation_messages,
          name='get_conversation_messages'),
+    path('api/conversations/<int:conversation_pk>/users/',
+         views.get_conversation_users,
+         name='get_conversation_users'),
 
     path('conversations/all/',
          views.ConversationListView.as_view(),
@@ -23,9 +26,12 @@ urlpatterns = [
     path('conversations/new/',
          views.ConversationCreateView.as_view(),
          name="conversation_create"),
-    path('conversations/<pk>/',
+    path('conversations/<int:conversation_pk>/',
          views.ConversationView.as_view(),
          name="conversation_view"),
+    path('conversations/<int:conversation_pk>/update-participants/',
+         views.ConversationUpdateParticipantsView.as_view(),
+         name="conversation_update_participants"),
 
     path('messages/all/',
          views.MessageListView.as_view(),
