@@ -1,18 +1,43 @@
 body {
-  margin: 2rem;
+  margin: 0;
 }
 
-.info-message {
-  font-weight: bold;
+#page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#header-container {
+  margin-top: 1rem;
+  max-height: 10vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#title-container {
+  display: flex;
+  flex-direction: column;
+}
+
+#login-container {
   margin: 1rem;
 }
 
+.info-message {
+  margin: 1rem;
+  font-weight: bold;
+}
+
 #body-title {
+  margin-top: 0;
   margin-bottom: 0;
 }
 
 #body-subheading {
-  margin-top: 0.5rem;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 /* formatting */

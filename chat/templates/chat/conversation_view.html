@@ -4,6 +4,7 @@
 
 {% block head_script %}
   {% include 'scripts.html' with vue=True js_cookie=True %}
+  {% include 'chat/conversation_view.css' %}
 {% endblock %}
 
 {% block body_title %}Conversation Detail{% endblock body_title %}
@@ -15,7 +16,7 @@
 {% if not conversation_messages %}
   <p>Say something to get the ball rolling!</p>
 {% else %}
-  <ul style="list-style-type: none;">
+  <ul class="chat-list" ref="chatList">
     <li v-for="message in messages"
         :key="message.pk"
         class="conversation-item"
@@ -62,11 +63,17 @@
   </ul>
 {% endif %}
 
-{% include 'base_form.html' %}
-
-  <div id="json-messages" style="margin-top: 3rem;">
-    <button @click="getMessages">Reload messages</button>
+  <div id="message-container">
+    <input id="message-input" type="text" v-model="messageInputText">
+    <button id="send-button"
+            class="cursor-url"
+            alt="send"
+            :style="{'background-color': messageInputText ? '#33f' : '#555'}">
+      &#9992; <!-- airplane emoji -->
+    </button>
   </div>
+
+  {% include 'base_form.html' %}
 
   <transition>
     <div v-if="messageUpdateStatus" class="messageUpdateStatus">[[ messageUpdateStatus ]]</div>
@@ -76,177 +83,7 @@
 {% endblock content %}
 
 {% block body_end_script %}
-<script>
-
-"use strict";
-
-let app = new Vue({
-  el: '#app',
-  delimiters: ['[[', ']]'],
-  data: {
-    userUsername: '{{ user.username }}',
-    userPk: {{ user.pk }},
-    userIsStaff: '{{ user.is_staff }}' === 'True',
-    messages: '',
-    messageUpdatePanelValue: undefined,
-    messageUpdateStatus: '',
-    messageUpdatedContent: '',
-  },
-  mounted() {
-    this.getMessages();
-    setInterval(() => {this.getMessages();}, 5000)
-  },
-  methods: {
-    messageContentClass: function (message) {
-      return {
-        'bold': this.userCanEdit(message),
-        'cursor-url': this.userCanEdit(message),
-        'item-current-user': this.userIsSender(message),
-        'item-other-user': !this.userIsSender(message),
-      }
-    },
-    messageContentStyle: function (message) {
-      return {
-        'background-color': this.getBackgroundColor(message.fields.sender_username),
-      }
-    },
-    getBackgroundColor(username) {
-      let result = 0;
-      for (let i = 0; i < username.length; i++) {
-        result += username.codePointAt(i);
-      }
-      result = result % 14;
-      if (result % 14 < 9) {
-        result += 5;
-      }
-      return '#' + result.toString(16).repeat(6);
-    },
-    userIsSender: function (message) {
-      if (message.fields.sender === this.userPk) {
-        return true;
-      } else return false;
-    },
-    userCanEdit: function (message) {
-      if (this.userIsStaff) {
-        return true;
-      }
-      else if (this.userPk === message.fields.sender) {
-        return true;
-      }
-      else {
-        return false;
-      }
-    },
-    messageUpdatePanelSelect: function (messagePk) {
-      if (this.messageUpdatePanelValue != messagePk) {
-        this.messageUpdatePanelValue = messagePk;
-        this.messageUpdatedContent = this.messages[messagePk-1].fields.content;
-      } else {
-        this.messageUpdatePanelValue = undefined;
-        this.messageUpdatedContent = '';
-      }
-    },
-    getMessages: function () {
-      /* REPLACE WITH DRF URL */
-      fetch('/chat/api/conversations/{{ conversation.pk }}/messages/')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("HTTP error, status = " + response.status);
-          }
-        return response.json();
-      })
-      .then(data => this.messages = data)
-      .catch(error => console.log('Error: ' + error.message))
-    },
-    messageUpdate: function (messagePk) {
-
-      const csrfToken = Cookies.get('csrftoken');
-
-      const postData = {
-        "id": this.messagePk,
-        "content": this.messageUpdatedContent
-      }
-
-      fetch(`/api/v1/messages/${messagePk}/`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken
-        },
-        body: JSON.stringify(postData)
-      })
-      .then(response => {
-        if (!response.ok) {
-          if (response.status === 403) {
-            this.displayStatusMessage('You do not have permission to modify this message.');
-          }
-          throw new Error("HTTP error, status = " + response.status);
-          }
-        return response.json();
-      })
-      .then(() => {
-        this.displayStatusMessage('Message updated successfully.');
-        this.getMessages();
-      })
-      .catch(error => {
-        console.log('Error: ' + error.message)
-      })
-      this.messageUpdatePanelValue = undefined;
-    },
-    displayStatusMessage: function (message) {
-      this.messageUpdateStatus = message;
-      setTimeout(() => {
-        this.messageUpdateStatus = '';
-        this.messageUpdatePanelValue = undefined;
-      }, 3000)
-    }
-  }
-})
-
-</script>
-
-<style>
-
-.v-enter-active, .v-leave-active {
-  transition: opacity .5s;
-}
-
-.v-enter, .v-leave-to {
-  opacity: 0;
-}
-
-.show-on-hover {
-  opacity: 0;
-}
-
-.show-on-hover:hover {
-  opacity: 1;
-}
-
-.conversation-item {
-  margin: 1rem 0;
-  border-radius: 1rem;
-  max-width: 50%;
-}
-
-.message-update-status {
-  margin-top: 2rem;
-  font-weight: bold;
-  font-size: 1.3rem;
-}
-
-.item-current-user {
-  margin-left: auto;
-  text-align: right;
-  padding: 2rem 1rem 1rem 1rem;
-  background-color: #999;
-}
-
-.item-other-user {
-  margin-right: auto;
-  padding: 1rem 1rem 2rem 1rem;
-}
-
-</style>
-
+  <script>
+  {% include 'chat/conversation_view.js' %}
+  </script>
 {% endblock body_end_script %}

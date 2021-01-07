@@ -1,0 +1,77 @@
+<style>
+.v-enter-active, .v-leave-active {
+  transition: opacity .5s;
+}
+
+.v-enter, .v-leave-to {
+  opacity: 0;
+}
+
+.show-on-hover {
+  opacity: 0;
+}
+
+.show-on-hover:hover {
+  opacity: 1;
+}
+
+#app {
+  flex-grow: 1;
+}
+
+.chat-list {
+  margin: 0;
+  padding: 1rem;
+  text-indent: -1rem;
+  overflow-y: scroll;
+  max-height: 80vh;
+  flex-grow: 1;
+  list-style-type: none;
+}
+
+.conversation-item {
+  margin: 1rem 0;
+  max-width: 50%;
+}
+
+.message-update-status {
+  margin-top: 2rem;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+.item-current-user {
+  margin-left: auto;
+  padding: 1rem 1rem 2rem 1rem;
+  border-radius: 1rem 1rem 0 1rem;
+}
+
+.item-other-user {
+  margin-right: auto;
+  padding: 1rem 1rem 2rem 1rem;
+  border-radius: 0 1rem 1rem 1rem;
+}
+
+#message-container {
+  display: flex;
+  flex-direction: row;
+  margin: 1rem 1rem;
+}
+
+#message-input {
+  margin-right: 1rem;
+  width: 100%;
+  border-width: 0 0 2px;
+  border-color: gray;
+}
+
+#send-button {
+  font-size: 1.25rem;
+  border-radius: 0.5rem;
+  color: white;
+  padding: 0.5rem 0.75rem;
+
+  transition: background-color 0.5s;
+}
+
+</style>

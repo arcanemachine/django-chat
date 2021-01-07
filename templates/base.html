@@ -7,34 +7,48 @@
     <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
-    {% block head_script %}{% endblock head_script %}
+{% block head_script %}{% endblock head_script %}
 
   </head>
   <body>
 
-    <section id="login-box" style="position: absolute; top: 1rem; right: 1rem">
-      {% if not user.is_authenticated %}
-      <span><a href="{% url 'users:login' %}">Login</a></span>
-      <span style="margin-left: 1rem;"><a href="{% url 'users:register' %}">Register</a></span>
-      {% else %}
-      <span><a href="{% url 'users:user_detail' %}">{{ user.username }}</a></span>
-      <span style="margin-left: 1rem;"><a href="{% url 'users:logout' %}">Logout</a></span>
-      {% endif %}
-    </section>
+    <noscript>
+      <h3>This page requires JavaScript. Please enable JavaScript to continue.</h3>
+    </noscript>
 
-    <h1 id="body-title">{% block body_title %}{% endblock body_title %}</h1>
-    <h3 id="body-subheading">{% block body_subheading %}{% endblock body_subheading %}</h3>
+    <div id="page-container">
 
-    {% if messages %}
-      {% for message in messages %}
-          <div class="info-message"><strong>{{ message }}</strong></div>
-      {% endfor %}
-    {% endif %}
+      <div id="header-container">
+
+        <div id="title-container">
+          <h1 id="body-title">{% block body_title %}{% endblock body_title %}</h1>
+          <h3 id="body-subheading">{% block body_subheading %}{% endblock body_subheading %}</h3>
+        </div>
+
+        <section id="login-container">
+          {% if not user.is_authenticated %}
+          <span><a href="{% url 'users:login' %}">Login</a></span>
+          <span style="margin-left: 1rem;"><a href="{% url 'users:register' %}">Register</a></span>
+          {% else %}
+          <span><a href="{% url 'users:user_detail' %}">{{ user.username }}</a></span>
+          <span style="margin-left: 1rem;"><a href="{% url 'users:logout' %}">Logout</a></span>
+          {% endif %}
+        </section>
+
+      </div>
+
+{% if messages %}
+  {% for message in messages %}
+      <div class="info-message">
+        <strong>{{ message }}</strong>
+      </div>
+  {% endfor %}
+{% endif %}
 
 
-    {% block content %}{% endblock content %}
-
-    {% block body_end_script %}{% endblock body_end_script %}
+{% block content %}{% endblock content %}
+    </div>
+{% block body_end_script %}{% endblock body_end_script %}
        
 	</body>
 </html>
