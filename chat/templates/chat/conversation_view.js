@@ -40,7 +40,6 @@ let app = new Vue({
       var chatList = document.querySelector('.chat-list');
       chatList.addEventListener('scroll', (e) => {
         if (chatList.scrollTop === 0) {
-          console.log('to the top!');
           this.getMoreMessages();
           this.$nextTick(() => {
             chatList.scrollTop = 1;
@@ -76,15 +75,15 @@ let app = new Vue({
       }
     },
     getBackgroundColor(username) {
-      let result = 0;
-      for (let i = 0; i < username.length; i++) {
-        result += username.codePointAt(i);
+      let maxValue = 255 - 16;
+      let minValue = 128 + 32;
+      let result = '';
+      for (let i = 0; i < 3; i++) {
+        let seed = new Math.seedrandom(username.substr(i, i+1))();
+        let thisResult = maxValue - Math.floor(seed * maxValue);
+        result += thisResult.toString(16);
       }
-      result = result % 14;
-      if (result % 14 < 9) {
-        result += 5;
-      }
-      return '#' + result.toString(16).repeat(6);
+      return '#' + result;
     },
     userIsSender: function (message) {
       if (message.fields.sender === this.userPk) {

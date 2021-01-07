@@ -3,7 +3,7 @@ from django.core import serializers
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic import CreateView, ListView
@@ -37,7 +37,7 @@ class ConversationCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ConversationView(LoginRequiredMixin, CreateView):
+class ConversationView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Message
     form_class = forms.ConversationForm
     template_name = 'chat/conversation_view.html'
@@ -45,8 +45,6 @@ class ConversationView(LoginRequiredMixin, CreateView):
     def dispatch(self, request, *args, **kwargs):
         self.conversation = \
             Conversation.objects.get(pk=self.kwargs['conversation_pk'])
-        if request.user not in self.conversation.participants.all():
-            raise PermissionDenied()
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -71,6 +69,8 @@ class ConversationView(LoginRequiredMixin, CreateView):
         self.object.sender = self.request.user
         return super().form_valid(form)
 
+    def test_func(self):
+        return self.request.user in self.conversation.participants.all()
 
 class ConversationUpdateParticipantsView(LoginRequiredMixin, UpdateView):
     model = Conversation

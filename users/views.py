@@ -5,16 +5,17 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
 from django.views.generic import CreateView, DetailView
 from django.urls import reverse, reverse_lazy
 
+from . import forms
 
 def users_root(request):
     return HttpResponseRedirect(reverse('users:user_detail'))
 
+
 class UserRegisterView(CreateView, SuccessMessageMixin):
-    form_class = UserCreationForm
+    form_class = forms.ChatUserCreationForm
     template_name = 'users/user_register.html'
     success_url = reverse_lazy(settings.LOGIN_URL)
     success_message = "You have successfully registered your account."
@@ -34,7 +35,7 @@ class UserLoginView(LoginView, SuccessMessageMixin):
 
 class UserDetailView(DetailView, LoginRequiredMixin):
     template_name = 'users/user_detail.html'
-    
+
     def get_object(self):
         return self.request.user
 

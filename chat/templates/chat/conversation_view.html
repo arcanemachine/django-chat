@@ -3,12 +3,12 @@
 {% block title %}Conversation Detail - {{ conversation.pk }} - {{ conversation.subject }}{% endblock %}
 
 {% block head_script %}
-  {% include 'scripts.html' with vue=True js_cookie=True helpers=True %}
+  {% include 'scripts.html' with vue=True js_cookie=True helpers=True seedrandom=True %}
   {% include 'chat/conversation_view.css' %}
 {% endblock %}
 
-{% block body_title %}{{ conversation.subject|truncatechars:14 }}{% endblock %}
-{% block body_subheading %}Conversation{% endblock %}
+{% block body_title %}Conversation{% endblock %}
+{% block body_subheading %}{{ conversation.subject|truncatechars:20 }}{% endblock %}
 
 {% block content %}
 <div id="app">
