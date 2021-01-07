@@ -11,7 +11,7 @@
 {% if user.conversation_set.count %}
 <ul>
   {% for conversation in user.conversation_set.all %}
-  <li><a href="{% url 'chat:conversation_view' pk=conversation.pk %}">{{ conversation }}</a></li>
+  <li><a href="{% url 'chat:conversation_view' conversation_pk=conversation.pk %}">{{ conversation }}</a></li>
   {% endfor %}
 </ul>
 {% else %}

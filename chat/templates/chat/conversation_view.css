@@ -7,6 +7,14 @@
   opacity: 0;
 }
 
+.expand-vertical-enter-active, .expand-vertical-leave-active {
+  transition: height .5s;
+}
+
+.expand-vertical-enter, .expand-vertical-leave-to {
+  height: 0;
+}
+
 .show-on-hover {
   opacity: 0;
 }
@@ -101,10 +109,10 @@
 
 .chat-list {
   margin: 0;
+  max-height: 72vh;
   padding: 1rem;
   text-indent: -1rem;
   overflow-y: scroll;
-  max-height: 80vh;
   flex-grow: 1;
   list-style-type: none;
 }
@@ -134,8 +142,9 @@
 
 #message-container {
   display: flex;
+  max-height: 10vh;
+  margin: 1rem;
   flex-direction: row;
-  margin: 1rem 1rem;
 }
 
 #message-input {

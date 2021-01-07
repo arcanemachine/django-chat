@@ -10,20 +10,28 @@ body {
 }
 
 #header-container {
-  margin-top: 1rem;
-  max-height: 10vh;
+  height: 10vh;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  border-bottom: 2px solid black;
 }
 
 #title-container {
+  margin-left: 1rem;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 #login-container {
-  margin: 1rem;
+  display: flex;
+  margin-right: 1rem;
+  align-items: center;
+}
+
+.login-item {
+  margin: auto 0.5rem;
 }
 
 .info-message {
@@ -46,12 +54,25 @@ body {
   font-weight: bold;
 }
 
+.text-italic {
+  font-style: italic;
+}
+
 .cursor-url {
   cursor: pointer;
+}
+
+.text-center {
+  text-align: center;
 }
 
 .unstyled-link {
   color: black;
   text-decoration: none;
   font-weight: bold;
+}
+
+/* spacing */
+.mb-2 {
+  margin-bottom: 1rem;
 }

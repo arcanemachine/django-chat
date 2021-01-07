@@ -1,5 +1,6 @@
 "use strict";
 
+  // indented stuff is django-related
   </script>
   {{ conversation_messages|json_script:'conversation-messages' }}
   <script>
@@ -16,19 +17,43 @@ let app = new Vue({
     userPk: {{ user.pk }},
     userIsStaff: '{{ user.is_staff }}' === 'True',
     messages: JSON.parse(conversationMessages),
+    allMessagesShown: false,
     messageDisplayCount: 10,
     messageInputText: '',
     messageUpdatePanelValue: undefined,
     messageUpdateStatus: '',
     messageUpdatedContent: '',
     menuShow: false,
-    
+
+    isMounted: false
+
   },
   mounted() {
+    
+    // scroll to bottom of chatList
     this.$nextTick(() => {
       this.scrollToBottom();
     })
-    setInterval(() => {this.getMessages();}, 5000);
+
+    // when scrolled to top of chatList, load 10 more messages
+    setTimeout(() => {
+      var chatList = document.querySelector('.chat-list');
+      chatList.addEventListener('scroll', (e) => {
+        if (chatList.scrollTop === 0) {
+          console.log('to the top!');
+          this.getMoreMessages();
+          this.$nextTick(() => {
+            chatList.scrollTop = 1;
+          })
+        }
+      })
+    }, 500)
+
+    // poll for new messages every 5 seconds
+    // setInterval(() => {this.getMessages();}, 5000);
+    
+    this.isMounted = true;
+
   },
   methods: {
     sayHello() {
@@ -103,6 +128,10 @@ let app = new Vue({
     },
     getMessages: function () {
 
+      if (this.allMessagesShown) {
+        return;
+      }
+
       // REPLACE WITH DRF URL
       fetch(`/chat/api/conversations/{{ conversation.pk }}/messages/${this.messageDisplayCount}`)
         .then(response => {
@@ -112,15 +141,26 @@ let app = new Vue({
           return response.json();
         })
         .then(data => {
-          this.messages = data;
+          this.messages = data.messages;
+          this.messageDisplayCount = data.messages.length;
+          if (data.allMessagesShown) {
+            this.allMessagesShown = true
+          }
+          
+          // scroll down if user is at the bottom of the page
           this.$nextTick(() => {
             if (this.scrolledToBottomOfElement(this.$refs.chatList)) {
                 this.scrollToBottom();
             }
           })
+
         })
         .catch(error => console.log('Error: ' + error.message))
       
+    },
+    getMoreMessages: function() {
+      this.messageDisplayCount += 10;
+      this.getMessages();
     },
     getUserList() {
       let message = "Users in this conversation: \n\n";
@@ -192,4 +232,3 @@ document.addEventListener('keyup', function keyPress (e) {
     app.menuShow = !app.menuShow;
   }
 })
-

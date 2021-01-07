@@ -3,12 +3,12 @@
 {% block title %}Conversation Detail - {{ conversation.pk }} - {{ conversation.subject }}{% endblock %}
 
 {% block head_script %}
-  {% include 'scripts.html' with vue=True js_cookie=True debounce=True %}
+  {% include 'scripts.html' with vue=True js_cookie=True helpers=True %}
   {% include 'chat/conversation_view.css' %}
 {% endblock %}
 
-{% block body_title %}Conversation Detail{% endblock body_title %}
-{% block body_subheading %}#{{ conversation.pk }} -- {{ conversation.subject }}{% endblock %}
+{% block body_title %}{{ conversation.subject|truncatechars:14 }}{% endblock %}
+{% block body_subheading %}Conversation{% endblock %}
 
 {% block content %}
 <div id="app">
@@ -32,51 +32,54 @@
   </transition>
 
   <p v-if="!messages.length">Say something to get the ball rolling!</p>
-  <ul v-else-if="messages.length" class="chat-list" ref="chatList">
-    <li v-for="message in messages.slice().reverse()"
-        :key="message.pk"
-        :id="'message' + message.pk"
-        class="conversation-item"
-        :class="messageContentClass(message)"
-        :style="messageContentStyle(message)">
+  <ul v-if="messages.length" class="chat-list" ref="chatList">
+    <div v-if="allMessagesShown" class="mb-2 text-italic text-center">Beginning of conversation</div>
+    <transition-group name="expand-vertical">
+      <li v-for="message in messages.slice().reverse()"
+          :key="message.pk"
+          :id="'message' + message.pk"
+          class="conversation-item"
+          :class="messageContentClass(message)"
+          :style="messageContentStyle(message)">
 
-      <span>
+        <span>
 
-        <span class="show-on-hover">([[ message.pk ]])</span>
+          <span class="show-on-hover">([[ message.pk ]])</span>
 
-        <span v-if="message.fields.sender !== userPk">[[ message.fields.sender_username ]]:</span>
-        <span v-else style="font-weight: regular;">You:</span>
+          <span v-if="message.fields.sender !== userPk">[[ message.fields.sender_username ]]:</span>
+          <span v-else style="font-weight: regular;">You:</span>
 
-        <span @click="messageUpdatePanelSelect(message.pk)">
-          [[ message.fields.content ]]
+          <span @click="messageUpdatePanelSelect(message.pk)">
+            [[ message.fields.content ]]
+          </span>
+
+          <transition>
+            <span v-if="messageUpdatePanelValue === message.pk && userCanEdit(message)">
+
+              <input type="text"
+                     v-model="messageUpdatedContent"
+                     @keyup.enter="messageUpdate(message.pk)">
+              <button @click="messageUpdate(message.pk)">
+                Update
+              </button>
+              <button @click="messageUpdatePanelSelect(message.pk)">
+                Cancel
+              </button>
+
+              <span v-if="userCanEdit(message)">
+                <strong v-if="!messageUpdateStatus && userIsStaff && message.fields.sender != userPk">&lt;-- Using admin privileges to edit</strong>
+              </span>
+              <span v-if="!userCanEdit(message)">
+                You do not have permission to edit this message.
+              </span>
+
+            </span>
+          </transition>
+
         </span>
 
-        <transition>
-          <span v-if="messageUpdatePanelValue === message.pk && userCanEdit(message)">
-
-            <input type="text"
-                   v-model="messageUpdatedContent"
-                   @keyup.enter="messageUpdate(message.pk)">
-            <button @click="messageUpdate(message.pk)">
-              Update
-            </button>
-            <button @click="messageUpdatePanelSelect(message.pk)">
-              Cancel
-            </button>
-
-            <span v-if="userCanEdit(message)">
-              <strong v-if="!messageUpdateStatus && userIsStaff && message.fields.sender != userPk">&lt;-- Using admin privileges to edit</strong>
-            </span>
-            <span v-if="!userCanEdit(message)">
-              You do not have permission to edit this message.
-            </span>
-
-          </span>
-        </transition>
-
-      </span>
-
-    </li>
+      </li>
+    </transition>
   </ul>
 
   <div id="message-container">

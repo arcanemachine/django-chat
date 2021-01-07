@@ -107,7 +107,12 @@ def get_conversation_messages(request, conversation_pk, number_of_messages):
     messages_serialized = serializers.serialize('json', messages)
     messages_json = json.loads(messages_serialized)
 
-    return JsonResponse(messages_json, safe=False)
+    all_messages_shown = messages.count() == conversation.message_set.count()
+
+    result = {'messages': messages_json,
+              'allMessagesShown': all_messages_shown}
+
+    return JsonResponse(result, safe=False)
 
 
 def get_conversation_users(request, conversation_pk):
