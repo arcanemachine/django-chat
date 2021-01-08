@@ -13,6 +13,7 @@ let app = new Vue({
   el: '#app',
   delimiters: ['[[', ']]'],
   data: {
+    conversationPk: {{ conversation.pk }},
     userUsername: '{{ user.username }}',
     userPk: {{ user.pk }},
     userIsStaff: '{{ user.is_staff }}' === 'True',
@@ -49,7 +50,7 @@ let app = new Vue({
     }, 500)
 
     // poll for new messages every 5 seconds
-    // setInterval(() => {this.getMessages();}, 5000);
+    setInterval(() => {this.getMessages();}, 5000);
     
     this.isMounted = true;
 
@@ -127,7 +128,7 @@ let app = new Vue({
       if (Object.keys(params).length === 1) {
         args = '?' + Object.keys(params)[0] + '=' + Object.values(params)[0];
       }
-      else if (Object.keys(params).length > 1) {
+      else if (Object.keys(params) && Object.keys(params).length > 1) {
         args += '?';
         for (let i = 0; i < Object.keys(params).length; i++) {
           args += Object.keys(params)[i] + '=' + Object.values(params)[i];
@@ -136,19 +137,30 @@ let app = new Vue({
           }
         }
       }
-      let result = `/chat/api/urls/reverse/${view_name}/${args}`;
-      console.log(result);
-      return result
+      let lookupUrl = `/chat/api/urls/reverse/${view_name}/${args}`;
+      var reversedUrl;
+      let result = fetch(lookupUrl)
+        .then(response => {
+          if (!response.ok) {
+              throw new Error("HTTP error, status = " + response.status);
+            }
+          return response.json();
+        })
+      return result;
     },
-    getMessages: function () {
+    async getMessages() {
 
       if (this.allMessagesShown) {
         return;
       }
 
       // REPLACE WITH DRF URL
-      let fetchUrl = undefined;
-      fetch(`/chat/api/conversations/{{ conversation.pk }}/messages/${this.messageDisplayCount}`)
+      let urlParams = {
+        'conversation_pk': this.conversationPk,
+        'number_of_messages': this.messageDisplayCount
+      }
+      let fetchUrl = await this.reverseUrl('chat:get_conversation_messages', urlParams);
+      fetch(fetchUrl.url)
         .then(response => {
           if (!response.ok) {
               throw new Error("HTTP error, status = " + response.status);
