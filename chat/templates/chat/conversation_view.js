@@ -16,7 +16,7 @@ let app = new Vue({
     conversationPk: {{ conversation.pk }},
     userUsername: '{{ user.username }}',
     userPk: {{ user.pk }},
-    userIsStaff: '{{ user.is_staff }}' === 'True',
+    userIsStaff: '{{ user.is_staff }}' === 'True', // do a boolean check for python's True/False boolean style
     messages: JSON.parse(conversationMessages),
     allMessagesShown: false,
     messageDisplayCount: 10,
@@ -28,6 +28,11 @@ let app = new Vue({
 
     isMounted: false
 
+  },
+  computed: {
+    messagesReversed() {
+      return this.messages.slice().reverse();
+    }
   },
   mounted() {
     
@@ -102,17 +107,18 @@ let app = new Vue({
     messageUpdatePanelSelect: function (messagePk) {
       if (this.messageUpdatePanelValue != messagePk) {
         this.messageUpdatePanelValue = messagePk;
-        this.messageUpdatedContent = this.messages[messagePk-1].fields.content;
+        this.messageUpdatedContent = this.messages.find(x => x.pk === messagePk).fields.content;
       } else {
         this.messageUpdatePanelValue = undefined;
         this.messageUpdatedContent = '';
       }
     },
-    scrolledToBottomOfElement(el) {
+    isScrolledToBottom() {
+      let el = this.$refs.chatList;
       let elementTotalHeight = el.scrollHeight;
       let elementVisibleHeight = el.clientHeight;
       let elementScrollHeight = el.scrollHeight - el.clientHeight;
-      if (el.scrollTop === elementScrollHeight) {
+      if (el.scrollTop >= elementScrollHeight - 125) {
         return true;
       } else {
         return false;
@@ -148,6 +154,8 @@ let app = new Vue({
         })
       return result;
     },
+    updateMessageList() {
+    },
     async getMessages() {
 
       if (this.allMessagesShown) {
@@ -169,20 +177,20 @@ let app = new Vue({
         })
         .then(data => {
           this.messages = data.messages;
-          this.messageDisplayCount = data.messages.length;
+          this.messageDisplayCount = this.messages.length;
           if (data.allMessagesShown) {
             this.allMessagesShown = true
           }
-          
+         
           // scroll down if user is at the bottom of the page
           this.$nextTick(() => {
-            if (this.scrolledToBottomOfElement(this.$refs.chatList)) {
+            if (this.isScrolledToBottom()) {
                 this.scrollToBottom();
             }
           })
 
         })
-        .catch(error => console.log('Error: ' + error.message))
+        .catch(error => console.log('Error: ' + error))
       
     },
     getMoreMessages: function() {
@@ -205,26 +213,51 @@ let app = new Vue({
           }
           window.alert(message);
         })
-        .catch(error => console.log('getUserList(): Error: ' + error.message))
+        .catch(error => console.log('getUserList(): Error: ' + error))
 
     },
     messageSend() {
-      fetch('/chat/api/conversations/1/messages/create/')
-        .then(response => {
-          if (!response.ok) {
-            if (response.status === 403) {
-              this.displayStatusMessage('You do not have permission to modify this message.');
-            }
-            throw new Error("HTTP error, status = " + response.status);
-            }
-          return response.json();
-        })
-         .then(data => {console.log(data)})
-      this.getMessages();
+
+      const csrftoken = Cookies.get('csrftoken');
+      const postData = {
+        "content": this.messageInputText
+      }
+
+      fetch('/chat/api/conversations/1/messages/create/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify(postData)
+      })
+      .then(response => {
+        if (!response.ok) {
+          if (response.status === 403) {
+            this.displayStatusMessage('You do not have permission to create this message.');
+          }
+          throw new Error("HTTP error, status = " + response.status);
+          }
+        return response.json();
+      })
+      .then(data => {
+        console.log(data)
+        this.messages.splice(0, 0, data.newMessage[0]);
+        this.messageUpdatedContent = '';
+        if (this.isScrolledToBottom()) {
+          this.$nextTick();
+            this.scrollToBottom();
+        }
+        this.messageDisplayCount = this.messages.length;
+        if (data.allMessagesShown) {
+          this.allMessagesShown = true
+        }
+      })
+      .catch(error => console.log('messageSend(): Error: ' + error))
     },
     messageUpdate: function (messagePk) {
 
-      const csrfToken = Cookies.get('csrftoken');
+      const csrftoken = Cookies.get('csrftoken');
 
       const postData = {
         "id": this.messagePk,
@@ -235,7 +268,7 @@ let app = new Vue({
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken
+          'X-CSRFToken': csrftoken
         },
         body: JSON.stringify(postData)
       })
@@ -253,7 +286,7 @@ let app = new Vue({
         this.getMessages();
       })
       .catch(error => {
-        console.log('Error: ' + error.message)
+        console.log('Error: ' + error)
       })
       this.messageUpdatePanelValue = undefined;
     },

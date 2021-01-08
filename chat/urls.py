@@ -26,6 +26,9 @@ urlpatterns = [
     path('api/conversations/<int:conversation_pk>/messages/create/',
          views.create_conversation_message,
          name='create_conversation_message'),
+    path('api/conversations/<int:conversation_pk>/message/<int:message_pk>/',
+         views.get_conversation_message,
+         name='get_conversation_message'),
     path('api/conversations/<int:conversation_pk>/messages/'
          '<int:number_of_messages>/',
          views.get_conversation_messages,

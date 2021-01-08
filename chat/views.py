@@ -125,8 +125,14 @@ def json_reverse_url(request, reverse_string):
     except Exception as e:
         return JsonResponse({'error': str(e)})
 
+
 def get_conversation_messages(request, conversation_pk, number_of_messages):
-    conversation = Conversation.objects.get(pk=conversation_pk)
+    try:
+        conversation = Conversation.objects.get(pk=conversation_pk)
+    except:
+        return JsonResponse(
+            {'error': "There is no conversation matching the ID entered."},
+            status=404)
 
     messages = conversation.message_set.order_by('-pk')[:number_of_messages]
     messages_serialized = serializers.serialize('json', messages)
@@ -134,14 +140,43 @@ def get_conversation_messages(request, conversation_pk, number_of_messages):
 
     all_messages_shown = messages.count() == conversation.message_set.count()
 
+
     result = {'messages': messages_json,
               'allMessagesShown': all_messages_shown}
 
     return JsonResponse(result, safe=False)
 
 
+def get_conversation_message(request, conversation_pk, message_pk):
+    try:
+        conversation = Conversation.objects.get(pk=conversation_pk)
+    except:
+        return JsonResponse(
+            {'error': "There is no conversation matching the ID entered."},
+            status=404)
+
+    message = conversation.message_set.filter(pk=message_pk)
+
+    if not message.exists():
+        return JsonResponse(
+            {'error': "There is no message matching the ID entered."},
+            status=404)
+
+    message_serialized = serializers.serialize('json', message)
+    message_json = json.loads(message_serialized)
+
+    result = {'message': message_json}
+
+    return JsonResponse(result, safe=False)
+
+
 def get_conversation_users(request, conversation_pk):
-    conversation = Conversation.objects.get(pk=conversation_pk)
+    try:
+        conversation = Conversation.objects.get(pk=conversation_pk)
+    except:
+        return JsonResponse(
+            {'error': "There is no conversation matching the ID entered."},
+            status=404)
 
     users = conversation.participants.all()
     users_serialized = serializers.serialize('json', users)
@@ -152,10 +187,39 @@ def get_conversation_users(request, conversation_pk):
 
 def create_conversation_message(request, conversation_pk):
     if not request.user.is_authenticated:
-        return JsonResponse({'error': 'Please login first'})
-    if request.method == 'GET':
-        return JsonResponse({'error': 'This view supports POST requests only'})
-    return JsonResponse({'message': ''})
+        return JsonResponse({'error': 'Please login first'}, status=401)
+
+    try:
+        conversation = Conversation.objects.get(pk=conversation_pk)
+    except:
+        return JsonResponse(
+            {'error': "There is no conversation matching the ID entered."},
+            status=404)
+
+    if request.method == 'POST':
+        try: 
+            message_content = \
+                json.loads(request.body.decode('utf-8'))['content']
+
+            new_message = Message.objects.create(
+                conversation=conversation,
+                sender=request.user,
+                content=message_content)
+
+            new_message_qs = conversation.message_set.filter(pk=new_message.pk)
+            message_serialized = serializers.serialize('json', new_message_qs)
+            message_json = json.loads(message_serialized)
+
+            result = {'newMessage': message_json}
+            return JsonResponse(result)
+
+        except Exception as e:
+            return JsonResponse(
+                {'message': 'We could not process your request'}, status=400)
+        # return message pk
+        return JsonResponse({'message': 'POST request received'})
+    else:
+        return JsonResponse({'message': 'This view supports POST requests only'}, status=405)
 
 
 class MessageListView(ListView):

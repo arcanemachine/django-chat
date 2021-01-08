@@ -3,7 +3,7 @@
 {% block title %}Conversation Detail - {{ conversation.pk }} - {{ conversation.subject }}{% endblock %}
 
 {% block head_script %}
-  {% include 'scripts.html' with vue=True js_cookie=True helpers=True seedrandom=True %}
+  {% include 'scripts.html' with vue=True js_cookie=True helpers=True seedrandom=True lodash=True %}
   {% include 'chat/conversation_view.css' %}
 {% endblock %}
 
@@ -38,13 +38,12 @@
       <li v-for="message in messages.slice().reverse()"
           :key="message.pk"
           :id="'message' + message.pk"
+          :ref="'message' + message.pk"
           class="conversation-item"
           :class="messageContentClass(message)"
           :style="messageContentStyle(message)">
 
         <span>
-
-          <span class="show-on-hover">([[ message.pk ]])</span>
 
           <span v-if="message.fields.sender !== userPk">[[ message.fields.sender_username ]]:</span>
           <span v-else style="font-weight: regular;">You:</span>
@@ -83,17 +82,10 @@
   </ul>
 
   <div id="message-container">
-    <input @keyup.enter="sendMessage"
+    <input @keyup.enter="messageSend"
            id="message-input"
            type="text"
            v-model="messageInputText">
-    <button @click="toggleMenu"
-            id="menu-button"
-            class="cursor-url"
-            alt="Menu button"
-            :style="{'background-color': menuShow ? '#33f' : '#555'}">
-      &#9776;  <!-- hamburger menu icon -->
-    </button>
     <button @click="messageSend"
             id="send-button"
             class="cursor-url"
@@ -101,14 +93,21 @@
             :style="{'background-color': messageInputText ? '#33f' : '#555'}">
       &#9992; <!-- airplane icon -->
     </button>
+    <button @click="toggleMenu"
+            id="menu-button"
+            class="cursor-url"
+            alt="Menu button"
+            :style="{'background-color': menuShow ? '#33f' : '#555'}">
+      &#9776;  <!-- hamburger menu icon -->
+    </button>
   </div>
 
   <div id="non-js-form">
-  {% include 'base_form.html' %}
+    {% include 'base_form.html' %}
   </div>
 
   <transition>
-    <div v-if="messageUpdateStatus" class="messageUpdateStatus">[[ messageUpdateStatus ]]</div>
+    <div v-if="messageUpdateStatus" class="message-update-status">[[ messageUpdateStatus ]]</div>
   </transition>
 
 </div>
