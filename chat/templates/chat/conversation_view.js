@@ -55,9 +55,6 @@ let app = new Vue({
 
   },
   methods: {
-    reverseUrl(view_name) {
-      return `/chat/api/urls/reverse/f{view_name}/`
-    },
     toggleMenu() {
       this.menuShow = !this.menuShow;
     },
@@ -125,6 +122,24 @@ let app = new Vue({
         this.$refs.chatList.scrollTo(0, this.$refs.chatList.scrollHeight);
       })
     },
+    reverseUrl(view_name, params={}) {
+      let args = '';
+      if (Object.keys(params).length === 1) {
+        args = '?' + Object.keys(params)[0] + '=' + Object.values(params)[0];
+      }
+      else if (Object.keys(params).length > 1) {
+        args += '?';
+        for (let i = 0; i < Object.keys(params).length; i++) {
+          args += Object.keys(params)[i] + '=' + Object.values(params)[i];
+          if (i !== Object.keys(params).length - 1) {
+            args += '&';
+          }
+        }
+      }
+      let result = `/chat/api/urls/reverse/${view_name}/${args}`;
+      console.log(result);
+      return result
+    },
     getMessages: function () {
 
       if (this.allMessagesShown) {
@@ -132,6 +147,7 @@ let app = new Vue({
       }
 
       // REPLACE WITH DRF URL
+      let fetchUrl = undefined;
       fetch(`/chat/api/conversations/{{ conversation.pk }}/messages/${this.messageDisplayCount}`)
         .then(response => {
           if (!response.ok) {
