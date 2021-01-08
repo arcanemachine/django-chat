@@ -81,8 +81,8 @@ let app = new Vue({
       let maxValue = 255 - 16;
       let minValue = 128 + 32;
       let result = '';
-      for (let i = 0; i < 3; i++) {
-        let seed = new Math.seedrandom(username.substr(i, i+1))();
+      for (let i = 1; i <= 3; i++) {
+        let seed = new Math.seedrandom(username.substr(username.length - i, username.length - i+1))();
         let thisResult = maxValue - Math.floor(seed * maxValue);
         result += thisResult.toString(16);
       }
@@ -243,16 +243,13 @@ let app = new Vue({
       .then(data => {
         console.log(data)
         this.messages.splice(0, 0, data.newMessage[0]);
-        this.messageUpdatedContent = '';
-        if (this.isScrolledToBottom()) {
-          this.$nextTick();
-            this.scrollToBottom();
-        }
+        this.messageInputText = '';
         this.messageDisplayCount = this.messages.length;
         if (data.allMessagesShown) {
           this.allMessagesShown = true
         }
       })
+      .then(() => this.scrollToBottom())
       .catch(error => console.log('messageSend(): Error: ' + error))
     },
     messageUpdate: function (messagePk) {
