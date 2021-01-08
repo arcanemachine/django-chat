@@ -17,6 +17,7 @@ let app = new Vue({
     userUsername: '{{ user.username }}',
     userPk: {{ user.pk }},
     userIsStaff: '{{ user.is_staff }}' === 'True', // do a boolean check for python's True/False boolean style
+    userBackgroundColors: {},
     messages: JSON.parse(conversationMessages),
     allMessagesShown: false,
     messageDisplayCount: 10,
@@ -78,6 +79,11 @@ let app = new Vue({
       }
     },
     getBackgroundColor(username) {
+      // if user's background color already calculated, use it
+      if (Object.keys(this.userBackgroundColors).indexOf(username) !== -1) {
+        console.log('shortcut');
+        return this.userBackgroundColors[username]
+      }
       let maxValue = 255 - 16;
       let minValue = 128 + 32;
       let result = '';
@@ -86,7 +92,10 @@ let app = new Vue({
         let thisResult = maxValue - Math.floor(seed * maxValue);
         result += thisResult.toString(16);
       }
-      return '#' + result;
+      result = '#' + result;
+      console.log('longcut');
+      this.userBackgroundColors[username] = result;
+      return result;
     },
     userIsSender: function (message) {
       if (message.fields.sender === this.userPk) {
