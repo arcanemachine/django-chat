@@ -28,8 +28,6 @@ let app = new Vue({
     menuShow: false,
 
     isMounted: false,
-    deleteMe: true,
-
 
   },
   computed: {
@@ -77,7 +75,7 @@ let app = new Vue({
     },
     messageContentStyle: function (message) {
       return {
-        'background-color': this.getBackgroundColor(message.fields.sender_username),
+        'background-color': this.getBackgroundColor(message.sender_username),
       }
     },
     getBackgroundColor(username) {
@@ -98,7 +96,7 @@ let app = new Vue({
       return result;
     },
     userIsSender: function (message) {
-      if (message.fields.sender === this.userPk) {
+      if (message.sender === this.userPk) {
         return true;
       } else return false;
     },
@@ -106,7 +104,7 @@ let app = new Vue({
       if (this.userIsStaff) {
         return true;
       }
-      else if (this.userPk === message.fields.sender) {
+      else if (this.userPk === message.sender) {
         return true;
       }
       else {
@@ -116,7 +114,7 @@ let app = new Vue({
     messageUpdatePanelSelect: function (messagePk) {
       if (this.messageUpdatePanelValue != messagePk) {
         this.messageUpdatePanelValue = messagePk;
-        this.messageUpdatedContent = this.messages.find(x => x.pk === messagePk).fields.content;
+        this.messageUpdatedContent = this.messages.find(x => x.id === messagePk).content;
       } else {
         this.messageUpdatePanelValue = undefined;
         this.messageUpdatedContent = '';
@@ -179,10 +177,10 @@ let app = new Vue({
       // REPLACE WITH DRF URL
       let urlParams = {
         'conversation_pk': this.conversationPk,
-        // 'message': this.messageDisplayCount
+        'message_count': this.messageDisplayCount
       }
       // let fetchUrl = await this.reverseUrl('chat:get_conversation_messages', urlParams);
-      let fetchUrl = await this.reverseUrl('api:message_list', urlParams);
+      let fetchUrl = await this.reverseUrl('api:message_list_count', urlParams);
       let topMessage = document.querySelector('#message' + this.messages.slice(-1)[0].pk);
       fetch(fetchUrl.url)
         .then(response => {
@@ -192,13 +190,10 @@ let app = new Vue({
           return response.json();
         })
         .then(data => {
-          console.log(data);
-          // this.messages = data.messages;
           this.messages = data;
           if (data.allMessagesShown) {
             this.allMessagesShown = true
           }
-         
           // scroll down if user is at the bottom of the page
           this.$nextTick(() => {
             if (this.isScrolledToBottom()) {
@@ -211,9 +206,7 @@ let app = new Vue({
               topMessage.scrollTo(0, 0);
             }
           })
-
           this.messageDisplayCount = this.messages.length;
-
         })
         .catch(error => console.log('Error: ' + error))
       
@@ -234,7 +227,7 @@ let app = new Vue({
         })
         .then(data => {
           for (let i in data) {
-            message += `${Number(i) + 1}. ${data[i].fields.username}\n`
+            message += `${Number(i) + 1}. ${data[i].username}\n`
           }
           window.alert(message);
         })

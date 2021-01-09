@@ -36,8 +36,7 @@
   <ul v-if="messages.length" class="chat-list" ref="chatList">
     <div v-if="allMessagesShown" class="mb-2 text-italic text-center">Beginning of conversation</div>
     <transition-group name="fade-slide">
-      <li v-if="deleteMe"
-          v-for="message in messages.slice().reverse()"
+      <li v-for="message in messages.slice().reverse()"
           :key="message.pk"
           :id="'message' + message.pk"
           :ref="'message' + message.pk"
@@ -47,11 +46,11 @@
 
         <span>
 
-          <span v-if="message.fields.sender !== userPk">[[ message.fields.sender_username ]]:</span>
+          <span v-if="message.sender !== userPk">[[ message.sender_username ]]:</span>
           <span v-else style="font-weight: regular;">You:</span>
 
           <span @click="messageUpdatePanelSelect(message.pk)">
-            [[ message.fields.content ]]
+            [[ message.content ]]
           </span>
 
           <transition name="fade">
@@ -68,7 +67,7 @@
               </button>
 
               <span v-if="userCanEdit(message)">
-                <strong v-if="!messageUpdateStatus && userIsStaff && message.fields.sender != userPk">&lt;-- Using admin privileges to edit</strong>
+                <strong v-if="!messageUpdateStatus && userIsStaff && message.sender != userPk">&lt;-- Using admin privileges to edit</strong>
               </span>
               <span v-if="!userCanEdit(message)">
                 You do not have permission to edit this message.
@@ -80,7 +79,7 @@
         </span>
 
       </li>
-    </transition>
+    </transition-group>
   </ul>
 
   <div id="message-container">
@@ -111,10 +110,6 @@
   <transition>
     <div v-if="messageUpdateStatus" class="message-update-status">[[ messageUpdateStatus ]]</div>
   </transition>
-
-  <div>
-    <button @click="deleteMe = !deleteMe" style="position: absolute; bottom: 10px; left: 0; right: 0; margin-left: auto; margin-right: auto">Toggle messages</button>
-  </div>
 
 </div>
 {% endblock content %}

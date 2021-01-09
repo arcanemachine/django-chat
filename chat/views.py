@@ -12,6 +12,7 @@ from django.views.generic.edit import UpdateView
 
 from . import forms
 from .models import Conversation, Message
+from api.serializers import MessageSerializer
 
 UserModel = get_user_model()
 
@@ -54,9 +55,9 @@ class ConversationView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         conversation_messages = \
             self.conversation.message_set.order_by('-pk')[:10]
         conversation_messages_serialized = \
-            serializers.serialize('json', conversation_messages)
+            MessageSerializer(conversation_messages, many=True).data
         conversation_messages_json = \
-            json.loads(conversation_messages_serialized)
+            json.loads(json.dumps(conversation_messages_serialized))
 
         context.update({
             'conversation': self.conversation,
@@ -115,6 +116,7 @@ def json_user_is_logged_in(request):
         return JsonResponse(
             {'message': f"You are logged in as {request.user.username}"})
 
+
 def json_reverse_url(request, reverse_string):
     try:
         request_get_dict = dict(request.GET)
@@ -126,7 +128,7 @@ def json_reverse_url(request, reverse_string):
         return JsonResponse({'error': str(e)})
 
 
-def get_conversation_messages(request, conversation_pk, number_of_messages):
+def get_conversation_messages(request, conversation_pk, message_count):
     try:
         conversation = Conversation.objects.get(pk=conversation_pk)
     except:
@@ -134,7 +136,7 @@ def get_conversation_messages(request, conversation_pk, number_of_messages):
             {'error': "There is no conversation matching the ID entered."},
             status=404)
 
-    messages = conversation.message_set.order_by('-pk')[:number_of_messages]
+    messages = conversation.message_set.order_by('-pk')[:message_count]
     messages_serialized = serializers.serialize('json', messages)
     messages_json = json.loads(messages_serialized)
 
