@@ -28,23 +28,39 @@ def hello_world(request):
     return Response({'message': "Hello world!"})
 
 
-class MessageList(generics.ListCreateAPIView):
+class MessageList(generics.ListAPIView):
     permission_classes = [HasMessagePermissionsOrReadOnly]
     serializer_class = serializers.MessageSerializer
     lookup_url_kwarg = 'conversation_pk'
 
     def get_queryset(self):
         return Conversation.objects.get(
-            pk=self.kwargs['conversation_pk']).message_set.all()
+            pk=self.kwargs['conversation_pk']).message_set.order_by('-pk')
 
 
-class MessageCountList(generics.ListCreateAPIView):
+class MessageCountList(generics.ListAPIView):
     permission_classes = [HasMessagePermissionsOrReadOnly]
     serializer_class = serializers.MessageSerializer
-    lookup_url_kwarg = 'message_pk'
+    lookup_url_kwarg = 'conversation_pk'
 
     def get_queryset(self):
-        return Conversation.objects.filter(pk=self.kwargs['conversation_pk'])
+        return Conversation.objects.get(pk=self.kwargs['conversation_pk'])\
+            .message_set.order_by('-pk')[:self.kwargs['message_count']]
+
+
+class MessageRangeList(generics.ListAPIView):
+    permission_classes = [HasMessagePermissionsOrReadOnly]
+    serializer_class = serializers.MessageSerializer
+    lookup_url_kwarg = 'conversation_pk'
+
+    def get_queryset(self):
+        range_from = self.kwargs['range_from']
+        range_to = self.kwargs['range_to']
+        messages = Conversation.objects.get(pk=self.kwargs['conversation_pk'])\
+            .message_set.order_by('-pk')
+        if range_to == 0:
+            range_to = messages.count()
+        return messages[range_from:range_to]
 
 
 class MessageDetail(generics.RetrieveUpdateDestroyAPIView):

@@ -12,9 +12,10 @@ urlpatterns = [
     path('conversations/<int:conversation_pk>/messages/',
          views.MessageList.as_view(),
          name='message_list'),
-    path('conversations/<int:conversation_pk>/messages/count/<int:message_count>/',
-         views.MessageCountList.as_view(),
-         name='message_count_list'),
+    path('conversations/<int:conversation_pk>/messages/range/'
+         '<int:range_from>/<int:range_to>/',
+         views.MessageRangeList.as_view(),
+         name='message_range_list'),
     path('messages/<int:message_pk>/',
          views.MessageDetail.as_view(),
          name='message_detail'),
