@@ -41,7 +41,7 @@ let app = new Vue({
     
     // scroll to bottom of chatList
     this.$nextTick(() => {
-      this.scrollToBottom();
+      this.scrollToBottom(smooth=false);
     })
 
     // when scrolled to top of chatList, load 10 more messages
@@ -58,10 +58,7 @@ let app = new Vue({
     }, 500)
 
     // poll for new messages every 5 seconds
-    setInterval(() => {
-      this.getMessages();
-      console.log('new messages loaded');
-    }, 5000);
+    // setInterval(() => {this.getMessages();}, 5000);
     
     this.isMounted = true;
 
@@ -140,11 +137,11 @@ let app = new Vue({
         return false;
       }
     },
-    scrollToBottom() {
+    scrollToBottom(smooth=true) {
       this.$nextTick(() => {
         this.$refs.chatList.scrollTo({
           top: this.getDistanceToBottom(),
-          behavior: 'smooth'
+          behavior: smooth ? 'smooth' : 'auto'
         })
       })
     },
@@ -185,6 +182,7 @@ let app = new Vue({
         'number_of_messages': this.messageDisplayCount
       }
       let fetchUrl = await this.reverseUrl('chat:get_conversation_messages', urlParams);
+      let topMessage = document.querySelector('#message' + this.messages.slice(-1)[0].pk);
       fetch(fetchUrl.url)
         .then(response => {
           if (!response.ok) {
@@ -204,6 +202,10 @@ let app = new Vue({
               if (this.messages.length !== this.messageDisplayCount) {
                 this.scrollToBottom();
               }
+            }
+            else {
+              // scroll to top of highest previous message
+              topMessage.scrollTo(0, 0);
             }
           })
 

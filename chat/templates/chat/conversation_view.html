@@ -21,6 +21,7 @@
           <div @click="menuShow = !menuShow" class="menu-close-button-icon">X</div>
           <div id="menu-overlay-title">More Options</div>
           <div id="menu-overlay-item-container">
+            <div @click="getMessages" class="menu-overlay-item bold cursor-url">- Get new messages</div>
             <div @click="getUserList" class="menu-overlay-item bold cursor-url">- List conversation members</div>
             <div class="menu-overlay-item">
               <a href="{% url 'chat:conversation_update_participants' conversation_pk=conversation.pk %}" class="menu-overlay-item unstyled-link">- Add/Remove participants</a>
