@@ -27,7 +27,9 @@ let app = new Vue({
     messageUpdatedContent: '',
     menuShow: false,
 
-    isMounted: false
+    isMounted: false,
+    deleteMe: true,
+
 
   },
   computed: {
@@ -56,7 +58,10 @@ let app = new Vue({
     }, 500)
 
     // poll for new messages every 5 seconds
-    setInterval(() => {this.getMessages();}, 5000);
+    setInterval(() => {
+      this.getMessages();
+      console.log('new messages loaded');
+    }, 5000);
     
     this.isMounted = true;
 
@@ -81,7 +86,6 @@ let app = new Vue({
     getBackgroundColor(username) {
       // if user's background color already calculated, use it
       if (Object.keys(this.userBackgroundColors).indexOf(username) !== -1) {
-        console.log('shortcut');
         return this.userBackgroundColors[username]
       }
       let maxValue = 255 - 16;
@@ -93,7 +97,6 @@ let app = new Vue({
         result += thisResult.toString(16);
       }
       result = '#' + result;
-      console.log('longcut');
       this.userBackgroundColors[username] = result;
       return result;
     },
@@ -122,12 +125,16 @@ let app = new Vue({
         this.messageUpdatedContent = '';
       }
     },
-    isScrolledToBottom() {
+    getDistanceToBottom() {
       let el = this.$refs.chatList;
       let elementTotalHeight = el.scrollHeight;
       let elementVisibleHeight = el.clientHeight;
       let elementScrollHeight = el.scrollHeight - el.clientHeight;
-      if (el.scrollTop >= elementScrollHeight - 125) {
+      return elementScrollHeight;
+    },
+    isScrolledToBottom() {
+      let el = this.$refs.chatList;
+      if (el.scrollTop >= this.getDistanceToBottom() - 100) {
         return true;
       } else {
         return false;
@@ -135,7 +142,10 @@ let app = new Vue({
     },
     scrollToBottom() {
       this.$nextTick(() => {
-        this.$refs.chatList.scrollTo(0, this.$refs.chatList.scrollHeight);
+        this.$refs.chatList.scrollTo({
+          top: this.getDistanceToBottom(),
+          behavior: 'smooth'
+        })
       })
     },
     reverseUrl(view_name, params={}) {
@@ -163,8 +173,6 @@ let app = new Vue({
         })
       return result;
     },
-    updateMessageList() {
-    },
     async getMessages() {
 
       if (this.allMessagesShown) {
@@ -186,7 +194,6 @@ let app = new Vue({
         })
         .then(data => {
           this.messages = data.messages;
-          this.messageDisplayCount = this.messages.length;
           if (data.allMessagesShown) {
             this.allMessagesShown = true
           }
@@ -194,9 +201,13 @@ let app = new Vue({
           // scroll down if user is at the bottom of the page
           this.$nextTick(() => {
             if (this.isScrolledToBottom()) {
+              if (this.messages.length !== this.messageDisplayCount) {
                 this.scrollToBottom();
+              }
             }
           })
+
+          this.messageDisplayCount = this.messages.length;
 
         })
         .catch(error => console.log('Error: ' + error))

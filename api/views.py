@@ -15,9 +15,13 @@ UserModel = get_user_model()
 #    def get_queryset(self):
 #        return Conversation.objects.filter(pk=self.kwargs['conversation_pk'])
 
+class MessageList(generics.ListCreateAPIView):
+    permission_classes = [HasMessagePermissionsOrReadOnly]
+    serializer_class = serializers.MessageSerializer
+    lookup_url_kwarg = 'message_pk'
+
 
 class MessageDetail(generics.RetrieveUpdateDestroyAPIView):
-    # permission_classes = [IsAuthenticated]
     permission_classes = [HasMessagePermissionsOrReadOnly]
     serializer_class = serializers.MessageSerializer
     lookup_url_kwarg = 'message_pk'
