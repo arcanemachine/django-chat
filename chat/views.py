@@ -1,6 +1,5 @@
 import json
 from django.core import serializers
-from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -74,6 +73,7 @@ class ConversationView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def test_func(self):
         return self.request.user in self.conversation.participants.all()
 
+
 class ConversationUpdateParticipantsView(LoginRequiredMixin, UpdateView):
     model = Conversation
     fields = ('participants',)
@@ -105,7 +105,7 @@ def json_hello_world(request):
 def json_debug(request):
     if request.user.username == 'admin':
         breakpoint()
-        return JsonResponse({'username':request.user.username})
+        return JsonResponse({'username': request.user.username})
     return HttpResponseForbidden()
 
 
@@ -131,17 +131,14 @@ def json_reverse_url(request, reverse_string):
 def get_conversation_messages(request, conversation_pk, message_count):
     try:
         conversation = Conversation.objects.get(pk=conversation_pk)
-    except:
-        return JsonResponse(
-            {'error': "There is no conversation matching the ID entered."},
-            status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=404)
 
     messages = conversation.message_set.order_by('-pk')[:message_count]
     messages_serialized = serializers.serialize('json', messages)
     messages_json = json.loads(messages_serialized)
 
     all_messages_shown = messages.count() == conversation.message_set.count()
-
 
     result = {'messages': messages_json,
               'allMessagesShown': all_messages_shown}
@@ -152,10 +149,8 @@ def get_conversation_messages(request, conversation_pk, message_count):
 def get_conversation_message(request, conversation_pk, message_pk):
     try:
         conversation = Conversation.objects.get(pk=conversation_pk)
-    except:
-        return JsonResponse(
-            {'error': "There is no conversation matching the ID entered."},
-            status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=404)
 
     message = conversation.message_set.filter(pk=message_pk)
 
@@ -175,10 +170,8 @@ def get_conversation_message(request, conversation_pk, message_pk):
 def get_conversation_users(request, conversation_pk):
     try:
         conversation = Conversation.objects.get(pk=conversation_pk)
-    except:
-        return JsonResponse(
-            {'error': "There is no conversation matching the ID entered."},
-            status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=404)
 
     users = conversation.participants.all()
     users_serialized = serializers.serialize('json', users)
@@ -193,13 +186,11 @@ def create_conversation_message(request, conversation_pk):
 
     try:
         conversation = Conversation.objects.get(pk=conversation_pk)
-    except:
-        return JsonResponse(
-            {'error': "There is no conversation matching the ID entered."},
-            status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=404)
 
     if request.method == 'POST':
-        try: 
+        try:
             message_content = \
                 json.loads(request.body.decode('utf-8'))['content']
 
@@ -216,12 +207,12 @@ def create_conversation_message(request, conversation_pk):
             return JsonResponse(result)
 
         except Exception as e:
-            return JsonResponse(
-                {'message': 'We could not process your request'}, status=400)
+            return JsonResponse({'error': str(e)}, status=400)
         # return message pk
         return JsonResponse({'message': 'POST request received'})
     else:
-        return JsonResponse({'message': 'This view supports POST requests only'}, status=405)
+        return JsonResponse(
+            {'message': 'This view supports POST requests only'}, status=405)
 
 
 class MessageListView(ListView):

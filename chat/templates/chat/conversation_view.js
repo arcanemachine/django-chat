@@ -215,10 +215,14 @@ let app = new Vue({
       this.messageDisplayCount += 10;
       this.getMessages();
     },
-    getUserList() {
+    async getUserList() {
       let message = "Users in this conversation: \n\n";
 
-      fetch('/chat/api/conversations/{{ conversation.pk }}/users/')
+      const urlParams = {
+        'conversation_pk': this.conversationPk,
+      }
+      const fetchUrl = await this.reverseUrl('api:conversation_user_list', urlParams);
+      fetch(fetchUrl.url)
         .then(response => {
           if (!response.ok) {
               this.displayStatusMessage("getUserList(): HTTP error, status = " + response.status);

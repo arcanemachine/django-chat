@@ -9,6 +9,21 @@ urlpatterns = [
     #     views.MessageCreate.as_view(),
     #     name='message_create'),
     path('', views.hello_world, name='hello_world'),
+
+    # users
+    path('users/',
+        views.UserList.as_view(),
+        name='user_list'),
+    path('users/<int:user_pk>/',
+        views.UserDetail.as_view(),
+        name='user_detail'),
+
+    # conversations
+    path('conversations/<int:conversation_pk>/users/',
+         views.ConversationUserList.as_view(),
+         name='conversation_user_list'),
+
+    # messages
     path('conversations/<int:conversation_pk>/messages/',
          views.MessageList.as_view(),
          name='message_list'),

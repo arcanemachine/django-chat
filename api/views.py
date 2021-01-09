@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import generics
 from rest_framework.decorators import api_view
-# from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
 from . import serializers
@@ -28,6 +28,33 @@ def hello_world(request):
     return Response({'message': "Hello world!"})
 
 
+class UserList(generics.ListAPIView):
+    permission_classes = [IsAdminUser]
+    serializer_class = serializers.UserSerializer
+
+    def get_queryset(self):
+        return UserModel.objects.all()
+
+
+class ConversationUserList(generics.ListAPIView):
+    permission_classes = [HasConversationPermissions]
+    serializer_class = serializers.UserSerializer
+    lookup_url_kwargs = 'conversation_pk'
+
+    def get_queryset(self):
+        return Conversation.objects.get(
+            pk=self.kwargs['conversation_pk']).participants.all()
+
+
+class UserDetail(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.UserSerializer
+    lookup_url_kwargs = 'user_pk'
+
+    def get_queryset(self):
+        return UserModel.objects.filter(pk=self.kwargs['user_pk'])
+
+
 class MessageList(generics.ListAPIView):
     permission_classes = [HasConversationPermissions]
     serializer_class = serializers.MessageSerializer
@@ -36,6 +63,7 @@ class MessageList(generics.ListAPIView):
     def get_queryset(self):
         return Conversation.objects.get(
             pk=self.kwargs['conversation_pk']).message_set.order_by('-pk')
+
 
 class MessageListCreate(generics.ListCreateAPIView):
     permission_classes = [HasConversationPermissions]
@@ -56,15 +84,28 @@ class MessageListCreateLast(generics.ListCreateAPIView):
         return Conversation.objects.get(
             pk=self.kwargs['conversation_pk']).message_set.filter(pk__in=[1])
 
+
 class MessageListCount(generics.ListAPIView):
     """Get the newest n messages from a conversation."""
     permission_classes = [HasMessagePermissions]
     serializer_class = serializers.MessageSerializer
     lookup_url_kwarg = 'conversation_pk'
 
+    def dispatch(self, request, *args, **kwargs):
+        self.conversation = \
+            Conversation.objects.get(pk=self.kwargs['conversation_pk'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['message_count'] = self.kwargs['message_count']
+        context['message_set_count'] = \
+            self.conversation.message_set.count()
+        return context
+
     def get_queryset(self):
-        return Conversation.objects.get(pk=self.kwargs['conversation_pk'])\
-            .message_set.order_by('-pk')[:self.kwargs['message_count']]
+        return self.conversation.message_set \
+            .order_by('-pk')[:self.kwargs['message_count']]
 
 
 class MessageListRange(generics.ListAPIView):
