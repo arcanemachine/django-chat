@@ -175,12 +175,12 @@ let app = new Vue({
       }
 
       // REPLACE WITH DRF URL
-      let urlParams = {
+      const urlParams = {
         'conversation_pk': this.conversationPk,
         'message_count': this.messageDisplayCount
       }
       // let fetchUrl = await this.reverseUrl('chat:get_conversation_messages', urlParams);
-      let fetchUrl = await this.reverseUrl('api:message_list_count', urlParams);
+      const fetchUrl = await this.reverseUrl('api:message_list_count', urlParams);
       let topMessage = document.querySelector('#message' + this.messages.slice(-1)[0].pk);
       fetch(fetchUrl.url)
         .then(response => {
@@ -221,6 +221,7 @@ let app = new Vue({
       fetch('/chat/api/conversations/{{ conversation.pk }}/users/')
         .then(response => {
           if (!response.ok) {
+              this.displayStatusMessage("getUserList(): HTTP error, status = " + response.status);
               throw new Error("getUserList(): HTTP error, status = " + response.status);
             }
           return response.json();
@@ -234,14 +235,18 @@ let app = new Vue({
         .catch(error => console.log('getUserList(): Error: ' + error))
 
     },
-    messageSend() {
+    async messageSend() {
 
       const csrftoken = Cookies.get('csrftoken');
+      const urlParams = {
+        'conversation_pk': this.conversationPk,
+      }
       const postData = {
         "content": this.messageInputText
       }
 
-      fetch('/chat/api/conversations/1/messages/create/', {
+      let fetchUrl = await this.reverseUrl('api:message_create', urlParams);
+      fetch(fetchUrl.url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -251,16 +256,14 @@ let app = new Vue({
       })
       .then(response => {
         if (!response.ok) {
-          if (response.status === 403) {
-            this.displayStatusMessage('You do not have permission to create this message.');
-          }
+          this.displayStatusMessage("HTTP error, status = " + response.status);
           throw new Error("HTTP error, status = " + response.status);
           }
         return response.json();
       })
       .then(data => {
         console.log(data)
-        this.messages.splice(0, 0, data.newMessage[0]);
+        this.messages.splice(0, 0, data);
         this.messageInputText = '';
         this.messageDisplayCount = this.messages.length;
         if (data.allMessagesShown) {

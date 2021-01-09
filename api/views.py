@@ -37,7 +37,6 @@ class MessageList(generics.ListAPIView):
         return Conversation.objects.get(
             pk=self.kwargs['conversation_pk']).message_set.order_by('-pk')
 
-
 class MessageListCreate(generics.ListCreateAPIView):
     permission_classes = [HasConversationPermissions]
     serializer_class = serializers.MessageSerializer
@@ -47,6 +46,15 @@ class MessageListCreate(generics.ListCreateAPIView):
         return Conversation.objects.get(
             pk=self.kwargs['conversation_pk']).message_set.order_by('-pk')
 
+
+class MessageListCreateLast(generics.ListCreateAPIView):
+    permission_classes = [HasConversationPermissions]
+    serializer_class = serializers.MessageSerializer
+    lookup_url_kwarg = 'conversation_pk'
+
+    def get_queryset(self):
+        return Conversation.objects.get(
+            pk=self.kwargs['conversation_pk']).message_set.filter(pk__in=[1])
 
 class MessageListCount(generics.ListAPIView):
     """Get the newest n messages from a conversation."""
@@ -73,6 +81,23 @@ class MessageListRange(generics.ListAPIView):
         if range_to == 0:
             range_to = messages.count()
         return messages[range_from:range_to]
+
+
+class MessageCreate(generics.CreateAPIView):
+    """Add a new message to an existing conversation."""
+    permission_classes = [HasConversationPermissions]
+    serializer_class = serializers.MessageCreateSerializer
+    lookup_url_kwarg = 'conversation_pk'
+
+    def get_queryset(self):
+        return Conversation.objects.filter(pk=self.kwargs['conversation_pk'])
+
+    def post(self, request, *args, **kwargs):
+        request.data.update({
+            'conversation': self.get_queryset().first().pk,
+            'sender': request.user.pk,
+            'sender_username': request.user.username})
+        return super().post(request, *args, **kwargs)
 
 
 class MessageDetail(generics.RetrieveUpdateDestroyAPIView):
