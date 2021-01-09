@@ -3,7 +3,7 @@ from rest_framework import permissions
 from chat.models import Message
 
 
-class HasMessagePermissionsOrReadOnly(permissions.BasePermission):
+class HasConversationPermissions(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         message = obj
@@ -16,13 +16,13 @@ class HasMessagePermissionsOrReadOnly(permissions.BasePermission):
             return True
         elif request.method in permissions.SAFE_METHODS:
             return True
-        elif message.sender == request.user:
+        elif request.user in obj.participants.all():
             return True
         else:
             return False
 
 
-class HasMessagePermissionsOrReadOnly(permissions.BasePermission):
+class HasMessagePermissions(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         message = obj

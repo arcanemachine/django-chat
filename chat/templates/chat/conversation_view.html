@@ -13,7 +13,7 @@
 {% block content %}
 <div id="app">
 
-  <transition>
+  <transition name="fade">
     <div v-if="menuShow" id="menu-overlay-parent-container" v-if="menuShow">
       <div key="overlayBackground" id="menu-overlay-background"></div>
       <div key="overlayMenu" id="menu-overlay-container">
@@ -30,12 +30,12 @@
         </div>
       </div>
     </div>
-  </transition>
+  </transition name="fade">
 
   <p v-if="!messages.length">Say something to get the ball rolling!</p>
   <ul v-if="messages.length" class="chat-list" ref="chatList">
     <div v-if="allMessagesShown" class="mb-2 text-italic text-center">Beginning of conversation</div>
-    <transition-group>
+    <transition-group name="fade-slide">
       <li v-if="deleteMe"
           v-for="message in messages.slice().reverse()"
           :key="message.pk"
@@ -54,7 +54,7 @@
             [[ message.fields.content ]]
           </span>
 
-          <transition>
+          <transition name="fade">
             <span v-if="messageUpdatePanelValue === message.pk && userCanEdit(message)">
 
               <input type="text"

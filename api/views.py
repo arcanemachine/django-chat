@@ -5,14 +5,14 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from . import serializers
-from .permissions import HasMessagePermissionsOrReadOnly
+from .permissions import HasConversationPermissions, HasMessagePermissions
 from chat.models import Conversation, Message
 
 UserModel = get_user_model()
 
 
 # class MessageCreate(generics.APIView):
-#     permission_classes = [HasMessagePermissionsOrReadOnly]
+#     permission_classes = [HasMessagePermissions]
 #     serializer_class = serializers.MessageSerializer
 #
 #     def get_queryset(self):
@@ -29,7 +29,7 @@ def hello_world(request):
 
 
 class MessageList(generics.ListAPIView):
-    permission_classes = [HasMessagePermissionsOrReadOnly]
+    permission_classes = [HasConversationPermissions]
     serializer_class = serializers.MessageSerializer
     lookup_url_kwarg = 'conversation_pk'
 
@@ -38,8 +38,19 @@ class MessageList(generics.ListAPIView):
             pk=self.kwargs['conversation_pk']).message_set.order_by('-pk')
 
 
-class MessageCountList(generics.ListAPIView):
-    permission_classes = [HasMessagePermissionsOrReadOnly]
+class MessageListCreate(generics.ListCreateAPIView):
+    permission_classes = [HasConversationPermissions]
+    serializer_class = serializers.MessageSerializer
+    lookup_url_kwarg = 'conversation_pk'
+
+    def get_queryset(self):
+        return Conversation.objects.get(
+            pk=self.kwargs['conversation_pk']).message_set.order_by('-pk')
+
+
+class MessageListCount(generics.ListAPIView):
+    """Get the newest n messages from a conversation."""
+    permission_classes = [HasMessagePermissions]
     serializer_class = serializers.MessageSerializer
     lookup_url_kwarg = 'conversation_pk'
 
@@ -48,8 +59,9 @@ class MessageCountList(generics.ListAPIView):
             .message_set.order_by('-pk')[:self.kwargs['message_count']]
 
 
-class MessageRangeList(generics.ListAPIView):
-    permission_classes = [HasMessagePermissionsOrReadOnly]
+class MessageListRange(generics.ListAPIView):
+    """Get the x-newest to y-newest messages from a conversation."""
+    permission_classes = [HasMessagePermissions]
     serializer_class = serializers.MessageSerializer
     lookup_url_kwarg = 'conversation_pk'
 
@@ -64,7 +76,7 @@ class MessageRangeList(generics.ListAPIView):
 
 
 class MessageDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [HasMessagePermissionsOrReadOnly]
+    permission_classes = [HasMessagePermissions]
     serializer_class = serializers.MessageSerializer
     lookup_url_kwarg = 'message_pk'
 

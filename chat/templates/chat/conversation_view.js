@@ -179,9 +179,10 @@ let app = new Vue({
       // REPLACE WITH DRF URL
       let urlParams = {
         'conversation_pk': this.conversationPk,
-        'number_of_messages': this.messageDisplayCount
+        // 'message': this.messageDisplayCount
       }
-      let fetchUrl = await this.reverseUrl('chat:get_conversation_messages', urlParams);
+      // let fetchUrl = await this.reverseUrl('chat:get_conversation_messages', urlParams);
+      let fetchUrl = await this.reverseUrl('api:message_list', urlParams);
       let topMessage = document.querySelector('#message' + this.messages.slice(-1)[0].pk);
       fetch(fetchUrl.url)
         .then(response => {
@@ -191,7 +192,9 @@ let app = new Vue({
           return response.json();
         })
         .then(data => {
-          this.messages = data.messages;
+          console.log(data);
+          // this.messages = data.messages;
+          this.messages = data;
           if (data.allMessagesShown) {
             this.allMessagesShown = true
           }
