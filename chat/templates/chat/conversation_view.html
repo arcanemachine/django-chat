@@ -65,9 +65,10 @@
 
   <div v-if="!messageBeingEdited" class="message-container">
     <input @keyup.enter="messageSend"
-           id="message-input"
-           class="message-input"
            type="text"
+           id="message-input"
+           ref="messageInputCreate"
+           class="message-input"
            v-model="messageInputText">
     <button @click="messageSend"
             class="message-button action-button send-button cursor-url"
@@ -84,9 +85,10 @@
   </div>
   <div v-if="messageBeingEdited" class="message-container">
     <input @keyup.enter="messageUpdate(messageBeingEdited)"
-           id="message-input"
-           class="message-input message-input-update"
            type="text"
+           id="message-input"
+           ref="messageInputEdit"
+           class="message-input message-input-update"
            v-model="messageUpdateText">
     <button @click="messageUpdate(messageBeingEdited)"
             class="message-button action-button send-button cursor-url"

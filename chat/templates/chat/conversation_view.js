@@ -127,21 +127,6 @@ let app = new Vue({
         return false;
       }
     },
-    messageUpdatePanelSelect: function (messagePk) {
-      message = this.messages.find(x => x.pk === messagePk);
-      let messageInput = document.querySelector('#message-input');
-      if (this.messageBeingEdited != message.pk) {
-        this.messageBeingEdited = message.pk;
-        this.elFlicker(messageInput);
-        this.messageUpdateText = message.content;
-      } else {
-        this.messageBeingEdited = undefined;
-        this.messageUpdateText = '';
-      }
-      if (message.sender !== this.userPk) {
-        this.displayStatusMessage("This message can be edited using your admin privileges.")
-      }
-    },
     getDistanceToBottom() {
       let el = this.$refs.chatList;
       let elementTotalHeight = el.scrollHeight;
@@ -292,11 +277,29 @@ let app = new Vue({
       .then(() => this.scrollToBottom())
       .catch(error => console.log('messageSend(): Error: ' + error))
     },
+    messageUpdatePanelSelect: function (messagePk) {
+      message = this.messages.find(x => x.pk === messagePk);
+      let messageInput = document.querySelector('#message-input');
+      if (this.messageBeingEdited != message.pk) {
+        this.messageBeingEdited = message.pk;
+        this.elFlicker(messageInput);
+        this.messageUpdateText = message.content;
+        this.$nextTick(() => {
+          this.$refs.messageInputEdit.focus();
+        })
+      } else {
+        this.messageBeingEdited = undefined;
+        this.messageUpdateText = '';
+      }
+      if (message.sender !== this.userPk) {
+        this.displayStatusMessage("This message can be edited using your admin privileges.")
+      }
+    },
     async messageUpdate(messagePk) {
 
       if (!this.messageUpdateText) {
         this.messageBeingEdited = undefined;
-        this.displayStatusMessage("The updated message content was empty, so no changes have been made.<br><br>Please delete the message if you want to remove it.")
+        this.displayStatusMessage("The updated message content was empty, so no changes have been made.<br><br>Please delete the message if you want to remove it.", timeout=5)
       }
 
       const csrftoken = Cookies.get('csrftoken');
@@ -337,11 +340,11 @@ let app = new Vue({
       })
       this.messageBeingEdited = undefined;
     },
-    displayStatusMessage: function (message) {
+    displayStatusMessage: function (message, timeout=3000) {
       this.statusMessage = message;
       setTimeout(() => {
         this.statusMessage = '';
-      }, 3000)
+      }, timeout)
     }
   }
 })
