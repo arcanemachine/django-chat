@@ -66,12 +66,6 @@ let app = new Vue({
 
   },
   methods: {
-    deleteMe() {
-      console.log('hello');
-    },
-    toggleMenu() {
-      this.menuShow = !this.menuShow;
-    },
     messageContentClass: function (message) {
       return {
         'bold': this.userCanEdit(message),
@@ -94,6 +88,9 @@ let app = new Vue({
         el.style.backgroundColor = originalColor;
       }, stopDelay)
     },
+    menuToggle() {
+      this.menuShow = !this.menuShow;
+    },
     getBackgroundColor(username) {
       // if user's background color already calculated, use it
       if (Object.keys(this.userBackgroundColors).indexOf(username) !== -1) {
@@ -111,22 +108,12 @@ let app = new Vue({
       this.userBackgroundColors[username] = result;
       return result;
     },
-    userIsSender: function (message) {
-      if (message.sender === this.userPk) {
-        return true;
-      } else return false;
-    },
-    userCanEdit: function (message) {
-      if (this.userIsStaff) {
-        return true;
-      }
-      else if (this.userPk === message.sender) {
-        return true;
-      }
-      else {
-        return false;
-      }
-    },
+    displayStatusMessage: function (message, timeout=3000) {
+      this.statusMessage = message;
+      setTimeout(() => {
+        this.statusMessage = '';
+      }, timeout)
+    }
     getDistanceToBottom() {
       let el = this.$refs.chatList;
       let elementTotalHeight = el.scrollHeight;
@@ -149,6 +136,22 @@ let app = new Vue({
           behavior: smooth ? 'smooth' : 'auto'
         })
       })
+    },
+    userIsSender: function (message) {
+      if (message.sender === this.userPk) {
+        return true;
+      } else return false;
+    },
+    userCanEdit: function (message) {
+      if (this.userIsStaff) {
+        return true;
+      }
+      else if (this.userPk === message.sender) {
+        return true;
+      }
+      else {
+        return false;
+      }
     },
     reverseUrl(view_name, params={}) {
       let args = '';
@@ -174,6 +177,30 @@ let app = new Vue({
           return response.json();
         })
       return result;
+    },
+    async getConversationUsers() {
+      let message = "Users in this conversation: \n\n";
+
+      const urlParams = {
+        'conversation_pk': this.conversationPk
+      }
+      const fetchUrl = await this.reverseUrl('api:conversation_user_list', urlParams);
+      fetch(fetchUrl.url)
+        .then(response => {
+          if (!response.ok) {
+              this.displayStatusMessage("getConversationUsers(): HTTP error, status = " + response.status);
+                throw new Error("getConversationUsers(): HTTP error, status = " + response.status);
+              }
+            return response.json();
+          })
+          .then(data => {
+            for (let i in data) {
+              message += `${Number(i) + 1}. ${data[i].username}\n`
+            }
+            window.alert(message);
+          })
+          .catch(error => console.log('getConversationUsers(): Error: ' + error))
+
     },
     async getMessages() {
       if (this.allMessagesShown) {
@@ -217,30 +244,6 @@ let app = new Vue({
     getMoreMessages: function() {
       this.messageDisplayCount += 10;
       this.getMessages();
-    },
-    async getUserList() {
-      let message = "Users in this conversation: \n\n";
-
-      const urlParams = {
-        'conversation_pk': this.conversationPk
-      }
-      const fetchUrl = await this.reverseUrl('api:conversation_user_list', urlParams);
-      fetch(fetchUrl.url)
-        .then(response => {
-          if (!response.ok) {
-              this.displayStatusMessage("getUserList(): HTTP error, status = " + response.status);
-              throw new Error("getUserList(): HTTP error, status = " + response.status);
-            }
-          return response.json();
-        })
-        .then(data => {
-          for (let i in data) {
-            message += `${Number(i) + 1}. ${data[i].username}\n`
-          }
-          window.alert(message);
-        })
-        .catch(error => console.log('getUserList(): Error: ' + error))
-
     },
     async messageSend() {
 
@@ -299,7 +302,9 @@ let app = new Vue({
 
       if (!this.messageUpdateText) {
         this.messageBeingEdited = undefined;
-        this.displayStatusMessage("The updated message content was empty, so no changes have been made.<br><br>Please delete the message if you want to remove it.", timeout=5)
+        let statusMessage = "The updated message content was empty, so no changes have been made.<br><br>"
+        statusMessage += "Please delete the message if you want to remove it."
+        this.displayStatusMessage(statusMessage, timeout=5)
       }
 
       const csrftoken = Cookies.get('csrftoken');
@@ -340,12 +345,9 @@ let app = new Vue({
       })
       this.messageBeingEdited = undefined;
     },
-    displayStatusMessage: function (message, timeout=3000) {
-      this.statusMessage = message;
-      setTimeout(() => {
-        this.statusMessage = '';
-      }, timeout)
-    }
+    async messageDelete(messagePk) {
+      
+    },
   }
 })
 
