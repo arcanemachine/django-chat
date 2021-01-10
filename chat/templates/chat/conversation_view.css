@@ -193,7 +193,6 @@
 .message-button {
   font-size: 1.25rem;
   border-radius: 0.5rem;
-  color: white;
 
   height: 3rem;
   width: 3rem;
@@ -210,7 +209,11 @@
 }
 
 .cancel-button {
-  background-color: #f33;
+  background-color: #ff3;
+}
+
+.delete-button {
+  background-color: #e22;
 }
 
 .menu-button{
