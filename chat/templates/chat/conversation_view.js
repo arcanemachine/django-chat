@@ -22,9 +22,9 @@ let app = new Vue({
     allMessagesShown: false,
     messageDisplayCount: 10,
     messageInputText: '',
-    messageUpdatePanelValue: undefined,
+    messageBeingEdited: undefined,
     statusMessage: '',
-    messageUpdatedContent: '',
+    messageUpdateText: '',
     menuShow: false,
 
     isMounted: false,
@@ -85,6 +85,15 @@ let app = new Vue({
         'background-color': this.getBackgroundColor(message.sender_username),
       }
     },
+    elFlicker(el, flickerColor='#99f', startDelay=20, stopDelay=360) {
+      let originalColor = el.style.backgroundColor;
+      setTimeout(() => {
+        el.style.backgroundColor = flickerColor;
+      }, startDelay)
+      setTimeout(() => {
+        el.style.backgroundColor = originalColor;
+      }, stopDelay)
+    },
     getBackgroundColor(username) {
       // if user's background color already calculated, use it
       if (Object.keys(this.userBackgroundColors).indexOf(username) !== -1) {
@@ -120,12 +129,14 @@ let app = new Vue({
     },
     messageUpdatePanelSelect: function (messagePk) {
       message = this.messages.find(x => x.pk === messagePk);
-      if (this.messageUpdatePanelValue != message.pk) {
-        this.messageUpdatePanelValue = message.pk;
-        this.messageUpdatedContent = message.content;
+      let messageInput = document.querySelector('#message-input');
+      if (this.messageBeingEdited != message.pk) {
+        this.messageBeingEdited = message.pk;
+        this.elFlicker(messageInput);
+        this.messageUpdateText = message.content;
       } else {
-        this.messageUpdatePanelValue = undefined;
-        this.messageUpdatedContent = '';
+        this.messageBeingEdited = undefined;
+        this.messageUpdateText = '';
       }
       if (message.sender !== this.userPk) {
         this.displayStatusMessage("This message can be edited using your admin privileges.")
@@ -283,6 +294,11 @@ let app = new Vue({
     },
     async messageUpdate(messagePk) {
 
+      if (!this.messageUpdateText) {
+        this.messageBeingEdited = undefined;
+        this.displayStatusMessage("The updated message content was empty, so no changes have been made.<br><br>Please delete the message if you want to remove it.")
+      }
+
       const csrftoken = Cookies.get('csrftoken');
       const urlParams = {
         'conversation_pk': this.conversationPk,
@@ -290,7 +306,7 @@ let app = new Vue({
       }
       const postData = {
         "id": messagePk,
-        "content": this.messageUpdatedContent
+        "content": this.messageUpdateText
       }
 
       let fetchUrl = await this.reverseUrl('api:message_detail', urlParams);
@@ -313,12 +329,13 @@ let app = new Vue({
       })
       .then(() => {
         this.displayStatusMessage('Message updated successfully.');
+        this.elFlicker(eval('this.$refs.message' + messagePk + '[0]'), '#393', 20, 1020);
         this.getMessages();
       })
       .catch(error => {
         console.log('Error: ' + error)
       })
-      this.messageUpdatePanelValue = undefined;
+      this.messageBeingEdited = undefined;
     },
     displayStatusMessage: function (message) {
       this.statusMessage = message;
@@ -330,12 +347,8 @@ let app = new Vue({
 })
 
 // toggle the options menu with Esc
-document.addEventListener('keyup', function keyPress (e) {
-  if (e.key === 'Escape') {
-    app.menuShow = !app.menuShow;
-  }
-})
-
-const helloWorld = hDebounce(() => {
-  console.log('hello!');
-}, 150);
+// document.addEventListener('keyup', function keyPress (e) {
+//  if (e.key === 'Escape') {
+//    app.menuShow = !app.menuShow;
+//  }
+//})

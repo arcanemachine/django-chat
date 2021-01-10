@@ -153,6 +153,7 @@
 .conversation-item {
   margin: 0 0 1rem;
   width: 75%;
+  transition: background-color 0.25s;
 }
 
 .item-current-user {
@@ -167,38 +168,53 @@
   border-radius: 0 1rem 1rem 1rem;
 }
 
-#message-container {
+.message-container {
   display: flex;
   max-height: 10vh;
   margin: 1rem;
   flex-direction: row;
 }
 
-#message-input {
+.message-input {
   margin-right: 1rem;
-  width: 100%;
-  border-width: 0 0 2px;
+  padding-left: 1rem;
+  flex-grow: 1;
+  border-width: 2px;
   border-color: gray;
+  border-style: solid;
+  border-radius: 1rem;
+  transition: background-color 0.33s;
 }
 
-#menu-button {
+.message-input-update {
+  border-color: #dd5;
+}
+
+.message-button {
   font-size: 1.25rem;
   border-radius: 0.5rem;
   color: white;
-  padding: 0.5rem 0.75rem;
+
+  height: 3rem;
+  width: 3rem;
 
   transition: background-color 0.5s;
+}
+
+.action-button {
+  margin-right: 0.5rem;
+}
+
+.send-button {
+
+}
+
+.cancel-button {
+  background-color: #f33;
+}
+
+.menu-button{
   z-index: 5;
-}
-
-#send-button {
-  font-size: 1.25rem;
-  border-radius: 0.5rem;
-  color: white;
-  margin-right: 1rem;
-  padding: 0.5rem 0.75rem;
-
-  transition: background-color 0.5s;
 }
 
 .status-message {
@@ -207,7 +223,7 @@
   left: 0;
   right: 0;
   max-width: 576px;
-  background-color: #bbf;
+  background-color: #99d;
 
   margin: 2rem auto auto;
   padding: 1rem;

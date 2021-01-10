@@ -39,6 +39,7 @@
       <button @click="getMoreMessages" class="button-get-messages">Load more messages</button>
     </div>
       <li v-for="message in messages.slice().reverse()"
+          @click="messageUpdatePanelSelect(message.pk)"
           :key="message.pk"
           :id="'message' + message.pk"
           :ref="'message' + message.pk"
@@ -52,25 +53,9 @@
           <span v-if="message.sender !== userPk">[[ message.sender_username ]]:</span>
           <span v-else style="font-weight: regular;">You:</span>
 
-          <span @click="messageUpdatePanelSelect(message.pk)">
+          <span>
             [[ message.content ]]
           </span>
-
-          <transition name="fade">
-            <span v-if="messageUpdatePanelValue === message.pk && userCanEdit(message)">
-
-              <input type="text"
-                     v-model="messageUpdatedContent"
-                     @keyup.enter="messageUpdate(message.pk)">
-              <button @click="messageUpdate(message.pk)">
-                Update
-              </button>
-              <button @click="messageUpdatePanelSelect(message.pk)">
-                Cancel
-              </button>
-
-            </span>
-          </transition>
 
         </span>
         </transition>
@@ -78,23 +63,46 @@
       </li>
   </ul>
 
-  <div id="message-container">
+  <div v-if="!messageBeingEdited" class="message-container">
     <input @keyup.enter="messageSend"
            id="message-input"
+           class="message-input"
            type="text"
            v-model="messageInputText">
     <button @click="messageSend"
-            id="send-button"
-            class="cursor-url"
+            class="message-button action-button send-button cursor-url"
             alt="Send button"
-            :style="{'background-color': messageInputText ? '#33f' : '#555'}">
+            :style="{'background-color': messageInputText ? '#33b' : '#555'}">
       &#9992; <!-- airplane icon -->
     </button>
     <button @click="toggleMenu"
-            id="menu-button"
-            class="cursor-url"
+            class="message-button menu-button cursor-url"
             alt="Menu button"
-            :style="{'background-color': menuShow ? '#33f' : '#555'}">
+            :style="{'background-color': menuShow ? '#33b' : '#555'}">
+      &#9776;  <!-- hamburger menu icon -->
+    </button>
+  </div>
+  <div v-if="messageBeingEdited" class="message-container">
+    <input @keyup.enter="messageUpdate(messageBeingEdited)"
+           id="message-input"
+           class="message-input message-input-update"
+           type="text"
+           v-model="messageUpdateText">
+    <button @click="messageUpdate(messageBeingEdited)"
+            class="message-button action-button send-button cursor-url"
+            alt="Send button"
+            :style="{'background-color': messageUpdateText ? '#3b3' : '#555'}">
+      &#10003; <!-- checkmark icon -->
+    </button>
+    <button @click="messageUpdatePanelSelect(messageBeingEdited)"
+            class="message-button action-button cancel-button cursor-url"
+            alt="Cancel button">
+      &times; <!-- cancel icon -->
+    </button>
+    <button @click="toggleMenu"
+            class="message-button menu-button cursor-url"
+            alt="Menu button"
+            :style="{'background-color': menuShow ? '#33b' : '#555'}">
       &#9776;  <!-- hamburger menu icon -->
     </button>
   </div>
@@ -104,10 +112,10 @@
   </div>
 
   <transition name="fade">
-    <div v-if="statusMessage" class="status-message">[[ statusMessage ]]</div>
+    <div v-if="statusMessage" class="status-message" v-html="statusMessage"></div>
   </transition>
 
-  <div id="delete-me">
+  <div v-if="false" id="delete-me">
     <button @click="deleteMe">Delete me</button>
   </div>
 
