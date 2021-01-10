@@ -43,17 +43,15 @@ let app = new Vue({
     })
 
     // when scrolled to top of chatList, load 10 more messages
-    setTimeout(() => {
-      var chatList = document.querySelector('.chat-list');
-      chatList.addEventListener('scroll', (e) => {
-        if (chatList.scrollTop === 0) {
-          this.getMoreMessages();
-          this.$nextTick(() => {
-            chatList.scrollTop = 1;
-          })
-        }
-      })
-    }, 500)
+    var chatList = document.querySelector('.chat-list');
+    chatList.addEventListener('scroll', (e) => {
+      if (chatList.scrollTop === 0) {
+        this.getMoreMessages();
+        this.$nextTick(() => {
+          chatList.scrollTop = 1;
+        })
+      }
+    })
 
     // poll for new messages every 5 seconds
     // setInterval(() => {this.getMessages();}, 5000);
@@ -62,6 +60,11 @@ let app = new Vue({
 
   },
   methods: {
+    deleteMe() {
+      hDebounce(() => {
+        console.log('hello...');
+      }, 500);
+    },
     toggleMenu() {
       this.menuShow = !this.menuShow;
     },
@@ -191,7 +194,7 @@ let app = new Vue({
         })
         .then(data => {
           this.messages = data;
-          if (data.allMessagesShown) {
+          if (data[0].all_messages_shown) {
             this.allMessagesShown = true
           }
           // scroll down if user is at the bottom of the page
@@ -270,9 +273,6 @@ let app = new Vue({
         this.messages.splice(0, 0, data);
         this.messageInputText = '';
         this.messageDisplayCount = this.messages.length;
-        if (data.allMessagesShown) {
-          this.allMessagesShown = true
-        }
       })
       .then(() => this.scrollToBottom())
       .catch(error => console.log('messageSend(): Error: ' + error))
@@ -328,3 +328,7 @@ document.addEventListener('keyup', function keyPress (e) {
     app.menuShow = !app.menuShow;
   }
 })
+
+const helloWorld = hDebounce(() => {
+  console.log('hello!');
+}, 150);

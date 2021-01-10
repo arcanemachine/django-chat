@@ -25,13 +25,13 @@ class MessageSerializer(serializers.ModelSerializer):
                             'created_at', 'modified_at', 'all_messages_shown']
 
     def __init__(self, *args, **kwargs):
-        if 'message_set_count' in kwargs['context'] \
-                and 'message_count' in kwargs['context'] \
-                and kwargs['context']['message_count'] >= \
-                    kwargs['context']['message_set_count']:
-            self.fields['all_messages_shown'].default = True
-        else:
-            del self.fields['all_messages_shown']
+        # if the requested amount of messages is >= the conversation's
+        # message count, then all_messages_shown = True
+        if 'context' in kwargs:
+            context = kwargs['context']
+            if 'all_messages_shown' in context \
+                    and context['all_messages_shown'] is True:
+                self.fields['all_messages_shown'].default = True
         super().__init__(*args, **kwargs)
 
 

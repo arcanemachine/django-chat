@@ -98,9 +98,11 @@ class MessageListCount(generics.ListAPIView):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['message_count'] = self.kwargs['message_count']
-        context['message_set_count'] = \
-            self.conversation.message_set.count()
+        all_messages_shown = True if self.kwargs['message_count'] >= \
+            self.conversation.message_set.count() else False
+        context.update({
+            'request_method': self.request.method,
+            'all_messages_shown': all_messages_shown})
         return context
 
     def get_queryset(self):
