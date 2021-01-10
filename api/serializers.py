@@ -30,6 +30,8 @@ class MessageSerializer(serializers.ModelSerializer):
                 and kwargs['context']['message_count'] >= \
                     kwargs['context']['message_set_count']:
             self.fields['all_messages_shown'].default = True
+        else:
+            del self.fields['all_messages_shown']
         super().__init__(*args, **kwargs)
 
 
