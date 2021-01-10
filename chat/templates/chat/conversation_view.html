@@ -64,19 +64,19 @@
   </ul>
 
   <div v-if="!messageBeingEdited" class="message-container">
-    <input @keyup.enter="messageSend"
+    <input @keyup.enter="messageCreate"
            type="text"
            id="message-input"
            ref="messageInputCreate"
            class="message-input"
            v-model="messageInputText">
-    <button @click="messageSend"
+    <button @click="messageCreate"
             class="message-button action-button send-button cursor-url"
             alt="Send button"
-            :style="{'background-color': messageInputText ? '#33b' : '#555'}">
+            :style="{'background-color': messageInputText ? '#55b' : '#555'}">
       &#9992; <!-- airplane icon -->
     </button>
-    <button @click="toggleMenu"
+    <button @click="menuToggle"
             class="message-button menu-button cursor-url"
             alt="Menu button"
             :style="{'background-color': menuShow ? '#33b' : '#555'}">
@@ -101,7 +101,12 @@
             alt="Cancel button">
       &times; <!-- cancel icon -->
     </button>
-    <button @click="toggleMenu"
+    <button @click="messageDeleteConfirm(messageBeingEdited)"
+            class="message-button action-button delete-button cursor-url"
+            alt="Delete message">
+      &#128465; <!-- trash can icon -->
+    </button>
+    <button @click="menuToggle"
             class="message-button menu-button cursor-url"
             alt="Menu button"
             :style="{'background-color': menuShow ? '#33b' : '#555'}">

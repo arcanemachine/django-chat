@@ -18,12 +18,15 @@ urlpatterns = [
         views.UserDetail.as_view(),
         name='user_detail'),
 
+    # messages
+    path('messages/<int:message_pk>/',
+         views.MessageDetail.as_view(),
+         name='message_detail'),
     # conversations
     path('conversations/<int:conversation_pk>/users/',
          views.ConversationUserList.as_view(),
          name='conversation_user_list'),
 
-    # messages
     path('conversations/<int:conversation_pk>/messages/',
          views.MessageList.as_view(),
          name='message_list'),
@@ -47,7 +50,9 @@ urlpatterns = [
     path('conversations/<int:conversation_pk>/messages/create/',
          views.MessageCreate.as_view(),
          name='message_create'),
-    path('conversations/<int:conversation_pk>/messages/<int:message_pk>/',
-         views.MessageDetail.as_view(),
-         name='message_detail'),
+    #path('conversations/<int:conversation_pk>/messages/<int:message_pk>/',
+    #     views.MessageDetail.as_view(),
+    #     name='message_detail'),
+
+    # mes
 ]
