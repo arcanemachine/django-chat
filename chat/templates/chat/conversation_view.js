@@ -179,14 +179,12 @@ let app = new Vue({
       if (this.allMessagesShown) {
         return;
       }
-      // REPLACE WITH DRF URL
       const urlParams = {
         'conversation_pk': this.conversationPk,
         'message_count': this.messageDisplayCount
       }
-      // let fetchUrl = await this.reverseUrl('chat:get_conversation_messages', urlParams);
       const fetchUrl = await this.reverseUrl('api:message_list_count', urlParams);
-      let topMessage = document.querySelector('#message' + this.messages.slice(-1)[0].pk);
+      this.topMessage = document.querySelector('#message' + this.messages.slice(-1)[0].pk);
       fetch(fetchUrl.url)
         .then(response => {
           if (!response.ok) {
@@ -208,7 +206,7 @@ let app = new Vue({
             }
             else {
               // scroll to top of highest previous message
-              topMessage.scrollTo(0, 0);
+              this.topMessage.scrollIntoView();
             }
           })
           this.messageDisplayCount = this.messages.length;
