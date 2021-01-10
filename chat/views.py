@@ -91,8 +91,8 @@ class ConversationUpdateParticipantsView(LoginRequiredMixin, UpdateView):
                 UserModel.objects.filter(pk__in=participants_list)
             form.cleaned_data['participants'] = participants_qs
             messages.info(self.request,
-                          "You cannot remove yourself from a conversation."
-                          "You have been added back to the conversation.")
+                          "You cannot remove yourself from a conversation. "
+                          "We have added you back to the conversation.")
         messages.info(self.request, "Conversation participants updated.")
         return super().form_valid(form)
 
