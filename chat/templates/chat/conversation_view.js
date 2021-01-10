@@ -23,7 +23,7 @@ let app = new Vue({
     messageDisplayCount: 10,
     messageInputText: '',
     messageUpdatePanelValue: undefined,
-    messageUpdateStatus: '',
+    statusMessage: '',
     messageUpdatedContent: '',
     menuShow: false,
 
@@ -119,12 +119,16 @@ let app = new Vue({
       }
     },
     messageUpdatePanelSelect: function (messagePk) {
-      if (this.messageUpdatePanelValue != messagePk) {
-        this.messageUpdatePanelValue = messagePk;
-        this.messageUpdatedContent = this.messages.find(x => x.id === messagePk).content;
+      message = this.messages.find(x => x.pk === messagePk);
+      if (this.messageUpdatePanelValue != message.pk) {
+        this.messageUpdatePanelValue = message.pk;
+        this.messageUpdatedContent = message.content;
       } else {
         this.messageUpdatePanelValue = undefined;
         this.messageUpdatedContent = '';
+      }
+      if (message.sender !== this.userPk) {
+        this.displayStatusMessage("This message can be edited using your admin privileges.")
       }
     },
     getDistanceToBottom() {
@@ -222,7 +226,7 @@ let app = new Vue({
       let message = "Users in this conversation: \n\n";
 
       const urlParams = {
-        'conversation_pk': this.conversationPk,
+        'conversation_pk': this.conversationPk
       }
       const fetchUrl = await this.reverseUrl('api:conversation_user_list', urlParams);
       fetch(fetchUrl.url)
@@ -246,7 +250,7 @@ let app = new Vue({
 
       const csrftoken = Cookies.get('csrftoken');
       const urlParams = {
-        'conversation_pk': this.conversationPk,
+        'conversation_pk': this.conversationPk
       }
       const postData = {
         "content": this.messageInputText
@@ -277,16 +281,20 @@ let app = new Vue({
       .then(() => this.scrollToBottom())
       .catch(error => console.log('messageSend(): Error: ' + error))
     },
-    messageUpdate: function (messagePk) {
+    async messageUpdate(messagePk) {
 
       const csrftoken = Cookies.get('csrftoken');
-
+      const urlParams = {
+        'conversation_pk': this.conversationPk,
+        'message_pk': messagePk
+      }
       const postData = {
-        "id": this.messagePk,
+        "id": messagePk,
         "content": this.messageUpdatedContent
       }
 
-      fetch(`/api/v1/messages/${messagePk}/`, {
+      let fetchUrl = await this.reverseUrl('api:message_detail', urlParams);
+      fetch(fetchUrl.url, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -313,10 +321,9 @@ let app = new Vue({
       this.messageUpdatePanelValue = undefined;
     },
     displayStatusMessage: function (message) {
-      this.messageUpdateStatus = message;
+      this.statusMessage = message;
       setTimeout(() => {
-        this.messageUpdateStatus = '';
-        this.messageUpdatePanelValue = undefined;
+        this.statusMessage = '';
       }, 3000)
     }
   }

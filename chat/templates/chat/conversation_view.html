@@ -38,7 +38,6 @@
     <div v-else-if="messages.length < 20" class="mb-2 text-italic text-center">
       <button @click="getMoreMessages" class="button-get-messages">Load more messages</button>
     </div>
-    <transition-group name="fade">
       <li v-for="message in messages.slice().reverse()"
           :key="message.pk"
           :id="'message' + message.pk"
@@ -47,6 +46,7 @@
           :class="messageContentClass(message)"
           :style="messageContentStyle(message)">
 
+        <transition name="fade">
         <span>
 
           <span v-if="message.sender !== userPk">[[ message.sender_username ]]:</span>
@@ -69,20 +69,13 @@
                 Cancel
               </button>
 
-              <span v-if="userCanEdit(message)">
-                <strong v-if="!messageUpdateStatus && userIsStaff && message.sender != userPk">&lt;-- Using admin privileges to edit</strong>
-              </span>
-              <span v-if="!userCanEdit(message)">
-                You do not have permission to edit this message.
-              </span>
-
             </span>
           </transition>
 
         </span>
+        </transition>
 
       </li>
-    </transition-group>
   </ul>
 
   <div id="message-container">
@@ -111,7 +104,7 @@
   </div>
 
   <transition name="fade">
-    <div v-if="messageUpdateStatus" class="message-update-status">[[ messageUpdateStatus ]]</div>
+    <div v-if="statusMessage" class="status-message">[[ statusMessage ]]</div>
   </transition>
 
   <div id="delete-me">

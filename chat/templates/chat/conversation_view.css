@@ -151,8 +151,8 @@
 }
 
 .conversation-item {
-  margin: -0 0 1rem;
-  max-width: 50%;
+  margin: 0 0 1rem;
+  width: 75%;
 }
 
 .item-current-user {
@@ -201,25 +201,22 @@
   transition: background-color 0.5s;
 }
 
-.message-update-status {
-}
-
-.message-update-status {
+.status-message {
   position: fixed;
   top: 20vh;
   left: 0;
   right: 0;
   max-width: 576px;
-  background-color: lightblue;
+  background-color: #bbf;
 
   margin: 2rem auto auto;
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
 
-  font-size: 1.4rem;
+  font-size: 1.2rem;
 
   border-radius: 1rem;
-  border: 2px solid black;
+  border: 2px solid #66f;
   font-weight: bold;
   z-index: 10;
 }
