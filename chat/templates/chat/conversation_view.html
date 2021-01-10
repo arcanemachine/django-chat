@@ -18,7 +18,7 @@
       <div key="overlayBackground" id="menu-overlay-background"></div>
       <div key="overlayMenu" id="menu-overlay-container">
         <div id="menu-overlay">
-          <div @click="menuShow = !menuShow" class="menu-close-button-icon">X</div>
+          <div @click="menuShow = !menuShow" class="menu-close-button-icon">&times;</div>
           <div id="menu-overlay-title">More Options</div>
           <div id="menu-overlay-item-container">
             <div @click="getMessages" class="menu-overlay-item bold cursor-url">- Get new messages</div>
@@ -35,6 +35,9 @@
   <p v-if="!messages.length">Say something to get the ball rolling!</p>
   <ul v-if="messages.length" class="chat-list" ref="chatList">
     <div v-if="allMessagesShown" class="mb-2 text-italic text-center">Beginning of conversation</div>
+    <div v-else class="mb-2 text-italic text-center">
+      <button @click="getMessages" class="button-get-messages">Load more messages</button>
+    </div>
     <transition-group name="fade-slide">
       <li v-for="message in messages.slice().reverse()"
           :key="message.pk"

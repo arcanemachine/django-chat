@@ -35,6 +35,12 @@ let app = new Vue({
       return this.messages.slice().reverse();
     }
   },
+  created() {
+    this.getMessages = _.debounce(this.getMessages, 400, {
+      leading: true,
+      trailing: false
+    })
+  },
   mounted() {
     
     // scroll to bottom of chatList
@@ -61,9 +67,7 @@ let app = new Vue({
   },
   methods: {
     deleteMe() {
-      hDebounce(() => {
-        console.log('hello...');
-      }, 500);
+      console.log('hello');
     },
     toggleMenu() {
       this.menuShow = !this.menuShow;
@@ -172,11 +176,9 @@ let app = new Vue({
       return result;
     },
     async getMessages() {
-
       if (this.allMessagesShown) {
         return;
       }
-
       // REPLACE WITH DRF URL
       const urlParams = {
         'conversation_pk': this.conversationPk,

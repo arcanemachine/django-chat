@@ -37,6 +37,7 @@
 }
 
 #app {
+  margin: 0 auto;
   flex-grow: 1;
 }
 
@@ -62,9 +63,11 @@
 #menu-overlay-container {
   position: fixed;
   display: flex;
+  top: 0;
+  left: 0;
 
   width: 100vw;
-  min-height: 100vh;
+  height: 100vh;
 
   flex-direction: column;
   justify-content: center;
@@ -80,32 +83,38 @@
   max-height: 90vh;
   max-width: 90vw;
 
-  border-radius: 2rem;
+  border-radius: 1rem;
 }
 
 .menu-close-button-icon {
   position: absolute;
   display: flex;
-  font-weight: bold;
-  cursor: pointer;
 
-  background-color: #eee;
   height: 2rem;
   width: 2rem;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
 
   margin-top: 0.5rem;
-  margin-left: 250px;
+  margin-left: 260px;
+
+  font-size: 2rem;
+  font-weight: bold;
+  cursor: pointer;
 
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  transition: background-color 0.2s;
+}
+
+.menu-close-button-icon:hover {
+  background-color: #ddd;
 }
 
 #menu-overlay-title {
-  margin-top: 1rem;
-  font-size: 1.4rem;
+  margin-top: 0.75rem;
   text-align: center;
+  font-size: 1.4rem;
 }
 
 #menu-overlay-item-container {
@@ -121,23 +130,29 @@
 }
 
 .chat-list {
-  margin: 0;
-  max-height: 72vh;
+  height: 72vh;
+  max-width: 768px;
   padding: 1rem;
   overflow-y: scroll;
   flex-grow: 1;
   list-style-type: none;
 }
 
+.button-get-messages {
+  background-color: lightblue;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+
+  text-align: center;
+  vertical-align: center;
+
+  border: 2px solid black;
+  border-radius: 0.5rem;
+}
+
 .conversation-item {
   margin: 1rem 0;
   max-width: 50%;
-}
-
-.message-update-status {
-  margin-top: 2rem;
-  font-weight: bold;
-  font-size: 1.3rem;
 }
 
 .item-current-user {
@@ -187,17 +202,23 @@
 }
 
 .message-update-status {
+}
+
+.message-update-status {
   position: fixed;
   top: 20vh;
-  left: 3rem;
-  right: 3rem;
-  background-color: #aaf;
+  left: 0;
+  right: 0;
+  max-width: 576px;
+  background-color: lightblue;
 
-  margin: 0 auto;
+  margin: 2rem auto auto;
   padding: 2rem;
   text-align: center;
 
-  border-radius: 2rem;
+  font-size: 1.4rem;
+
+  border-radius: 1rem;
   border: 2px solid black;
   font-weight: bold;
   z-index: 10;
