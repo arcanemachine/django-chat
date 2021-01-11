@@ -23,11 +23,10 @@ let app = new Vue({
     messageDisplayCount: 10,
     messageInputText: '',
     messageBeingEdited: undefined,
-    statusMessage: '',
     messageUpdateText: '',
     menuShow: false,
 
-    isMounted: false,
+    statusMessage: '',
 
   },
   computed: {
@@ -60,10 +59,8 @@ let app = new Vue({
     })
 
     // poll for new messages every 5 seconds
-    // setInterval(() => {this.getMessages();}, 5000);
+    setInterval(() => {this.getMessages();}, 5000);
     
-    this.isMounted = true;
-
   },
   methods: {
     messageContentClass: function (message) {
@@ -160,6 +157,9 @@ let app = new Vue({
       }
       let index = pkList.indexOf(messagePk)
       return index;
+    },
+    messageGetFromPk(messagePk) {
+      return this.messages[this.messageGetIndex(messagePk)];
     },
     messageRemoveFromList(messagePk) {
       let index = this.messageGetIndex(messagePk);
@@ -333,6 +333,13 @@ let app = new Vue({
         let statusMessage = "The updated message content was empty, so no changes have been made.<br><br>"
         statusMessage += "Please delete the message if you want to remove it."
         this.displayStatusMessage(statusMessage, timeout=5)
+        return false;
+      }
+      else if (this.messageGetFromPk(messagePk).content === this.messageUpdateText) {
+        let statusMessage = "The new message is the same as the old message.<br><br>";
+        statusMessage += "The message has not been updated.";
+        this.displayStatusMessage(statusMessage)
+        return false;
       }
 
       if (this.messages.find(x => x.pk === messagePk).sender !== this.userPk) {
@@ -343,11 +350,7 @@ let app = new Vue({
         }
       }
 
-      const urlParams = {
-        // 'conversation_pk': this.conversationPk,
-        'message_pk': messagePk
-      }
-
+      const urlParams = {'message_pk': messagePk}
       const fetchUrl = await this.reverseUrl('api:message_detail', urlParams);
 
       const postData = {
@@ -373,10 +376,7 @@ let app = new Vue({
       .then(() => {
         this.displayStatusMessage('Message updated successfully.');
         this.elFlicker(eval('this.$refs.message' + messagePk + '[0]'), '#393', 20, 1020);
-        setTimeout(() => {
-          this.elFlicker(eval('this.$refs.message' + messagePk + '[0]'), '#393', 20, 1020);
-        }, 1200)
-        this.getMessages();
+        this.messages[this.messageGetIndex(messagePk)].content = this.messageUpdateText;
       })
       .catch(error => {
         console.log('Error: ' + error)
