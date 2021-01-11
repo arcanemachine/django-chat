@@ -153,12 +153,18 @@ let app = new Vue({
       }
     },
     messageGetIndex(messagePk) {
-      let pkList = [];
-      for (let i = 0; i < this.messages.length; i++) {
-        pkList.push(this.messages[i].pk)
-      }
-      let index = pkList.indexOf(messagePk)
-      return index;
+      /* for loop */
+      // let pkList = [];
+      // for (let i = 0; i < this.messages.length; i++) {
+      // pkList.push(this.messages[i].pk)
+      // }
+
+      /* map */
+      // let pkList = this.messages.map(x => x.pk);
+      // let index = pkList.indexOf(messagePk)
+
+      /* findIndex */
+      return this.messages.findIndex(x => x.pk === messagePk);
     },
     messageGetFromPk(messagePk) {
       return this.messages[this.messageGetIndex(messagePk)];
@@ -331,13 +337,14 @@ let app = new Vue({
     async messageUpdate(messagePk) {
 
       if (!this.messageUpdateText) {
-        this.messageBeingEdited = undefined;
+        this.messageUpdatePanelSelect(0);
         let statusMessage = "The updated message content was empty, so no changes have been made.<br><br>"
         statusMessage += "Please delete the message if you want to remove it."
         this.displayStatusMessage(statusMessage, timeout=5)
         return false;
       }
       else if (this.messageGetFromPk(messagePk).content === this.messageUpdateText) {
+        this.messageUpdatePanelSelect(0);
         let statusMessage = "The new message is the same as the old message.<br><br>";
         statusMessage += "The message has not been updated.";
         this.displayStatusMessage(statusMessage)
@@ -348,6 +355,7 @@ let app = new Vue({
         let warningMessage = "This message belongs to another user and will be edited using admin privileges. "
         warningMessage += "Are you sure you want to edit this message?"
         if (!confirm(warningMessage)) {
+          this.messageUpdatePanelSelect(0);
           return false;
         }
       }
@@ -377,13 +385,14 @@ let app = new Vue({
       })
       .then(() => {
         this.displayStatusMessage('Message updated successfully.');
-        this.elFlicker(eval('this.$refs.message' + messagePk + '[0]'), '#393', 20, 1020);
-        this.messages[this.messageGetIndex(messagePk)].content = this.messageUpdateText;
+        // this.messages[this.messageGetIndex(messagePk)].content = this.messageUpdateText;
+        this.getMessages();
+        this.elFlicker(eval('this.$refs.message' + messagePk + '[0]'), '#393', 20, 300);
       })
       .catch(error => {
         console.log('Error: ' + error)
       })
-      this.messageBeingEdited = undefined;
+      this.messageUpdatePanelSelect(0);
     },
     handleResponse(response) {
       if (!response.ok) {
