@@ -27,6 +27,7 @@ let app = new Vue({
     menuShow: false,
 
     statusMessage: '',
+    statusMessageTimeout: undefined,
 
   },
   computed: {
@@ -105,9 +106,10 @@ let app = new Vue({
       this.userBackgroundColors[username] = result;
       return result;
     },
-    displayStatusMessage: function (message, timeout=3000) {
+    displayStatusMessage(message, timeout=3000) {
       this.statusMessage = message;
-      setTimeout(() => {
+      clearTimeout(this.statusMessageTimeout);
+      this.statusMessageTimeout = setTimeout(() => {
         this.statusMessage = '';
       }, timeout)
     },
