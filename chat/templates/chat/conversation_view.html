@@ -22,7 +22,7 @@
           <div id="menu-overlay-title">More Options</div>
           <div id="menu-overlay-item-container">
             <div @click="getMessages" class="menu-overlay-item bold cursor-url">- Get new messages</div>
-            <div @click="getUserList" class="menu-overlay-item bold cursor-url">- List conversation members</div>
+            <div @click="getConversationUsers" class="menu-overlay-item bold cursor-url">- List conversation members</div>
             <div class="menu-overlay-item">
               <a href="{% url 'chat:conversation_update_participants' conversation_pk=conversation.pk %}" class="menu-overlay-item unstyled-link">- Add/Remove participants</a>
             </div>
@@ -30,25 +30,29 @@
         </div>
       </div>
     </div>
-  </transition name="fade">
+  </transition>
 
   <p v-if="!messages.length">Say something to get the ball rolling!</p>
   <ul v-if="messages.length" class="chat-list" ref="chatList">
-    <div v-if="allMessagesShown" class="mb-2 text-italic text-center">Beginning of conversation</div>
-    <div v-else-if="messages.length < 20" class="mb-2 text-italic text-center">
+
+    <div v-if="allMessagesShown" class="mb-2 text-italic text-center">
+      Beginning of conversation
+    </div>
+
+    <div v-if="messages.length < 20" class="mb-2 text-italic text-center">
       <button @click="getMoreMessages" class="button-get-messages">Load more messages</button>
     </div>
-      <li v-for="message in messages.slice().reverse()"
-          @click="messageUpdatePanelSelect(message.pk)"
-          :key="message.pk"
-          :id="'message' + message.pk"
-          :ref="'message' + message.pk"
-          class="conversation-item"
-          :class="messageContentClass(message)"
-          :style="messageContentStyle(message)">
+    <li v-for="message in messages.slice().reverse()"
+        @click="messageUpdatePanelSelect(message.pk)"
+        :key="message.pk"
+        :id="'message' + message.pk"
+        :ref="'message' + message.pk"
+        class="conversation-item"
+        :class="messageContentClass(message)"
+        :style="messageContentStyle(message)">
 
-        <transition name="fade">
-        <span>
+      <transition name="fade">
+        <span v-if="message.content">
 
           <span v-if="message.sender !== userPk">[[ message.sender_username ]]:</span>
           <span v-else style="font-weight: regular;">You:</span>
@@ -58,9 +62,9 @@
           </span>
 
         </span>
-        </transition>
+      </transition>
 
-      </li>
+    </li>
   </ul>
 
   <div v-if="!messageBeingEdited" class="message-container">
@@ -69,16 +73,18 @@
            id="message-input"
            ref="messageInputCreate"
            class="message-input"
+           title="Send message"
            v-model="messageInputText">
     <button @click="messageCreate"
             class="message-button action-button send-button cursor-url"
             alt="Send button"
-            :style="{'background-color': messageInputText ? '#55b' : '#555'}">
+            :style="{'background-color': messageInputText ? '#26f' : '#555'}">
       &#9992; <!-- airplane icon -->
     </button>
     <button @click="menuToggle"
             class="message-button menu-button cursor-url"
             alt="Menu button"
+            title="Show menu"
             :style="{'background-color': menuShow ? '#33b' : '#555'}">
       &#9776;  <!-- hamburger menu icon -->
     </button>
@@ -93,22 +99,26 @@
     <button @click="messageUpdate(messageBeingEdited)"
             class="message-button action-button send-button cursor-url"
             alt="Send button"
+            title="Confirm message update"
             :style="{'background-color': messageUpdateText ? '#3b3' : '#555'}">
       &#10003; <!-- checkmark icon -->
     </button>
     <button @click="messageUpdatePanelSelect(messageBeingEdited)"
             class="message-button action-button cancel-button cursor-url"
+            title="Cancel"
             alt="Cancel button">
       &times; <!-- cancel icon -->
     </button>
     <button @click="messageDeleteConfirm(messageBeingEdited)"
             class="message-button action-button delete-button cursor-url"
+            title="Delete message"
             alt="Delete message">
       &#128465; <!-- trash can icon -->
     </button>
     <button @click="menuToggle"
             class="message-button menu-button cursor-url"
             alt="Menu button"
+            title="Show menu"
             :style="{'background-color': menuShow ? '#33b' : '#555'}">
       &#9776;  <!-- hamburger menu icon -->
     </button>

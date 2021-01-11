@@ -79,14 +79,14 @@ let app = new Vue({
         'background-color': this.getBackgroundColor(message.sender_username),
       }
     },
-    elFlicker(el, flickerColor='#99f', startDelay=20, stopDelay=360) {
+    elFlicker(el, flickerColor='#99f', startAfter=20, stopAfter=360) {
       let originalColor = el.style.backgroundColor;
       setTimeout(() => {
         el.style.backgroundColor = flickerColor;
-      }, startDelay)
+      }, startAfter)
       setTimeout(() => {
         el.style.backgroundColor = originalColor;
-      }, stopDelay)
+      }, stopAfter)
     },
     menuToggle() {
       this.menuShow = !this.menuShow;
@@ -153,11 +153,31 @@ let app = new Vue({
         return false;
       }
     },
-    getMessageByPk(messagePk) {
-      index = this.messages.find(x => x.pk === messagePk)
-      this.messages.slice(index, 1);
+    messageGetIndex(messagePk) {
+      let pkList = [];
+      for (let i = 0; i < this.messages.length; i++) {
+        pkList.push(this.messages[i].pk)
+      }
+      let index = pkList.indexOf(messagePk)
+      return index;
+    },
+    messageRemoveFromList(messagePk) {
+      let index = this.messageGetIndex(messagePk);
+
+      // shrink the deleted message along the y-axis
+      let messageEl = eval('this.$refs.message' + messagePk)[0];
+      let messageElHeight = messageEl.offsetHeight;
+      messageEl.style.transform = 'scale(1, 0)';
+      messageEl.style.marginBottom = `-${messageEl.offsetHeight}px`
+      this.messageUpdatePanelSelect(0);
+
     },
     messageUpdatePanelSelect: function (messagePk) {
+      if (!messagePk) {
+        this.messageBeingEdited = undefined;
+        this.messageUpdateText = '';
+        return false
+      }
       message = this.messages.find(x => x.pk === messagePk);
       if (!this.userCanEdit(messagePk)) {
         return false;
@@ -173,9 +193,6 @@ let app = new Vue({
       } else {
         this.messageBeingEdited = undefined;
         this.messageUpdateText = '';
-      }
-      if (message.sender !== this.userPk) {
-        this.displayStatusMessage("This message can be edited using your admin privileges.")
       }
     },
     reverseUrl(view_name, params={}) {
@@ -237,7 +254,7 @@ let app = new Vue({
         'message_count': this.messageDisplayCount
       }
       const fetchUrl = await this.reverseUrl('api:message_list_count', urlParams);
-      this.topMessage = document.querySelector('#message' + this.messages.slice(-1)[0].pk);
+      this.topPageMessage = document.querySelector('#message' + this.messages.slice(-1)[0].pk);
       fetch(fetchUrl.url)
         .then(response => {
           if (!response.ok) {
@@ -259,13 +276,12 @@ let app = new Vue({
             }
             else {
               // scroll to top of highest previous message
-              this.topMessage.scrollIntoView();
+              this.topPageMessage.scrollIntoView();
             }
           })
           this.messageDisplayCount = this.messages.length;
         })
         .catch(error => console.log('Error: ' + error))
-      
     },
     getMoreMessages: function() {
       this.messageDisplayCount += 10;
@@ -320,6 +336,14 @@ let app = new Vue({
         this.displayStatusMessage(statusMessage, timeout=5)
       }
 
+      if (this.messages.find(x => x.pk === messagePk).sender !== this.userPk) {
+        let warningMessage = "This message belongs to another user and will be edited using admin privileges. "
+        warningMessage += "Are you sure you want to edit this message?"
+        if (!confirm(warningMessage)) {
+          return false;
+        }
+      }
+
       const csrftoken = Cookies.get('csrftoken');
       const urlParams = {
         // 'conversation_pk': this.conversationPk,
@@ -351,6 +375,9 @@ let app = new Vue({
       .then(() => {
         this.displayStatusMessage('Message updated successfully.');
         this.elFlicker(eval('this.$refs.message' + messagePk + '[0]'), '#393', 20, 1020);
+        setTimeout(() => {
+          this.elFlicker(eval('this.$refs.message' + messagePk + '[0]'), '#393', 20, 1020);
+        }, 1200)
         this.getMessages();
       })
       .catch(error => {
@@ -399,13 +426,8 @@ let app = new Vue({
       })
       .then(() => {
         this.displayStatusMessage("Message deleted.");
-        index = this.messages.find(x => x.pk === messagePk)
-        this.messages.slice(index, 1);
-        // this.getMessages();
+        this.messageRemoveFromList(messagePk);
       })
-      // success message
-      // use response method
-
     },
   }
 })

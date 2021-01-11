@@ -131,6 +131,7 @@
 
 .chat-list {
   height: 72vh;
+  min-width: 60vh;
   max-width: 768px;
   padding: 1rem;
   overflow-y: scroll;
@@ -153,7 +154,11 @@
 .conversation-item {
   margin: 0 0 1rem;
   width: 75%;
-  transition: background-color 0.25s;
+
+  transition: background-color 0.5s;
+  transition: transform 0.5s;
+  transition: margin-top 0.5s;
+  transition: margin-bottom 0.5s;
 }
 
 .item-current-user {
@@ -213,6 +218,7 @@
 }
 
 .delete-button {
+  color: blue;
   background-color: #e22;
 }
 
@@ -222,17 +228,17 @@
 
 .status-message {
   position: fixed;
-  top: 20vh;
+  top: 12px;
   left: 0;
   right: 0;
-  max-width: 576px;
+  max-width: 40vw;
   background-color: #99d;
 
-  margin: 2rem auto auto;
+  margin: 0 auto;
   padding: 1rem;
   text-align: center;
 
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 
   border-radius: 1rem;
   border: 2px solid #66f;
