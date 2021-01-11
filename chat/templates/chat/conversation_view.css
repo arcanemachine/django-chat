@@ -131,7 +131,7 @@
 
 .chat-list {
   height: 72vh;
-  min-width: 60vh;
+  width: 80vw;
   max-width: 768px;
   padding: 1rem;
   overflow-y: scroll;
