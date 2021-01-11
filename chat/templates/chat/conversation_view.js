@@ -293,7 +293,6 @@ let app = new Vue({
         return false;
       }
 
-      const csrftoken = Cookies.get('csrftoken');
       const urlParams = {
         'conversation_pk': this.conversationPk
       }
@@ -307,7 +306,7 @@ let app = new Vue({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': csrftoken
+          'X-CSRFToken': Cookies.get('csrftoken')
         },
         body: JSON.stringify(postData)
       })
@@ -344,7 +343,6 @@ let app = new Vue({
         }
       }
 
-      const csrftoken = Cookies.get('csrftoken');
       const urlParams = {
         // 'conversation_pk': this.conversationPk,
         'message_pk': messagePk
@@ -361,7 +359,7 @@ let app = new Vue({
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': csrftoken
+          'X-CSRFToken': Cookies.get('csrftoken')
         },
         body: JSON.stringify(postData)
       })
@@ -398,17 +396,12 @@ let app = new Vue({
       }
     },
     async messageDelete(messagePk) {
-      const csrftoken = Cookies.get('csrftoken')
-      const urlParams = {
-        'message_pk': messagePk
-      }
-
+      const urlParams = {'message_pk': messagePk}
       const fetchUrl = await this.reverseUrl('api:message_detail', urlParams);
-
       fetch(fetchUrl.url, {
         method: 'DELETE',
         headers: {
-          'X-CSRFToken': csrftoken
+          'X-CSRFToken': Cookies.get('csrftoken')
         }
       })
       .then(response => {
