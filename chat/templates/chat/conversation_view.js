@@ -36,7 +36,7 @@ let app = new Vue({
     }
   },
   created() {
-    this.getMessages = _.debounce(this.getMessages, 400, {
+    this.messagesGet = _.debounce(this.messagesGet, 400, {
       leading: true,
       trailing: false
     })
@@ -52,7 +52,7 @@ let app = new Vue({
     var chatList = document.querySelector('.chat-list');
     chatList.addEventListener('scroll', (e) => {
       if (chatList.scrollTop === 0) {
-        this.getMoreMessages();
+        this.messagesGetMore();
         this.$nextTick(() => {
           chatList.scrollTop = 1;
         })
@@ -60,23 +60,11 @@ let app = new Vue({
     })
 
     // poll for new messages every 5 seconds
-    setInterval(() => {this.getMessages();}, 5000);
+    // setInterval(() => {this.messagesGet();}, 5000);
     
   },
   methods: {
-    messageContentClass: function (message) {
-      return {
-        'bold': this.userCanEdit(message),
-        'cursor-url': this.userCanEdit(message),
-        'item-current-user': this.userIsSender(message),
-        'item-other-user': !this.userIsSender(message),
-      }
-    },
-    messageContentStyle: function (message) {
-      return {
-        'background-color': this.getBackgroundColor(message.sender_username),
-      }
-    },
+    // ui methods
     elFlicker(el, flickerColor='#99f', startAfter=20, stopAfter=360) {
       let originalColor = el.style.backgroundColor;
       setTimeout(() => {
@@ -86,10 +74,20 @@ let app = new Vue({
         el.style.backgroundColor = originalColor;
       }, stopAfter)
     },
-    menuToggle() {
-      this.menuShow = !this.menuShow;
+    messageElContentClass: function (message) {
+      return {
+        'bold': this.userCanEdit(message),
+        'cursor-url': this.userCanEdit(message),
+        'item-current-user': this.userIsSender(message),
+        'item-other-user': !this.userIsSender(message),
+      }
     },
-    getBackgroundColor(username) {
+    messageElContentStyle: function (message) {
+      return {
+        'background-color': this.messageElBackgroundColorGet(message.sender_username),
+      }
+    },
+    messageElBackgroundColorGet(username) {
       // if user's background color already calculated, use it
       if (Object.keys(this.userBackgroundColors).indexOf(username) !== -1) {
         return this.userBackgroundColors[username]
@@ -105,6 +103,9 @@ let app = new Vue({
       result = '#' + result;
       this.userBackgroundColors[username] = result;
       return result;
+    },
+    menuToggle() {
+      this.menuShow = !this.menuShow;
     },
     displayStatusMessage(message, timeout=3000) {
       this.statusMessage = message;
@@ -136,6 +137,7 @@ let app = new Vue({
         })
       })
     },
+    // conversation logic
     userIsSender: function (message) {
       if (message.sender === this.userPk) {
         return true;
@@ -174,6 +176,12 @@ let app = new Vue({
 
       // shrink the deleted message along the y-axis
       let messageEl = eval('this.$refs.message' + messagePk)[0];
+
+      // if the message is undefined, that means it has already been removed
+      if (messageEl === undefined) {
+        return false;
+      }
+
       let messageElHeight = messageEl.offsetHeight;
       messageEl.style.transform = 'scale(1, 0)';
       messageEl.style.marginBottom = `-${messageEl.offsetHeight}px`
@@ -240,7 +248,7 @@ let app = new Vue({
         return response.json();
       }
     },
-    async getConversationUsers() {
+    async conversationGetUsers() {
       let message = "Users in this conversation: \n\n";
 
       const urlParams = {
@@ -256,12 +264,20 @@ let app = new Vue({
           }
           window.alert(message);
         })
-        .catch(error => console.log('getConversationUsers(): Error: ' + error))
+        .catch(error => console.log('conversationGetUsers(): Error: ' + error))
 
     },
-    async getMessages() {
+    async messageGet(messagePk) {
+      const urlParams = {
+        'message_pk': messagePk
+      }
+      const fetchUrl = await this.reverseUrl('api:message_detail', urlParams);
+      return fetch(fetchUrl.url)
+      .then(response => {return this.handleResponse(response);})
+    },
+    async messagesGet() {
       if (this.allMessagesShown) {
-        return;
+        return false;
       }
       const urlParams = {
         'conversation_pk': this.conversationPk,
@@ -270,31 +286,31 @@ let app = new Vue({
       const fetchUrl = await this.reverseUrl('api:message_list_count', urlParams);
       this.topPageMessage = document.querySelector('#message' + this.messages.slice(-1)[0].pk);
       fetch(fetchUrl.url)
-        .then(response => {return this.handleResponse(response);})
-        .then(data => {
-          this.messages = data;
-          if (data[0].all_messages_shown) {
-            this.allMessagesShown = true
+      .then(response => {return this.handleResponse(response);})
+      .then(data => {
+        this.messages = data;
+        if (data[0].all_messages_shown) {
+          this.allMessagesShown = true
+        }
+        // scroll down if user is at the bottom of the page
+        this.$nextTick(() => {
+          if (this.isScrolledToBottom()) {
+            if (this.messages.length !== this.messageDisplayCount) {
+              this.scrollToBottom();
+            }
           }
-          // scroll down if user is at the bottom of the page
-          this.$nextTick(() => {
-            if (this.isScrolledToBottom()) {
-              if (this.messages.length !== this.messageDisplayCount) {
-                this.scrollToBottom();
-              }
-            }
-            else {
-              // scroll to top of highest previous message
-              this.topPageMessage.scrollIntoView();
-            }
-          })
-          this.messageDisplayCount = this.messages.length;
+          else {
+            // scroll to top of highest previous message
+            this.topPageMessage.scrollIntoView();
+          }
         })
-        .catch(error => console.log('Error: ' + error))
+        this.messageDisplayCount = this.messages.length;
+      })
+      .catch(error => console.log('Error: ' + error))
     },
-    getMoreMessages: function() {
+    messagesGetMore: function() {
       this.messageDisplayCount += 10;
-      this.getMessages();
+      this.messagesGet();
     },
     async messageCreate() {
 
@@ -370,11 +386,19 @@ let app = new Vue({
         },
         body: JSON.stringify(postData)
       })
-      .then(response => {return this.handleResponse(response);})
-      .then(() => {
+      .then(response => {
+        if (response.status === 404) {
+          let statusMessage = "This message could not be found.<br><br>";
+          statusMessage += "It may already have been deleted.";
+          this.displayStatusMessage(statusMessage, 5000); 
+          this.messageRemoveFromList(messagePk);
+        }
+        else {return this.handleResponse(response);}
+      })
+      .then(data => {
         this.displayStatusMessage('Message updated successfully.');
         // this.messages[this.messageGetIndex(messagePk)].content = this.messageUpdateText;
-        this.getMessages();
+        Object.assign(this.messageGetFromPk(messagePk), data);
         this.elFlicker(eval('this.$refs.message' + messagePk + '[0]'), '#393', 20, 300);
       })
       .catch(error => {
@@ -402,6 +426,7 @@ let app = new Vue({
             let statusMessage = "This message could not be found.<br><br>";
             statusMessage += "It may already have been deleted.";
             this.displayStatusMessage(statusMessage, 5000); 
+            this.messageRemoveFromList(messagePk);
           }
           else {return this.handleResponse(response, 'none');}
         }

@@ -21,8 +21,8 @@
           <div @click="menuShow = !menuShow" class="menu-close-button-icon">&times;</div>
           <div id="menu-overlay-title">More Options</div>
           <div id="menu-overlay-item-container">
-            <div @click="getMessages" class="menu-overlay-item bold cursor-url">- Get new messages</div>
-            <div @click="getConversationUsers" class="menu-overlay-item bold cursor-url">- List conversation members</div>
+            <div @click="messagesGet" class="menu-overlay-item bold cursor-url">- Get new messages</div>
+            <div @click="conversationGetUsers" class="menu-overlay-item bold cursor-url">- List conversation members</div>
             <div class="menu-overlay-item">
               <a href="{% url 'chat:conversation_update_participants' conversation_pk=conversation.pk %}" class="menu-overlay-item unstyled-link">- Add/Remove participants</a>
             </div>
@@ -40,7 +40,7 @@
     </div>
 
     <div v-if="messages.length < 20" class="mb-2 text-italic text-center">
-      <button @click="getMoreMessages" class="button-get-messages">Load more messages</button>
+      <button @click="messagesGetMore" class="button-get-messages">Load more messages</button>
     </div>
     <li v-for="message in messages.slice().reverse()"
         @click="messageUpdatePanelSelect(message.pk)"
@@ -48,8 +48,8 @@
         :id="'message' + message.pk"
         :ref="'message' + message.pk"
         class="conversation-item"
-        :class="messageContentClass(message)"
-        :style="messageContentStyle(message)">
+        :class="messageElContentClass(message)"
+        :style="messageElContentStyle(message)">
 
       <transition name="fade">
         <span v-if="message.content">
