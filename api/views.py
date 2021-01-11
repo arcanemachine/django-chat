@@ -120,10 +120,11 @@ class MessageListRange(generics.ListAPIView):
         range_from = self.kwargs['range_from']
         range_to = self.kwargs['range_to']
         messages = Conversation.objects.get(pk=self.kwargs['conversation_pk'])\
-            .message_set.order_by('-pk')
-        if range_to == 0:
-            range_to = messages.count()
-        return messages[range_from:range_to]
+            .message_set.order_by('-pk')\
+            .filter(pk__gte=range_from)
+        if range_to != 0:
+            messages = messages.filter(pk__lte=range_to)
+        return messages
 
 
 class MessageCreate(generics.CreateAPIView):
