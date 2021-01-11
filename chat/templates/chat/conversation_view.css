@@ -131,7 +131,7 @@
 
 .chat-list {
   height: 72vh;
-  width: 80vw;
+  width: 90vw;
   max-width: 768px;
   padding: 1rem;
   overflow-y: scroll;
@@ -187,7 +187,7 @@
   border-width: 2px;
   border-color: gray;
   border-style: solid;
-  border-radius: 1rem;
+  border-radius: 0.25rem;
   transition: background-color 0.33s;
 }
 

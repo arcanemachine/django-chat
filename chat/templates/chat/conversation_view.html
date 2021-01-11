@@ -78,14 +78,14 @@
     <button @click="messageCreate"
             class="message-button action-button send-button cursor-url"
             alt="Send button"
-            :style="{'background-color': messageInputText ? '#26f' : '#555'}">
+            :style="{'background-color': messageInputText ? '#26f' : '#888'}">
       &#9992; <!-- airplane icon -->
     </button>
     <button @click="menuToggle"
             class="message-button menu-button cursor-url"
             alt="Menu button"
             title="Show menu"
-            :style="{'background-color': menuShow ? '#33b' : '#555'}">
+            :style="{'background-color': menuShow ? '#33b' : '#888'}">
       &#9776;  <!-- hamburger menu icon -->
     </button>
   </div>
@@ -100,7 +100,7 @@
             class="message-button action-button send-button cursor-url"
             alt="Send button"
             title="Confirm message update"
-            :style="{'background-color': messageUpdateText ? '#3b3' : '#555'}">
+            :style="{'background-color': messageUpdateText ? '#3b3' : '#888'}">
       &#10003; <!-- checkmark icon -->
     </button>
     <button @click="messageUpdatePanelSelect(messageBeingEdited)"
@@ -119,7 +119,7 @@
             class="message-button menu-button cursor-url"
             alt="Menu button"
             title="Show menu"
-            :style="{'background-color': menuShow ? '#33b' : '#555'}">
+            :style="{'background-color': menuShow ? '#33b' : '#888'}">
       &#9776;  <!-- hamburger menu icon -->
     </button>
   </div>

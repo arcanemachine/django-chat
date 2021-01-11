@@ -228,6 +228,18 @@ let app = new Vue({
         })
       return result;
     },
+    handleResponse(response, responseType='json') {
+      if (!response.ok) {
+        this.displayStatusMessage("HTTP error, status = " + response.status);
+        throw new Error("HTTP error, status = " + response.status);
+        }
+      if (responseType === 'none') {
+        return undefined;
+      }
+      if (responseType === 'json') {
+        return response.json();
+      }
+    },
     async getConversationUsers() {
       let message = "Users in this conversation: \n\n";
 
@@ -237,20 +249,14 @@ let app = new Vue({
       const fetchUrl = await this.reverseUrl('api:conversation_user_list', urlParams);
 
       fetch(fetchUrl.url)
-        .then(response => {
-          if (!response.ok) {
-              this.displayStatusMessage("getConversationUsers(): HTTP error, status = " + response.status);
-                throw new Error("getConversationUsers(): HTTP error, status = " + response.status);
-              }
-            return response.json();
-          })
-          .then(data => {
-            for (let i in data) {
-              message += `${Number(i) + 1}. ${data[i].username}\n`
-            }
-            window.alert(message);
-          })
-          .catch(error => console.log('getConversationUsers(): Error: ' + error))
+        .then(response => {return this.handleResponse(response);})
+        .then(data => {
+          for (let i in data) {
+            message += `${Number(i) + 1}. ${data[i].username}\n`
+          }
+          window.alert(message);
+        })
+        .catch(error => console.log('getConversationUsers(): Error: ' + error))
 
     },
     async getMessages() {
@@ -264,12 +270,7 @@ let app = new Vue({
       const fetchUrl = await this.reverseUrl('api:message_list_count', urlParams);
       this.topPageMessage = document.querySelector('#message' + this.messages.slice(-1)[0].pk);
       fetch(fetchUrl.url)
-        .then(response => {
-          if (!response.ok) {
-              throw new Error("HTTP error, status = " + response.status);
-            }
-          return response.json();
-        })
+        .then(response => {return this.handleResponse(response);})
         .then(data => {
           this.messages = data;
           if (data[0].all_messages_shown) {
@@ -318,15 +319,8 @@ let app = new Vue({
         },
         body: JSON.stringify(postData)
       })
-      .then(response => {
-        if (!response.ok) {
-          this.displayStatusMessage("HTTP error, status = " + response.status);
-          throw new Error("HTTP error, status = " + response.status);
-          }
-        return response.json();
-      })
+      .then(response => {return this.handleResponse(response);})
       .then(data => {
-        console.log(data)
         this.messages.splice(0, 0, data);
         this.messageInputText = '';
         this.messageDisplayCount = this.messages.length;
@@ -376,13 +370,7 @@ let app = new Vue({
         },
         body: JSON.stringify(postData)
       })
-      .then(response => {
-        if (!response.ok) {
-          this.displayStatusMessage("HTTP error, status = " + response.status);
-          throw new Error("HTTP error, status = " + response.status);
-          }
-        return response.json();
-      })
+      .then(response => {return this.handleResponse(response);})
       .then(() => {
         this.displayStatusMessage('Message updated successfully.');
         // this.messages[this.messageGetIndex(messagePk)].content = this.messageUpdateText;
@@ -393,13 +381,6 @@ let app = new Vue({
         console.log('Error: ' + error)
       })
       this.messageUpdatePanelSelect(0);
-    },
-    handleResponse(response) {
-      if (!response.ok) {
-        this.displayStatusMessage("HTTP error, status = " + response.status);
-        throw new Error("HTTP error, status = " + response.status);
-        }
-      return response.json();
     },
     messageDeleteConfirm(messagePk) {
       if (confirm('Are you sure you want to delete this message? (ID: ' + messagePk + ')')) {
@@ -422,10 +403,7 @@ let app = new Vue({
             statusMessage += "It may already have been deleted.";
             this.displayStatusMessage(statusMessage, 5000); 
           }
-          else {
-            this.displayStatusMessage("HTTP error, status = " + response.status);
-            throw new Error("HTTP error, status = " + response.status);
-          }
+          else {return this.handleResponse(response, 'none');}
         }
       })
       .then(() => {
