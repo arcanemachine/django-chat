@@ -150,3 +150,8 @@ class MessageDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return Message.objects.filter(pk=self.kwargs['message_pk'])
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['all_messages_shown'] = 'disabled'
+        return context

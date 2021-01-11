@@ -29,9 +29,12 @@ class MessageSerializer(serializers.ModelSerializer):
         # message count, then all_messages_shown = True
         if 'context' in kwargs:
             context = kwargs['context']
-            if 'all_messages_shown' in context \
-                    and context['all_messages_shown'] is True:
-                self.fields['all_messages_shown'].default = True
+            if 'all_messages_shown' in context:
+                if context['all_messages_shown'] is True:
+                    self.fields['all_messages_shown'].default = True
+                elif context['all_messages_shown'] == 'disabled':
+                    del self.fields['all_messages_shown']
+
         super().__init__(*args, **kwargs)
 
 
