@@ -14,13 +14,13 @@
 <div id="app">
 
   <transition name="fade">
-    <div v-if="menuShow" id="menu-overlay-parent-container" v-if="menuShow">
-      <div key="overlayBackground" id="menu-overlay-background"></div>
-      <div key="overlayMenu" id="menu-overlay-container">
-        <div id="menu-overlay">
+    <div v-if="menuShow" class="menu-overlay-parent-container" v-if="menuShow">
+      <div key="overlayBackground" class="menu-overlay-background"></div>
+      <div key="overlayMenu" class="menu-overlay-container">
+        <div class="menu-overlay">
           <div @click="menuShow = !menuShow" class="menu-close-button-icon">&times;</div>
-          <div id="menu-overlay-title">More Options</div>
-          <div id="menu-overlay-item-container">
+          <div class="menu-overlay-title">More Options</div>
+          <div class="menu-overlay-item-container">
             <div @click="messagesGet" class="menu-overlay-item bold cursor-url">- Get new messages</div>
             <div @click="conversationGetUsers" class="menu-overlay-item bold cursor-url">- List conversation members</div>
             <div class="menu-overlay-item">
@@ -42,36 +42,45 @@
     <div v-if="messages.length < 20" class="mb-2 text-italic text-center">
       <button @click="messagesGetMore" class="button-get-messages">Load more messages</button>
     </div>
-    <li v-for="message in messages.slice().reverse()"
-        @click="messageUpdatePanelSelect(message.pk)"
-        :key="message.pk"
-        :id="'message' + message.pk"
-        :ref="'message' + message.pk"
-        class="conversation-item"
-        :class="messageElContentClass(message)"
-        :style="messageElContentStyle(message)">
+    <div v-for="message in messages.slice().reverse()"
+          :key="message.pk">
 
-      <transition name="fade">
-        <span v-if="message.content">
+      <div class="new-date" v-if="checkIfIsNewDay(message)">[[ dateFormat(message.created_at, 'date') ]]</div>
 
-          <span v-if="message.sender !== userPk">[[ message.sender_username ]]:</span>
-          <span v-else style="font-weight: regular;">You:</span>
+      <li @click="messageUpdatePanelSelect(message.pk)"
+          :id="'message' + message.pk"
+          :ref="'message' + message.pk"
+          :id="'message' + message.pk"
+          class="conversation-item"
+          :class="messageElContentClass(message)"
+          :style="messageElContentStyle(message)">
 
-          <span>
-            [[ message.content ]]
+        <transition name="fade">
+          <span v-if="message.content">
+
+            <span v-if="message.sender !== userPk">[[ message.sender_username ]]:</span>
+            <span v-else style="font-weight: regular;">You:</span>
+
+            <span>
+              [[ message.content ]]
+            </span>
+
+            <div class="conversation-item-timestamp">
+              <span>[[ dateFormat(message.created_at, 'hours') ]]:[[ dateFormat(message.created_at, 'minutes') ]]</span>
+            </div>
+
           </span>
+        </transition>
 
-        </span>
-      </transition>
-
-    </li>
+      </li>
+    </div>
   </ul>
 
   <div v-if="!messageBeingEdited" class="message-container">
     <input @keyup.enter="messageCreate"
            type="text"
-           id="message-input"
            ref="messageInputCreate"
+           id="message-input"
            class="message-input"
            title="Send message"
            v-model="messageInputText">
@@ -131,10 +140,6 @@
   <transition name="fade">
     <div v-if="statusMessage" class="status-message" v-html="statusMessage"></div>
   </transition>
-
-  <div v-if="false" id="delete-me">
-    <button @click="deleteMe">Delete me</button>
-  </div>
 
 </div>
 {% endblock content %}

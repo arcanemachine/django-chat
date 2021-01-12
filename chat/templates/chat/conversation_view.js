@@ -33,7 +33,7 @@ let app = new Vue({
   computed: {
     messagesReversed() {
       return this.messages.slice().reverse();
-    }
+    },
   },
   created() {
     this.messagesGet = _.debounce(this.messagesGet, 400, {
@@ -64,6 +64,54 @@ let app = new Vue({
     
   },
   methods: {
+    // date logic
+    zeroPadder(num, minLength=2) {
+      // get the minimum length of the result
+      let sliceLength = minLength;
+      let numLength = String(num).length;
+      if (numLength > minLength) {sliceLength = numLength;}
+
+      // create a string of zeroes
+      let zeroString = '';
+      //for (let i in sliceLength) {
+      for (let i = 0; i < sliceLength; i++) {zeroString += '0'}
+
+      // return a string that is at least as long as minLength
+      return (zeroString + String(num)).slice(numLength);
+    },
+    dateFormat(dateString, convertTo) {
+      let dateObj = new Date(dateString);
+        if (convertTo === 'date') {
+          return dateObj.toDateString();
+        }
+        else if (convertTo === 'hours') {
+          let hours = dateObj.getHours();
+          return this.zeroPadder(hours);
+        }
+        else if (convertTo === 'minutes') {
+          let minutes = dateObj.getMinutes();
+          return this.zeroPadder(minutes);
+        }
+    },
+    checkIfIsNewDay(message) {
+      // sanity check
+      let messageIndex = this.messageGetIndexFromPk(message.pk);
+      if (messageIndex === this.messages.length-1) {return true;}
+
+      if(messageIndex > 0) {
+        let currentMessageDate = new Date(message.created_at);
+        let previousMessageDate = new Date(this.messages[messageIndex+1].created_at);
+
+        if (currentMessageDate.getYear() >= previousMessageDate.getYear() && +
+            currentMessageDate.getMonth() >= previousMessageDate.getMonth() && + 
+            currentMessageDate.getDay() > previousMessageDate.getDay()) {
+          return true;
+        }
+        else {
+          return false;
+        }
+      }
+    },
     // ui methods
     elFlicker(el, flickerColor='#99f', startAfter=20, stopAfter=360) {
       let originalColor = el.style.backgroundColor;
@@ -154,7 +202,7 @@ let app = new Vue({
         return false;
       }
     },
-    messageGetIndex(messagePk) {
+    messageGetIndexFromPk(messagePk) {
       /* for loop */
       // let pkList = [];
       // for (let i = 0; i < this.messages.length; i++) {
@@ -168,11 +216,11 @@ let app = new Vue({
       /* findIndex */
       return this.messages.findIndex(x => x.pk === messagePk);
     },
-    messageGetFromPk(messagePk) {
-      return this.messages[this.messageGetIndex(messagePk)];
+    messageGetByPk(messagePk) {
+      return this.messages[this.messageGetIndexFromPk(messagePk)];
     },
     messageRemoveFromList(messagePk) {
-      let index = this.messageGetIndex(messagePk);
+      let index = this.messageGetIndexFromPk(messagePk);
 
       // shrink the deleted message along the y-axis
       let messageEl = eval('this.$refs.message' + messagePk)[0];
@@ -284,7 +332,7 @@ let app = new Vue({
         'message_count': this.messageDisplayCount
       }
       const fetchUrl = await this.reverseUrl('api:message_list_count', urlParams);
-      this.topPageMessage = document.querySelector('#message' + this.messages.slice(-1)[0].pk);
+      this.topMessagePk = this.messages.slice(-1)[0].pk;
       fetch(fetchUrl.url)
       .then(response => {return this.handleResponse(response);})
       .then(data => {
@@ -301,12 +349,13 @@ let app = new Vue({
           }
           else {
             // scroll to top of highest previous message
-            this.topPageMessage.scrollIntoView();
+            document.querySelector('#message' + this.topMessagePk).scrollIntoView();
           }
         })
         this.messageDisplayCount = this.messages.length;
       })
       .catch(error => console.log('Error: ' + error))
+      this.messagesNewestDay = new Date(0);
     },
     messagesGetMore: function() {
       this.messageDisplayCount += 10;
@@ -353,7 +402,7 @@ let app = new Vue({
         this.displayStatusMessage(statusMessage, timeout=5)
         return false;
       }
-      else if (this.messageGetFromPk(messagePk).content === this.messageUpdateText) {
+      else if (this.messageGetByPk(messagePk).content === this.messageUpdateText) {
         this.messageUpdatePanelSelect(0);
         let statusMessage = "The new message is the same as the old message.<br><br>";
         statusMessage += "The message has not been updated.";
@@ -397,8 +446,8 @@ let app = new Vue({
       })
       .then(data => {
         this.displayStatusMessage('Message updated successfully.');
-        // this.messages[this.messageGetIndex(messagePk)].content = this.messageUpdateText;
-        Object.assign(this.messageGetFromPk(messagePk), data);
+        // this.messages[this.messageGetIndexFromPk(messagePk)].content = this.messageUpdateText;
+        Object.assign(this.messageGetByPk(messagePk), data);
         this.elFlicker(eval('this.$refs.message' + messagePk + '[0]'), '#393', 20, 300);
       })
       .catch(error => {
