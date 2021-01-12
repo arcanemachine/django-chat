@@ -28,7 +28,6 @@ let app = new Vue({
 
     statusMessage: '',
     statusMessageTimeout: undefined,
-
   },
   computed: {
     messagesReversed() {
@@ -73,7 +72,6 @@ let app = new Vue({
 
       // create a string of zeroes
       let zeroString = '';
-      //for (let i in sliceLength) {
       for (let i = 0; i < sliceLength; i++) {zeroString += '0'}
 
       // return a string that is at least as long as minLength
@@ -94,7 +92,7 @@ let app = new Vue({
         }
     },
     checkIfIsNewDay(message) {
-      // sanity check
+      // edge case
       let messageIndex = this.messageGetIndexFromPk(message.pk);
       if (messageIndex === this.messages.length-1) {return true;}
 
@@ -106,6 +104,24 @@ let app = new Vue({
             currentMessageDate.getMonth() >= previousMessageDate.getMonth() && + 
             currentMessageDate.getDay() > previousMessageDate.getDay()) {
           return true;
+        }
+        else {
+          return false;
+        }
+      }
+    },
+    checkIfIsNewUser(message) {
+      // edge case
+      let messageIndex = this.messageGetIndexFromPk(message.pk);
+      if (messageIndex === this.messages.length-1) {return true;}
+
+      if(messageIndex > 0) {
+        let currentMessageUser = message.sender_username;
+        let previousMessageUser = this.messages[messageIndex+1].sender_username;
+
+        if (currentMessageUser !== previousMessageUser) {
+          return true;
+
         }
         else {
           return false;
@@ -124,7 +140,6 @@ let app = new Vue({
     },
     messageElContentClass: function (message) {
       return {
-        'bold': this.userCanEdit(message),
         'cursor-url': this.userCanEdit(message),
         'item-current-user': this.userIsSender(message),
         'item-other-user': !this.userIsSender(message),
@@ -242,8 +257,8 @@ let app = new Vue({
         this.messageUpdateText = '';
         return false
       }
-      message = this.messages.find(x => x.pk === messagePk);
-      if (!this.userCanEdit(messagePk)) {
+      let message = this.messages.find(x => x.pk === messagePk);
+      if (!this.userCanEdit(message)) {
         return false;
       }
       let messageInput = document.querySelector('#message-input');

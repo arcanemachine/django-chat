@@ -45,7 +45,15 @@
     <div v-for="message in messages.slice().reverse()"
           :key="message.pk">
 
-      <div class="new-date" v-if="checkIfIsNewDay(message)">[[ dateFormat(message.created_at, 'date') ]]</div>
+      <div v-if="checkIfIsNewDay(message)"
+           class="new-conversation-date">
+        [[ dateFormat(message.created_at, 'date') ]]
+      </div>
+      <div v-if="(checkIfIsNewUser(message) || checkIfIsNewDay(message))"
+           class="new-conversation-user"
+           :style="{'text-align': message.sender !== userPk ? 'left' : 'right'}">
+        [[ message.sender === userPk ? 'You' : message.sender_username ]]
+      </div>
 
       <li @click="messageUpdatePanelSelect(message.pk)"
           :id="'message' + message.pk"
@@ -57,9 +65,6 @@
 
         <transition name="fade">
           <span v-if="message.content">
-
-            <span v-if="message.sender !== userPk">[[ message.sender_username ]]:</span>
-            <span v-else style="font-weight: regular;">You:</span>
 
             <span>
               [[ message.content ]]

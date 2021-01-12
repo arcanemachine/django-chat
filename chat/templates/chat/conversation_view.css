@@ -176,9 +176,14 @@
   border-radius: 0 1rem 1rem 1rem;
 }
 
-.new-date {
-  margin: 2.5rem auto 1.5rem;
+.new-conversation-date {
+  margin: 2.5rem auto 1rem;
+  font-size: 1.1rem;
   text-align: center;
+}
+
+.new-conversation-user {
+  margin: 1.5rem 1rem 0.75rem;
   font-weight: bold;
 }
 
