@@ -2,19 +2,55 @@
 
 {% block title %}User Info - {{ user.username }}{% endblock title %}
 {% block body_title %}User Info{% endblock body_title %}
-{% block body_subheading %}User Info{% endblock body_subheading %}
 
 {% block content %}
 
-<h3>Your Conversations</h3>
+<h1 class="user-detail-title">{{ user.username }}</h1>
+<h3 class="user-detail-subheading">Your Account</h3>
 
+
+{% if unread_messages %}
+<h3>Unread Messages</h3>
+
+<p>You have unread messages in the following conversation{{ unread_messages|pluralize }}:</p>
+
+<ul class="unread-messages">
+  {% for subject, conversation_pk in unread_messages.items %}
+  <li><a href="{% url 'chat:conversation_view' conversation_pk=conversation_pk %}">{{ subject }}</a></li>
+  {% endfor %}
+</ul>
+
+{% endif %}
+
+<h3>Your Conversations</h3>
 {% if user.conversation_set.count %}
 <ul>
   {% for conversation in user.conversation_set.all %}
-  <li><a href="{% url 'chat:conversation_view' conversation_pk=conversation.pk %}">{{ conversation }}</a></li>
+  <li><a href="{% url 'chat:conversation_view' conversation_pk=conversation.pk %}">{{ conversation.subject }}</a></li>
   {% endfor %}
 </ul>
 {% else %}
 {% endif %}
 
 {% endblock content %}
+
+{% block style %}
+<style>
+
+.user-detail-title {
+  margin-top: 0;
+  margin-bottom: 0.25rem;
+  text-align: center;
+}
+.user-detail-subheading {
+  margin: 0 auto 1.5rem;
+  text-align: center;
+}
+
+
+.unread-messages {
+  margin-bottom: 2rem;
+}
+
+</style>
+{% endblock style %}

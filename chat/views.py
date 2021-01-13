@@ -51,6 +51,7 @@ class ConversationView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        # serialize the conversation messages
         conversation_messages = \
             self.conversation.message_set.order_by('-pk')[:10]
         conversation_messages_serialized = \
@@ -58,10 +59,21 @@ class ConversationView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         conversation_messages_json = \
             json.loads(json.dumps(conversation_messages_serialized))
 
+        # if user has unread messages,
+        # add the pk of the last-read message to the context
+        unread_messages = self.request.user.profile.unread_messages
+        if unread_messages:
+            if str(self.conversation.pk) in unread_messages:
+                context['last_read_message_pk'] = \
+                    unread_messages.pop(str(self.conversation.pk))
+                messages.info(
+                    self.request,
+                    "New messages are shown with a glowing red border.")
+                self.request.user.save()
+
         context.update({
             'conversation': self.conversation,
-            'conversation_messages': conversation_messages_json
-            })
+            'conversation_messages': conversation_messages_json})
         return context
 
     def form_valid(self, form):

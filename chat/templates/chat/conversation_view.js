@@ -1,10 +1,12 @@
 "use strict";
 
-  // indented stuff is django-related
+  // django stuff
   </script>
   {{ conversation_messages|json_script:'conversation-messages' }}
   <script>
   let conversationMessages = document.querySelector('#conversation-messages').textContent;
+  let conversationPk = {{ conversation.pk }};
+  let lastReadMessagePk = Number('{{ last_read_message_pk }}');
 
   // hide non-js form
   document.querySelector('#non-js-form').style['display'] = 'none';
@@ -13,7 +15,9 @@ let app = new Vue({
   el: '#app',
   delimiters: ['[[', ']]'],
   data: {
-    conversationPk: {{ conversation.pk }},
+    conversationPk: conversationPk,
+    lastReadMessagePk: lastReadMessagePk,
+    
     userUsername: '{{ user.username }}',
     userPk: {{ user.pk }},
     userIsStaff: '{{ user.is_staff }}' === 'True', // do a boolean check for python's True/False boolean style
@@ -46,6 +50,16 @@ let app = new Vue({
     this.$nextTick(() => {
       this.scrollToBottom(smooth=false);
     })
+
+    // hide status messages after 5 seconds
+    if (document.querySelector('#info-message-container')) {
+      setTimeout(() => {
+        document.querySelector('#info-message-container').classList.add('make-transparent');
+        setTimeout(() => {
+          document.querySelector('#info-message-container').classList.add('hide');
+        }, 1000)
+      }, 2000)
+    }
 
     // when scrolled to top of chatList, load 10 more messages
     var chatList = document.querySelector('.chat-list');
@@ -148,6 +162,7 @@ let app = new Vue({
     messageElContentStyle: function (message) {
       return {
         'background-color': this.messageElBackgroundColorGet(message.sender_username),
+        'box-shadow': message.pk === this.lastReadMessagePk ? '0 0 10px red' : '0 0 10px black'
       }
     },
     messageElBackgroundColorGet(username) {

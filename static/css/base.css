@@ -25,19 +25,36 @@ body {
   justify-content: center;
 }
 
-#login-container {
+#nav-item-container {
   display: flex;
   margin-right: 1rem;
   align-items: center;
 }
 
-.login-item {
+.nav-item {
   margin: auto 0.5rem;
 }
 
-.info-message {
-  margin: 1rem;
-  font-weight: bold;
+.nav-item-icon {
+  margin-right: 0.25rem;
+  font-size: 2.5rem;
+}
+
+.content-container {
+  margin: 0 2rem;
+}
+
+.info-message-container {
+  background-color: #ddd;
+  width: 100vw;
+  margin: 0 -2rem 1rem;
+  padding: 1rem 0;
+  flex-direction: unset;
+  transition: opacity 0.5s;
+}
+
+.info-message-item {
+  text-align: center;
 }
 
 #body-title {

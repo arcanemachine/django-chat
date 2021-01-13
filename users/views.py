@@ -9,6 +9,7 @@ from django.views.generic import CreateView, DetailView
 from django.urls import reverse, reverse_lazy
 
 from . import forms
+from chat.models import Conversation
 
 def users_root(request):
     return HttpResponseRedirect(reverse('users:user_detail'))
@@ -35,6 +36,22 @@ class UserLoginView(LoginView, SuccessMessageMixin):
 
 class UserDetailView(DetailView, LoginRequiredMixin):
     template_name = 'users/user_detail.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.profile.unread_messages:
+            messages.info(self.request, "You have unread messages.")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        unread_messages = {}
+        for pk in self.request.user.profile.unread_messages:
+            unread_messages.update({
+                Conversation.objects.get(pk=pk).subject: pk})
+
+        context['unread_messages'] = unread_messages
+        return context
 
     def get_object(self):
         return self.request.user

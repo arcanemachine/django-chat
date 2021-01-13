@@ -1,5 +1,21 @@
 <style>
 
+.content-container {
+  margin: 0;
+}
+
+.make-transparent {
+  opacity: 0;
+}
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s;
 }
@@ -34,6 +50,10 @@
 
 .expand-vertical-enter, .expand-vertical-leave-to {
   height: 100%;
+}
+
+.info-message-container {
+  
 }
 
 .app {
@@ -132,7 +152,7 @@
 }
 
 .chat-list {
-  height: 72vh;
+  height: 65vh;
   width: 90vw;
   max-width: 768px;
   margin: 0 auto;
@@ -177,13 +197,13 @@
 }
 
 .new-conversation-date {
-  margin: 2.5rem auto 1rem;
+  margin: 4rem auto 0;
   font-size: 1.1rem;
   text-align: center;
 }
 
 .new-conversation-user {
-  margin: 1.5rem 1rem 0.75rem;
+  margin: 1rem 1rem 0.75rem;
   font-weight: bold;
 }
 
@@ -203,6 +223,7 @@
   max-width: 768px;
   margin: 1rem auto;
   flex-direction: row;
+  justify-content: center;
 }
 
 .message-input {

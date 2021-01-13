@@ -26,32 +26,40 @@
           <h3 id="body-subheading">{% block body_subheading %}{% endblock body_subheading %}</h3>
         </div>
 
-        <section id="login-container">
+        <section id="nav-item-container">
           {% if not user.is_authenticated %}
-          <div class="login-item"><a href="{% url 'users:login' %}">Login</a></div>
-          <div class="login-item"><a href="{% url 'users:register' %}">Register</a></div>
-          {% else %}
-          <div class="login-item"><a href="{% url 'users:user_detail' %}">{{ user.username }}</a></div>
-          <div class="login-item"><a href="{% url 'users:logout' %}">Logout</a></div>
+          <div class="nav-item"><a href="{% url 'users:login' %}">Login</a></div>
+          <div class="nav-item"><a href="{% url 'users:register' %}">Register</a></div>
+          {% elif user.is_authenticated %}
+            {% if request.user.profile.unread_messages %}
+          <div class="nav-item"><a href="{% url 'users:user_detail' %}" title="You have unread messages!" class="nav-item-icon unstyled-link">&#x26A0;&#xFE0E;</a></div>
+            {% endif %}
+          <div class="nav-item"><a href="{% url 'users:user_detail' %}">{{ user.username }}</a></div>
+          <div class="nav-item"><a href="{% url 'users:logout' %}">Logout</a></div>
           {% endif %}
+
         </section>
 
       </div>
 
-      {% if messages %}
-      <div class="message-container">
-        {% for message in messages %}
-        <div class="info-message">
-          <strong>{{ message }}</strong>
+      <div class="content-container">
+
+  {% if messages %}
+        <div id="info-message-container" class="info-message-container">
+    {% for message in messages %}
+          <div class="info-message-item">
+            <strong>{{ message }}</strong>
+          </div>
+    {% endfor %}
         </div>
-        {% endfor %}
+  {% endif %}
+
+
+  {% block content %}{% endblock content %}
+
       </div>
-      {% endif %}
-
-
-    {% block content %}{% endblock content %}
     </div>
-    {% block body_end_script %}{% endblock body_end_script %}
-       
+  {% block style %}{% endblock style %}
+  {% block body_end_script %}{% endblock body_end_script %}
 	</body>
 </html>
