@@ -28,8 +28,8 @@ class Conversation(models.Model):
 
 
 class Message(models.Model):
-    conversation = \
-        models.ForeignKey('Conversation', on_delete=models.CASCADE)
+    conversation = models.ForeignKey(
+        'Conversation', on_delete=models.SET_NULL, null=True)
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     sender_username = models.CharField(max_length=150, default='')
