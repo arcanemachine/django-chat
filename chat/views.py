@@ -53,7 +53,7 @@ class ConversationView(UserPassesTestMixin, CreateView):
 
         # serialize the conversation messages
         conversation_messages = \
-            self.conversation.message_set.order_by('-pk')[:10]
+            self.conversation.message_set.order_by('-pk')[:20]
         conversation_messages_serialized = \
             MessageSerializer(conversation_messages, many=True).data
         conversation_messages_json = \

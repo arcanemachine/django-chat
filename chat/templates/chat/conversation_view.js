@@ -39,7 +39,7 @@ let app = new Vue({
     messages: JSON.parse(dConversationMessages),
     allMessagesShown: false,
     lastReadMessagePk: dLastReadMessagePk,
-    messageDisplayCount: 10,
+    messageDisplayCount: 20,
     messageInputText: '',
     messageBeingEdited: undefined,
     messageUpdateText: '',
