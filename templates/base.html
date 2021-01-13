@@ -42,8 +42,6 @@
 
       </div>
 
-      <div class="content-container">
-
   {% if messages %}
         <div id="info-message-container" class="info-message-container">
     {% for message in messages %}
@@ -53,6 +51,8 @@
     {% endfor %}
         </div>
   {% endif %}
+
+      <div class="content-container">
 
 
   {% block content %}{% endblock content %}

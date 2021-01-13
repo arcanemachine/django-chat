@@ -45,16 +45,23 @@ body {
 }
 
 .info-message-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: space-between;
   background-color: #ddd;
   width: 100vw;
-  margin: 0 -2rem 1rem;
+  margin-bottom: 1rem;
   padding: 1rem 0;
-  flex-direction: unset;
   transition: opacity 0.5s;
 }
 
 .info-message-item {
   text-align: center;
+}
+
+.info-message-item:not(:first-child) {
+  margin-top: 1rem;
 }
 
 #body-title {
