@@ -52,8 +52,8 @@
   height: 100%;
 }
 
-.info-message-container {
-  
+.content-container {
+  margin-top: 0;
 }
 
 .app {

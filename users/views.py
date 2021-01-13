@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
 from django.views.generic import CreateView, DetailView
+from django.views.generic.edit import UpdateView
 from django.urls import reverse, reverse_lazy
 
 from . import forms
@@ -15,7 +16,7 @@ def users_root(request):
     return HttpResponseRedirect(reverse('users:user_detail'))
 
 
-class UserRegisterView(CreateView, SuccessMessageMixin):
+class UserRegisterView(SuccessMessageMixin, CreateView):
     form_class = forms.ChatUserCreationForm
     template_name = 'users/user_register.html'
     success_url = reverse_lazy(settings.LOGIN_URL)
@@ -27,14 +28,14 @@ class UserRegisterView(CreateView, SuccessMessageMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
-class UserLoginView(LoginView, SuccessMessageMixin):
+class UserLoginView(SuccessMessageMixin, LoginView):
     form_class = AuthenticationForm
     template_name = 'users/user_login.html'
     redirect_authenticated_user = True
     success_message = "You are now logged in."
 
 
-class UserDetailView(DetailView, LoginRequiredMixin):
+class UserDetailView(LoginRequiredMixin, DetailView):
     template_name = 'users/user_detail.html'
 
     def dispatch(self, request, *args, **kwargs):
@@ -52,6 +53,18 @@ class UserDetailView(DetailView, LoginRequiredMixin):
 
         context['unread_messages'] = unread_messages
         return context
+
+    def get_object(self):
+        return self.request.user
+
+def user_detail_redirect(request):
+    return HttpResponseRedirect(reverse('users:user_detail'))
+
+class UserUpdateTimezoneView(
+        LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    fields = '__all__'
+    template_name = 'users/user_update_timezone.html'
+    success_message = "Your timezone settings have been updated."
 
     def get_object(self):
         return self.request.user

@@ -6,11 +6,11 @@
 {% block content %}
 
 <h1 class="user-detail-title">{{ user.username }}</h1>
-<h3 class="user-detail-subheading">Your Account</h3>
+<h3 class="user-detail-subheading">Your Account Profile</h3>
 
 
 {% if unread_messages %}
-<h3>Unread Messages</h3>
+<h2>Unread Messages</h2>
 
 <p>You have unread messages in the following conversation{{ unread_messages|pluralize }}:</p>
 
@@ -22,7 +22,7 @@
 
 {% endif %}
 
-<h3>Your Conversations</h3>
+<h2>Your Conversations</h2>
 {% if user.conversation_set.count %}
 <ul>
   {% for conversation in user.conversation_set.all %}
@@ -30,12 +30,23 @@
   {% endfor %}
 </ul>
 {% else %}
+<p>You have no active conversations. Would you like to <a href="{% url 'chat:conversation_create' %}">start a new one</a>?
 {% endif %}
+
+<h2>Account Settings</h2>
+
+<ul>
+  <li><a href="{% url 'users:user_update_timezone' %}">Change your timezone</a> (Current: <strong>{% if user.timezone %}{{ user.timezone }}{% else %}FIXME{% endif %})</li>
+</ul>
 
 {% endblock content %}
 
 {% block style %}
 <style>
+
+p {
+  margin-left: 1rem;
+}
 
 .user-detail-title {
   margin-top: 0;

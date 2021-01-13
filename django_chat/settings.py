@@ -135,6 +135,9 @@ STATIC_ROOT = server_config.STATIC_ROOT
 
 # authentication
 
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda a: '/users/me/'
+}
 LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = 'users:user_detail'
 LOGOUT_REDIRECT_URL = 'root'

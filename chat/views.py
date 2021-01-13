@@ -38,7 +38,7 @@ class ConversationCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ConversationView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+class ConversationView(UserPassesTestMixin, CreateView):
     model = Message
     form_class = forms.ConversationForm
     template_name = 'chat/conversation_view.html'
