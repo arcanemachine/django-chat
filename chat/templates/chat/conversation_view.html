@@ -139,15 +139,16 @@
     </button>
   </div>
 
-  <div id="non-js-form">
-    {% include 'base_form.html' %}
-  </div>
-
   <transition name="fade">
     <div v-if="statusMessage" class="status-message" v-html="statusMessage"></div>
   </transition>
 
 </div>
+
+  <div id="non-js-form">
+    {% include 'base_form.html' %}
+  </div>
+
 {% endblock content %}
 
 {% block body_end_script %}
