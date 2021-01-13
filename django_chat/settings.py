@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     # third-party
     'rest_framework',
+    'timezone_field',
     #'corsheaders',
 ]
 

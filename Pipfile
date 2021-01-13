@@ -8,6 +8,7 @@ Django = "*"
 ipython = "*"
 djangorestframework = "*"
 django-cors-headers = "*"
+django-timezone-field = "*"
 
 [dev-packages]
 

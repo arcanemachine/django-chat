@@ -1,18 +1,17 @@
 {% extends 'base.html' %}
 
-{% block title %}User Info - {{ user.username }}{% endblock title %}
-{% block body_title %}User Info{% endblock body_title %}
+{% block title %}User Info - {{ user.username }}{% endblock %}
+
+{% block body_title %}{{ user.username }}{% endblock %}
+{% block body_subheading %}Your Account Profile{% endblock %}
 
 {% block content %}
 
-<h1 class="user-detail-title">{{ user.username }}</h1>
-<h3 class="user-detail-subheading">Your Account Profile</h3>
 
-
-{% if unread_messages %}
 <h2>Unread Messages</h2>
+{% if unread_messages %}
 
-<p>You have unread messages in the following conversation{{ unread_messages|pluralize }}:</p>
+<p class="ml-2">You have unread messages in the following conversation{{ unread_messages|pluralize }}:</p>
 
 <ul class="unread-messages">
   {% for subject, conversation_pk in unread_messages.items %}
@@ -20,9 +19,11 @@
   {% endfor %}
 </ul>
 
+{% else %}
+<p class="ml-2">You have no unread messages.</p>
 {% endif %}
 
-<h2>Your Conversations</h2>
+<h2 class="mt-4">Your Conversations</h2>
 {% if user.conversation_set.count %}
 <ul>
   {% for conversation in user.conversation_set.all %}
@@ -30,38 +31,13 @@
   {% endfor %}
 </ul>
 {% else %}
-<p>You have no active conversations. Would you like to <a href="{% url 'chat:conversation_create' %}">start a new one</a>?
+<p class="ml-2">You have no active conversations. Would you like to <a href="{% url 'chat:conversation_create' %}">start a new one</a>?
 {% endif %}
 
-<h2>Account Settings</h2>
+<h2 class="mt-4">Account Settings</h2>
 
 <ul>
-  <li><a href="{% url 'users:user_update_timezone' %}">Change your timezone</a> (Current: <strong>{% if user.timezone %}{{ user.timezone }}{% else %}FIXME{% endif %})</li>
+  <li><a href="{% url 'users:user_update_timezone' %}">Change your timezone</a> (Current: <strong>{{ user.profile.timezone }})</li>
 </ul>
 
 {% endblock content %}
-
-{% block style %}
-<style>
-
-p {
-  margin-left: 1rem;
-}
-
-.user-detail-title {
-  margin-top: 0;
-  margin-bottom: 0.25rem;
-  text-align: center;
-}
-.user-detail-subheading {
-  margin: 0 auto 1.5rem;
-  text-align: center;
-}
-
-
-.unread-messages {
-  margin-bottom: 2rem;
-}
-
-</style>
-{% endblock style %}

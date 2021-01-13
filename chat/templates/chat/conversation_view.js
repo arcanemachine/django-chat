@@ -4,9 +4,16 @@
   </script>
   {{ conversation_messages|json_script:'conversation-messages' }}
   <script>
-  let conversationMessages = document.querySelector('#conversation-messages').textContent;
-  let conversationPk = {{ conversation.pk }};
-  let lastReadMessagePk = Number('{{ last_read_message_pk }}');
+
+  let dConversationMessages = document.querySelector('#conversation-messages').textContent;
+  let dConversationPk = Number('{{ conversation.pk }}');
+  let dUserUsername = '{{ user.username }}';
+  let dUserPk = Number('{{ user.pk }}');
+  let dUserIsStaff = '{{ user.is_staff }}' === 'True';
+  let dLastReadMessagePk = Number('{{ last_read_message_pk }}');
+  let dUserTimezoneOffset = Number('{{ user.profile.get_timezone_offset }}');
+  let dUserTimezoneAbbreviation = '{{ user.profile.get_timezone_abbreviation }}';
+  let dUserTimezoneName = '{{ user.profile.timezone.zone }}'
 
   // hide non-js form
   document.querySelector('#non-js-form').style['display'] = 'none';
@@ -15,23 +22,28 @@ let app = new Vue({
   el: '#app',
   delimiters: ['[[', ']]'],
   data: {
-    conversationPk: conversationPk,
-    lastReadMessagePk: lastReadMessagePk,
-    
-    userUsername: '{{ user.username }}',
-    userPk: {{ user.pk }},
-    userIsStaff: '{{ user.is_staff }}' === 'True', // do a boolean check for python's True/False boolean style
+    optionsMenuShow: false,
+    statusMessage: '',
+    statusMessageTimeout: undefined,
+
+    conversationPk: dConversationPk,
+
+    userUsername: dUserUsername,
+    userPk: dUserPk,
+    userTimezoneAbbreviation: dUserTimezoneAbbreviation,
+    userTimezoneName: dUserTimezoneName,
+    userTimezoneOffset: dUserTimezoneOffset,
+    userIsStaff: dUserIsStaff,
     userBackgroundColors: {},
-    messages: JSON.parse(conversationMessages),
+
+    messages: JSON.parse(dConversationMessages),
     allMessagesShown: false,
+    lastReadMessagePk: dLastReadMessagePk,
     messageDisplayCount: 10,
     messageInputText: '',
     messageBeingEdited: undefined,
     messageUpdateText: '',
-    menuShow: false,
 
-    statusMessage: '',
-    statusMessageTimeout: undefined,
   },
   computed: {
     messagesReversed() {
@@ -91,8 +103,13 @@ let app = new Vue({
       // return a string that is at least as long as minLength
       return (zeroString + String(num)).slice(numLength);
     },
+    dateLocalize(dateObj, offset=0) {
+      return new Date(dateObj.getTime() + this.userTimezoneOffset);
+    },
     dateFormat(dateString, convertTo) {
+      // convert to local time
       let dateObj = new Date(dateString);
+      dateObj = this.dateLocalize(dateObj);
         if (convertTo === 'date') {
           return dateObj.toDateString();
         }
@@ -183,7 +200,7 @@ let app = new Vue({
       return result;
     },
     menuToggle() {
-      this.menuShow = !this.menuShow;
+      this.optionsMenuShow = !this.optionsMenuShow;
     },
     displayStatusMessage(message, timeout=3000) {
       this.statusMessage = message;
@@ -521,6 +538,6 @@ let app = new Vue({
 // toggle the options menu with Esc
 // document.addEventListener('keyup', function keyPress (e) {
 //  if (e.key === 'Escape') {
-//    app.menuShow = !app.menuShow;
+//    app.optionsMenuShow = !app.optionsMenuShow;
 //  }
 //})

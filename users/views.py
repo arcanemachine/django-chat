@@ -28,6 +28,11 @@ class UserRegisterView(SuccessMessageMixin, CreateView):
             return HttpResponseRedirect(reverse(self.success_url))
         return super().dispatch(request, *args, **kwargs)
 
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.profile.timezone = form.cleaned_data['timezone']
+        return super().form_valid(form)
+
 
 class UserLoginView(SuccessMessageMixin, LoginView):
     form_class = AuthenticationForm
@@ -65,12 +70,12 @@ def user_detail_redirect(request):
 
 class UserUpdateTimezoneView(
         LoginRequiredMixin, SuccessMessageMixin, UpdateView):
-    fields = '__all__'
+    fields = ['timezone']
     template_name = 'users/user_update_timezone.html'
     success_message = "Your timezone settings have been updated."
 
     def get_object(self):
-        return self.request.user
+        return self.request.user.profile
 
 
 class UserLogoutView(LogoutView):

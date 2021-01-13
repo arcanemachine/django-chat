@@ -14,11 +14,11 @@
 <div id="app">
 
   <transition name="fade">
-    <div v-if="menuShow" class="menu-overlay-parent-container" v-if="menuShow">
+    <div v-if="optionsMenuShow" class="menu-overlay-parent-container">
       <div key="overlayBackground" class="menu-overlay-background"></div>
       <div key="overlayMenu" class="menu-overlay-container">
         <div class="menu-overlay">
-          <div @click="menuShow = !menuShow" class="menu-close-button-icon">&times;</div>
+          <div @click="optionsMenuShow = !optionsMenuShow" class="menu-close-button-icon">&times;</div>
           <div class="menu-overlay-title">More Options</div>
           <div class="menu-overlay-item-container">
             <div @click="messagesGet" class="menu-overlay-item bold cursor-url">- Get new messages</div>
@@ -71,8 +71,8 @@
             </span>
 
             <div class="conversation-item-timestamp">
-              <span>#[[ message.pk ]] - </span>
-              <span>[[ dateFormat(message.created_at, 'hours') ]]:[[ dateFormat(message.created_at, 'minutes') ]]</span>
+              <span>[[ dateFormat(message.created_at, 'hours') ]]:[[ dateFormat(message.created_at, 'minutes') ]] [[ userTimezoneAbbreviation ]]</span>
+              <span class="text-italic"> - #[[ message.pk ]]</span>
             </div>
 
           </span>
@@ -100,7 +100,7 @@
             class="message-button menu-button cursor-url"
             alt="Menu button"
             title="Show menu"
-            :style="{'background-color': menuShow ? '#33b' : '#888'}">
+            :style="{'background-color': optionsMenuShow ? '#33b' : '#888'}">
       &#9776;  <!-- hamburger menu icon -->
     </button>
   </div>
@@ -134,7 +134,7 @@
             class="message-button menu-button cursor-url"
             alt="Menu button"
             title="Show menu"
-            :style="{'background-color': menuShow ? '#33b' : '#888'}">
+            :style="{'background-color': optionsMenuShow ? '#33b' : '#888'}">
       &#9776;  <!-- hamburger menu icon -->
     </button>
   </div>
