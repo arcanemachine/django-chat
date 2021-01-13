@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.conf import settings
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -11,6 +11,7 @@ from django.urls import reverse, reverse_lazy
 
 from . import forms
 from chat.models import Conversation
+
 
 def users_root(request):
     return HttpResponseRedirect(reverse('users:user_detail'))
@@ -57,8 +58,10 @@ class UserDetailView(LoginRequiredMixin, DetailView):
     def get_object(self):
         return self.request.user
 
+
 def user_detail_redirect(request):
     return HttpResponseRedirect(reverse('users:user_detail'))
+
 
 class UserUpdateTimezoneView(
         LoginRequiredMixin, SuccessMessageMixin, UpdateView):
