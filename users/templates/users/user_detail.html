@@ -34,7 +34,7 @@
 <p class="ml-2">You have no active conversations. Would you like to <a href="{% url 'chat:conversation_create' %}">start a new one</a>?
 {% endif %}
 
-<h2 class="mt-4">Account Settings</h2>
+<h2 class="mt-6">Account Settings</h2>
 
 <ul>
   <li><a href="{% url 'users:user_update_timezone' %}">Change your timezone</a> (Current: <strong>{{ user.profile.timezone }})</li>

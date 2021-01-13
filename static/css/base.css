@@ -161,6 +161,14 @@ form {
   margin-top: 2em;
 }
 
+.mt-5 {
+  margin-top: 2.5em;
+}
+
+.mt-6 {
+  margin-top: 3em;
+}
+
 .mr-0 {
   margin-right: 0em;
 }
@@ -179,6 +187,14 @@ form {
 
 .mr-4 {
   margin-right: 2em;
+}
+
+.mr-5 {
+  margin-right: 2.5em;
+}
+
+.mr-6 {
+  margin-right: 3em;
 }
 
 .mb-0 {
@@ -201,6 +217,14 @@ form {
   margin-bottom: 2em;
 }
 
+.mb-5 {
+  margin-bottom: 2.5em;
+}
+
+.mb-6 {
+  margin-bottom: 3em;
+}
+
 .ml-0 {
   margin-left: 0em;
 }
@@ -219,4 +243,12 @@ form {
 
 .ml-4 {
   margin-left: 2em;
+}
+
+.ml-5 {
+  margin-left: 2.5em;
+}
+
+.ml-6 {
+  margin-left: 3em;
 }

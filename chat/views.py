@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import JsonResponse, HttpResponseForbidden
 from django.urls import reverse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views.generic import CreateView, ListView
 from django.views.generic.edit import UpdateView
 
@@ -27,7 +27,7 @@ class ConversationListView(ListView):
 
 class ConversationCreateView(CreateView):
     model = Conversation
-    fields = ('subject', 'participants')
+    form_class = forms.ConversationCreateForm
     template_name = 'chat/conversation_create.html'
     success_message = "New conversation successfully created."
 
@@ -45,7 +45,7 @@ class ConversationView(UserPassesTestMixin, CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         self.conversation = \
-            Conversation.objects.get(pk=self.kwargs['conversation_pk'])
+            get_object_or_404(Conversation, pk=self.kwargs['conversation_pk'])
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

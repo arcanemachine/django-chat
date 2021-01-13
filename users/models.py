@@ -8,7 +8,8 @@ from timezone_field import TimeZoneField
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    timezone = TimeZoneField(choices_display="WITH_GMT_OFFSET")
+    timezone = TimeZoneField(
+        default='Canada/Mountain', choices_display="WITH_GMT_OFFSET")
 
     unread_messages = models.JSONField(default=dict)
 
