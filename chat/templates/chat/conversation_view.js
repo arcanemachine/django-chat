@@ -7,6 +7,7 @@
 
   let dConversationMessages = document.querySelector('#conversation-messages').textContent;
   let dConversationPk = Number('{{ conversation.pk }}');
+  let dAllMessagesLoadedFromDb = '{{ all_messages_loaded_from_db }}' === 'True';
   let dUserUsername = '{{ user.username }}';
   let dUserPk = Number('{{ user.pk }}');
   let dUserIsStaff = '{{ user.is_staff }}' === 'True';
@@ -37,7 +38,8 @@ let app = new Vue({
     userBackgroundColors: {},
 
     messages: JSON.parse(dConversationMessages),
-    allMessagesShown: false,
+    allMessagesFetched: false,
+    allMessagesLoadedFromDb: dAllMessagesLoadedFromDb,
     lastReadMessagePk: dLastReadMessagePk,
     messageDisplayCount: 20,
     messageInputText: '',
@@ -46,8 +48,8 @@ let app = new Vue({
 
   },
   computed: {
-    messagesReversed() {
-      return this.messages.slice().reverse();
+    allMessagesShown() {
+      return this.allMessagesFetched || this.allMessagesLoadedFromDb;
     },
   },
   created() {
@@ -146,7 +148,7 @@ let app = new Vue({
       let messageIndex = this.messageGetIndexFromPk(message.pk);
       if (messageIndex === this.messages.length-1) {return true;}
 
-      if(messageIndex > 0) {
+      if(messageIndex >= 0) {
         let currentMessageUser = message.sender_username;
         let previousMessageUser = this.messages[messageIndex+1].sender_username;
 
@@ -371,7 +373,7 @@ let app = new Vue({
       .then(response => {return this.handleResponse(response);})
     },
     async messagesGet() {
-      if (this.allMessagesShown) {
+      if (this.allMessagesFetched) {
         return false;
       }
       const urlParams = {
@@ -385,7 +387,7 @@ let app = new Vue({
       .then(data => {
         this.messages = data;
         if (data[0].all_messages_shown) {
-          this.allMessagesShown = true
+          this.allMessagesFetched = true
         }
         // scroll down if user is at the bottom of the page
         this.$nextTick(() => {

@@ -71,9 +71,14 @@ class ConversationView(UserPassesTestMixin, CreateView):
                     "New messages are shown with a glowing red border.")
                 self.request.user.save()
 
+        all_conversation_messages_count = self.conversation.message_set.count()
+
         context.update({
             'conversation': self.conversation,
-            'conversation_messages': conversation_messages_json})
+            'conversation_messages': conversation_messages_json,
+            'all_messages_loaded_from_db':
+                True if all_conversation_messages_count ==
+                conversation_messages.count() else False})
         return context
 
     def form_valid(self, form):

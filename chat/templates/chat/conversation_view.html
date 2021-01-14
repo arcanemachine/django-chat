@@ -35,13 +35,18 @@
   <p v-if="!messages.length">Say something to get the ball rolling!</p>
   <ul v-if="messages.length" class="chat-list" ref="chatList">
 
-    <div v-if="allMessagesShown" class="mb-2 text-italic text-center">
+    <div v-if="allMessagesShown" class="mb-n2 text-italic text-center">
       Beginning of conversation
     </div>
 
     <div v-if="messages.length < 20" class="mb-2 text-italic text-center">
-      <button @click="messagesGetMore" class="button-get-messages">Load more messages</button>
+      <button v-if="!allMessagesShown"
+              @click="messagesGetMore"
+              class="button-get-messages">
+        Load more messages
+      </button>
     </div>
+
     <div v-for="message in messages.slice().reverse()"
           :key="message.pk">
 

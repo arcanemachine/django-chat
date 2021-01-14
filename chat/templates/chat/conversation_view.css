@@ -156,6 +156,7 @@
   max-width: 768px;
   margin-top: 0.5rem;
   padding: 1rem;
+  padding-top: 2rem;
   overflow-y: scroll;
 
   flex-grow: 1;
