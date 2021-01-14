@@ -79,6 +79,7 @@ class ConversationView(UserPassesTestMixin, CreateView):
             'all_messages_loaded_from_db':
                 True if all_conversation_messages_count ==
                 conversation_messages.count() else False})
+        messages.info(self.request, 'deleteme')
         return context
 
     def form_valid(self, form):
