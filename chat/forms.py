@@ -10,11 +10,10 @@ class ConversationCreateForm(forms.ModelForm):
     class Meta:
         model = Conversation
         fields = ['subject', 'participants']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        breakpoint()
-        self.fields['subject'].widget.attrs['size'] = 20
+        widgets = {
+            'subject': forms.TextInput(attrs={'size': 30}),
+            'participants': forms.CheckboxSelectMultiple(),
+        }
 
 
 class ConversationForm(forms.ModelForm):
