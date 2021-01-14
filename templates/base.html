@@ -42,25 +42,25 @@
 
       </div>
 
-      <div class="content-container">
+      <div class="main-container">
 
   {% if messages %}
-        <div class="info-message-container" class="info-message-container">
+			<div id="info-message-container" class="info-message-container">
     {% for message in messages %}
-          <div class="info-message-item">
-            <strong>{{ message }}</strong>
-          </div>
+				<div class="info-message-item">
+					<strong>{{ message }}</strong>
+				</div>
     {% endfor %}
-        </div>
+			</div>
   {% endif %}
 
-        <div class="body-title-container">
-          <h2 class="body-title">{% block body_title %}{% endblock body_title %}</h2>
-          <h3 class="body-subheading">{% block body_subheading %}{% endblock body_subheading %}</h3>
-        </div>
-
+				<div class="content-container">
+					<div class="body-title-container">
+						<h2 class="body-title">{% block body_title %}{% endblock body_title %}</h2>
+						<h3 class="body-subheading">{% block body_subheading %}{% endblock body_subheading %}</h3>
+					</div>
   {% block content %}{% endblock content %}
-
+				</div>
       </div>
     </div>
   {% block body_end_script %}{% endblock body_end_script %}

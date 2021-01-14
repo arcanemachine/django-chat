@@ -45,7 +45,8 @@ class UserDetailView(LoginRequiredMixin, DetailView):
     template_name = 'users/user_detail.html'
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.profile.unread_messages:
+        if hasattr(request.user, 'profile') \
+                and request.user.profile.unread_messages:
             messages.info(self.request, "You have unread messages.")
         return super().dispatch(request, *args, **kwargs)
 

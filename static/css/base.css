@@ -12,8 +12,7 @@ body {
 }
 
 .header-container {
-	min-height: 5rem;
-  max-height: 10vh;
+  height: 5rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -42,9 +41,11 @@ body {
   font-size: 2.5rem;
 }
 
+.main-container {
+}
+
 .content-container {
   margin: 0 2rem;
-	max-height: 90vh;
 }
 
 .info-message-container {
@@ -53,8 +54,6 @@ body {
   justify-content: center;
   align-items: space-between;
   background-color: #ddd;
-	min-height: 2rem;
-	max-height: 4vh;
   width: 100vw;
   margin-bottom: 0.5rem;
   padding: 1rem 0;
@@ -71,7 +70,6 @@ body {
 
 .body-title-container {
   display: flex;
-	height: 10vh;
   flex-direction: column;
   justify-content: center;
   align-items: center;
