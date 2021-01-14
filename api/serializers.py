@@ -36,7 +36,7 @@ class MessageSerializer(serializers.ModelSerializer):
         result = {
             'pk': instance.pk,
             'conversation': instance.conversation.pk,
-            'sender': instance.sender.pk,
+            'sender': instance.sender.pk if instance.sender else None,
             'sender_username': instance.sender_username,
             'content': instance.content,
             'created_at': iso_time(instance.created_at),
