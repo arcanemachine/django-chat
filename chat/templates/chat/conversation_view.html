@@ -8,11 +8,11 @@
 {% endblock %}
 
 {% block body_title %}Conversation{% endblock %}
-{% block body_subheading %}{{ conversation.subject|truncatechars:20 }}{% endblock %}
+{% block body_subheading %}{{ conversation.subject|truncatechars:25 }}{% endblock %}
 
 {% block content %}
 <div id="app">
-
+  
   <transition name="fade">
     <div v-if="optionsMenuShow" class="menu-overlay-parent-container">
       <div key="overlayBackground" class="menu-overlay-background"></div>

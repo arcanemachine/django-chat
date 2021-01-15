@@ -13,6 +13,7 @@ urlpatterns = [
     path('api/v1/', include('api.urls')),
     path('chat/', include('chat.urls')),
     path('users/', include('users.urls')),
+    path('test/', views.hello_jasmine, name='hello_jasmine'),
 ]
 
 if server_config.SERVER_NAME == 'dev':
