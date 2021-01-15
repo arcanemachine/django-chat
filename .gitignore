@@ -8,6 +8,7 @@ gunicorn.sh
 todo
 base_template.html
 menus/templatetags/
+deleteme/
 
 # npm #
 node_modules/
