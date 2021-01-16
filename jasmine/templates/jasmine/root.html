@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Jasmine Testing{% endblock %}
+
+{% block body_title %}Jasmine Tests{% endblock %}
+{% block body_subheading %}Root View{% endblock %}
+
+{% block content %}
+
+<h2>Tutorial/Examples</h2>
+
+<ul>
+  <li><a href="{% url 'jasmine:hello_jasmine' %}">Hello Jasmine!</a></li>
+  <li><a href="{% url 'jasmine:hello_vue' %}">Hello Vue!</a></li>
+</ul>
+
+<h2>Chat</h2>
+
+<ul>
+  <li><a href="{% url 'jasmine:chat_conversation_view' %}">chat:conversation_view</a></li>
+</ul>
+
+<h2>Experiments</h2>
+
+<ul>
+  <li>
+    <a href="{% url 'jasmine:hello_include' %}">hello_include</a>
+    <ul><li>Test Django's ability to include other Django views.</li></ul>
+  </li>
+</ul>
+
+{% endblock content %}

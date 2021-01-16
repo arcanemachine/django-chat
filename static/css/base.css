@@ -4,6 +4,10 @@ body {
 	min-height: 100vh;
 }
 
+ul {
+	margin-bottom: 2rem;
+}
+
 /* ui components */
 .page-container {
   display: flex;
@@ -76,7 +80,7 @@ body {
 }
 
 .body-title {
-	margin-top: 0.5rem;
+	margin-top: 1rem;
   margin-bottom: 0;
 }
 

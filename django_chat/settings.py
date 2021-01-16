@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # local
     'chat.apps.ChatConfig',
     'users.apps.UsersConfig',
+    'jasmine.apps.JasmineConfig',
     # third-party
     'rest_framework',
     'timezone_field',
@@ -160,3 +161,7 @@ REST_FRAMEWORK = {
 
 # django-cors-headers
 #CORS_ALLOW_ALL_ORIGINS = True
+
+# testing
+if server_config.SERVER_NAME == 'dev':
+    STATICFILES_DIRS += server_config.TEST_SPEC_DIRS
