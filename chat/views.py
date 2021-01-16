@@ -3,6 +3,7 @@ from django.core import serializers
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.staticfiles import finders
 from django.http import JsonResponse, HttpResponseForbidden
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, render
@@ -79,7 +80,6 @@ class ConversationView(UserPassesTestMixin, CreateView):
             'all_messages_loaded_from_db':
                 True if all_conversation_messages_count ==
                 conversation_messages.count() else False})
-        messages.info(self.request, 'deleteme')
         return context
 
     def form_valid(self, form):

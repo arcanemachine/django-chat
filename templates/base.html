@@ -8,8 +8,23 @@
     <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
-  {% block head_script %}{% endblock head_script %}
-  {% block style %}{% endblock style %}
+    {% if jasmine_scripts or jasmine_specs %}
+
+    <link rel="shortcut icon" type="image/png" href="{% static 'jasmine/lib/jasmine-3.6.0/jasmine_favicon.png' %}">
+    <link rel="stylesheet" href="{% static 'jasmine/lib/jasmine-3.6.0/jasmine.css' %}">
+
+    <script src="{% static 'jasmine/lib/jasmine-3.6.0/jasmine.js' %}"></script>
+    <script src="{% static 'jasmine/lib/jasmine-3.6.0/jasmine-html.js' %}"></script>
+    <script src="{% static 'jasmine/lib/jasmine-3.6.0/boot.js' %}"></script>
+
+      {% for script in jasmine_scripts %}
+    <script src="{% static script %}"></script>
+      {% endfor %}
+
+    {% endif %}
+    
+    {% block head_script %}{% endblock head_script %}
+    {% block style %}{% endblock style %}
 
   </head>
   <body>
@@ -18,7 +33,7 @@
       <h3>This page requires JavaScript. Please enable JavaScript to continue.</h3>
     </noscript>
 
-    <div class="page-container">
+    <div id="page-container" class="page-container">
 
       <div class="header-container">
 
@@ -64,5 +79,9 @@
       </div>
     </div>
   {% block body_end_script %}{% endblock body_end_script %}
+
+	{% if jasmine_scripts or jasmine_specs %}<script src="{% static 'js/jasmine_helpers.js' %}"></script>{% endif %}
+  {% for spec in jasmine_specs %}<script src="{% static spec %}"></script>{% endfor %}
+
 	</body>
 </html>

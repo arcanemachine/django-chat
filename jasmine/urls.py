@@ -16,7 +16,7 @@ urlpatterns = [
     path('experiments/include/', views.hello_include, name='hello_include'),
 
     # chat
-    path('chat/conversations/',
-         views.chat_conversation_view,
+    path('chat/conversations/<int:conversation_pk>/',
+         views.ChatConversationView.as_view(),
          name='chat_conversation_view'),
 ]

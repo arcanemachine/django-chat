@@ -1,7 +1,10 @@
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.staticfiles import finders
 from django.shortcuts import render
 
 from django_chat import views as project_views
+from chat import views as chat_views
 
 
 def is_staff(user):
@@ -42,9 +45,16 @@ def hello_vue_test(request):
 
 
 # chat
-@user_passes_test(is_staff)
-def chat_conversation_view(request):
-    return render(request, 'jasmine/chat_conversation_view.html')
+class ChatConversationView(chat_views.ConversationView, UserPassesTestMixin):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['jasmine_specs'] = [
+            finders.find('jasmine/spec/ConversationView.js')]
+        return context
+
+    def test_func(self):
+        return self.request.user.is_staff
 
 
 # experiments
