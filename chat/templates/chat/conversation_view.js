@@ -179,8 +179,13 @@ let app = new Vue({
       }
     },
     messageElContentStyle: function (message) {
+      let bgColor = this.messageElBackgroundColorGet(message.sender_username);
+      if (message.sender !== this.userPk) {
+        bgColor = [bgColor[1], bgColor[0]];
+      }
       return {
-        'background-color': this.messageElBackgroundColorGet(message.sender_username),
+        // 'background-color': this.messageElBackgroundColorGet(message.sender_username),
+        'background': `linear-gradient(to bottom right, ${bgColor[0]}, ${bgColor[1]})`,
         'box-shadow': message.pk === this.lastReadMessagePk ? '0 0 10px red' : '0 0 10px black'
       }
     },
@@ -189,15 +194,19 @@ let app = new Vue({
       if (Object.keys(this.userBackgroundColors).indexOf(username) !== -1) {
         return this.userBackgroundColors[username]
       }
-      let maxValue = 255 - 16;
-      let minValue = 128 + 32;
-      let result = '';
+      let maxValue = 255 - 32;
+      let minValue = 140 + 32;
+      let darkResult = '';
+      let lightResult = '';
       for (let i = 1; i <= 3; i++) {
         let seed = new Math.seedrandom(username.substr(username.length - i, username.length - i+1))();
         let thisResult = maxValue - Math.floor(seed * maxValue);
-        result += thisResult.toString(16);
+        darkResult += thisResult.toString(16);
+        lightResult += (thisResult + 32).toString(16);
       }
-      result = '#' + result;
+      darkResult = '#' + darkResult;
+      lightResult = '#' + lightResult;
+      let result = [darkResult, lightResult];
       this.userBackgroundColors[username] = result;
       return result;
     },
