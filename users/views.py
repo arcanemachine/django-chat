@@ -19,7 +19,7 @@ def users_root(request):
 
 class UserRegisterView(SuccessMessageMixin, CreateView):
     form_class = forms.ChatUserCreationForm
-    template_name = 'users/user_register.html'
+    template_name = 'users/register.html'
     success_url = reverse_lazy(settings.LOGIN_URL)
     success_message = "You have successfully registered your account."
 
@@ -36,7 +36,7 @@ class UserRegisterView(SuccessMessageMixin, CreateView):
 
 class UserLoginView(SuccessMessageMixin, LoginView):
     form_class = AuthenticationForm
-    template_name = 'users/user_login.html'
+    template_name = 'users/login.html'
     redirect_authenticated_user = True
     success_message = "You are now logged in."
 
