@@ -10,6 +10,35 @@ urlpatterns = [
     #     name='message_create'),
     path('', views.hello_world, name='hello_world'),
 
+    # ghetto api calls made using JsonResponse
+    path('urls/reverse/<str:reverse_string>/',
+         views.json_reverse_url,
+         name='json_reverse_url'),
+    path('test/hello-world/',
+         views.json_hello_world,
+         name='json_hello_world'),
+    path('test/user-is-logged-in/',
+         views.json_user_is_logged_in,
+         name='json_user_is_logged_in'),
+    path('test/debug/',
+         views.json_debug,
+         name='json_debug'),
+
+    path('conversations/<int:conversation_pk>/messages/create/',
+         views.create_conversation_message,
+         name='create_conversation_message'),
+    path('conversations/<int:conversation_pk>/message/<int:message_pk>/',
+         views.get_conversation_message,
+         name='get_conversation_message'),
+    path('conversations/<int:conversation_pk>/messages/'
+         '<int:number_of_messages>/',
+         views.get_conversation_messages,
+         name='get_conversation_messages'),
+    path('conversations/<int:conversation_pk>/users/',
+         views.get_conversation_users,
+         name='get_conversation_users'),
+
+
     # users
     path('users/',
         views.UserList.as_view(),
