@@ -33,19 +33,28 @@ class MessageSerializer(serializers.ModelSerializer):
                 else None)
             return json.loads(json.dumps(dt_obj, default=date_handler))
 
-        result = {
-            'pk': instance.pk,
-            'conversation': instance.conversation.pk,
+        # new version
+        data = super().to_representation(instance)
+        data.update({
             'sender': instance.sender.pk if instance.sender else None,
-            'sender_username': instance.sender_username,
-            'content': instance.content,
             'created_at': iso_time(instance.created_at),
             'modified_at': iso_time(instance.modified_at),
-            'all_messages_shown': self.fields['all_messages_shown'].default}
-        return result
-        #if 'all_messages_shown' in self.fields:
-        #    result.update({
-        #        'all_messages_shown': self.fields['all_messages_shown']})
+            'all_messages_shown': self.fields['all_messages_shown'].default})
+
+        # old version below, probably safe to delete (more verbose)
+        # result = {
+        #     'pk': instance.pk,
+        #     'conversation': instance.conversation.pk,
+        #     'sender': instance.sender.pk if instance.sender else None,
+        #     'sender_username': instance.sender_username,
+        #     'content': instance.content,
+        #     'created_at': iso_time(instance.created_at),
+        #     'modified_at': iso_time(instance.modified_at),
+        #     'all_messages_shown': self.fields['all_messages_shown'].default}
+        # return result
+        # #if 'all_messages_shown' in self.fields:
+        # #    result.update({
+        # #        'all_messages_shown': self.fields['all_messages_shown']})
 
 
 
