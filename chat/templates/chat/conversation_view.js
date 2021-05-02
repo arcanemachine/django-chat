@@ -331,7 +331,7 @@ let app = new Vue({
           }
         }
       }
-      let lookupUrl = `/chat/api/urls/reverse/${view_name}/${args}`;
+      let lookupUrl = `/api/v1/urls/reverse/${view_name}/${args}`;
       var reversedUrl;
       let result = fetch(lookupUrl)
         .then(response => {
@@ -390,6 +390,9 @@ let app = new Vue({
         'message_count': this.messageDisplayCount
       }
       const fetchUrl = await this.reverseUrl('api:message_list_count', urlParams);
+      if (!this.messages) {
+        this.messages = [];
+      }
       this.topMessagePk = this.messages.slice(-1)[0].pk;
       fetch(fetchUrl.url)
       .then(response => {return this.handleResponse(response);})
@@ -428,7 +431,7 @@ let app = new Vue({
       const urlParams = {
         'conversation_pk': this.conversationPk
       }
-      const fetchUrl = await this.reverseUrl('api:message_create', urlParams);
+      const fetchUrl = await this.reverseUrl('api:conversation_message_create', urlParams);
 
       const postData = {
         "content": this.messageInputText

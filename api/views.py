@@ -1,4 +1,7 @@
+import json
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse, HttpResponseForbidden
+from django.urls import reverse
 from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -256,6 +259,7 @@ class MessageCreate(generics.CreateAPIView):
         return Conversation.objects.filter(pk=self.kwargs['conversation_pk'])
 
     def post(self, request, *args, **kwargs):
+        breakpoint()
         request.data.update({
             'conversation': self.get_queryset().first().pk,
             'sender': request.user.pk,
