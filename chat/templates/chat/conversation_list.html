@@ -19,9 +19,8 @@
 <p>- There are no conversations available.</p>
 {% endif %}
 
-<ul style="margin-top: 2rem;">
-  <li><a href="{% url 'chat:conversation_create' %}">Create new conversation</a></li>
-  <li><a href="{% url 'chat:chat_root' %}">Return to chat root</a></li>
-</ul>
+<p style="margin-top: 2rem;">
+  <a href="{% url 'chat:conversation_create' %}">Create new conversation</a>
+</p>
 
 {% endblock content %}
