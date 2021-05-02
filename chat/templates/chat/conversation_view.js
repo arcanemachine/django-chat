@@ -416,7 +416,7 @@ let app = new Vue({
       this.messagesNewestDay = new Date(0);
     },
     messagesGetMore: function() {
-      this.messageDisplayCount += 10;
+      this.messageDisplayCount += 5;
       this.messagesGet();
     },
     async messageCreate() {
