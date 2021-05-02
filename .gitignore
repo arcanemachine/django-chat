@@ -9,7 +9,8 @@ gunicorn.sh
 todo
 base_template.html
 menus/templatetags/
-deleteme/
+staticfiles/
+mediafiles/
 
 # npm #
 node_modules/
