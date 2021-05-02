@@ -9,8 +9,9 @@ ipython = "*"
 djangorestframework = "*"
 django-cors-headers = "*"
 django-timezone-field = "*"
+gunicorn = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.8"
+python_version = "3"
