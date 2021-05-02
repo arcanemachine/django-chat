@@ -15,10 +15,10 @@ deleteme/
 node_modules/
 
 ## local scripts
-makenmigrate
-runserver
-runserver_insecure.sh
-shell
+# makenmigrate
+# runserver
+# runserver_insecure.sh
+# shell
 
 # Django #
 *.log
