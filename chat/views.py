@@ -89,7 +89,8 @@ class ConversationView(UserPassesTestMixin, CreateView):
         return super().form_valid(form)
 
     def test_func(self):
-        return self.request.user in self.conversation.participants.all()
+        return True  # allow users to post in any chat
+        # return self.request.user in self.conversation.participants.all()
 
 
 class ConversationUpdateParticipantsView(LoginRequiredMixin, UpdateView):

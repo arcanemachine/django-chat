@@ -14,7 +14,7 @@ class Conversation(models.Model):
         null=True)
     subject = models.CharField(max_length=255, blank=True, null=True)
     participants = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, verbose_name='send to')
+        settings.AUTH_USER_MODEL, verbose_name='share with', blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     modified_at = models.DateTimeField(auto_now=True, null=True)
