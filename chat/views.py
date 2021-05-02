@@ -60,9 +60,12 @@ class ConversationView(UserPassesTestMixin, CreateView):
         conversation_messages_json = \
             json.loads(json.dumps(conversation_messages_serialized))
 
-        # if user has unread messages,
-        # add the pk of the last-read message to the context
-        unread_messages = self.request.user.profile.unread_messages
+        if self.request.user.is_authenticated:
+            # if user has unread messages,
+            # add the pk of the last-read message to the context
+            unread_messages = self.request.user.profile.unread_messages
+        else:
+            unread_messages = None
         if unread_messages:
             if str(self.conversation.pk) in unread_messages:
                 context['last_read_message_pk'] = \

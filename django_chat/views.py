@@ -3,4 +3,4 @@ from django.urls import reverse
 
 
 def root(request):
-    return HttpResponseRedirect(reverse('chat:chat_root'))
+    return HttpResponseRedirect(reverse('chat:conversation_list'))

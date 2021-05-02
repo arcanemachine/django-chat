@@ -87,7 +87,7 @@ let app = new Vue({
     })
 
     // poll for new messages every 5 seconds
-    // setInterval(() => {this.messagesGet();}, 5000);
+    setInterval(() => {this.messagesGet();}, 5000);
     
   },
   methods: {
@@ -382,9 +382,9 @@ let app = new Vue({
       .then(response => {return this.handleResponse(response);})
     },
     async messagesGet() {
-      if (this.allMessagesFetched) {
-        return false;
-      }
+      // if (this.allMessagesFetched) {
+      //   return false;
+      // }
       const urlParams = {
         'conversation_pk': this.conversationPk,
         'message_count': this.messageDisplayCount
@@ -420,6 +420,11 @@ let app = new Vue({
       this.messagesGet();
     },
     async messageCreate() {
+
+      if (!this.userPk) {
+        this.displayStatusMessage("You must login if you want to send a message.");
+        return false;
+      }
 
       if (!this.messageInputText) {
         return false;

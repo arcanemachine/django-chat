@@ -21,8 +21,8 @@
           <div @click="optionsMenuShow = !optionsMenuShow" class="menu-close-button-icon">&times;</div>
           <div class="menu-overlay-title">More Options</div>
           <div class="menu-overlay-item-container">
-            <div @click="messagesGet" class="menu-overlay-item bold cursor-url">- Get new messages</div>
-            <div @click="conversationGetUsers" class="menu-overlay-item bold cursor-url">- List conversation members</div>
+            <!--div @click="messagesGet" class="menu-overlay-item bold cursor-url">- Get new messages</div>
+            <div @click="conversationGetUsers" class="menu-overlay-item bold cursor-url">- List conversation members</div-->
             <div class="menu-overlay-item">
               <a href="{% url 'chat:conversation_update_participants' conversation_pk=conversation.pk %}" class="menu-overlay-item unstyled-link">- Add/Remove participants</a>
             </div>
@@ -99,7 +99,7 @@
     <button @click="messageCreate"
             class="message-button action-button send-button cursor-url"
             alt="Send button"
-            :style="{'background-color': messageInputText ? '#26f' : '#888'}">
+            :style="{'background-color': messageInputText && userPk ? '#26f' : '#888'}">
       &#9992; <!-- airplane icon -->
     </button>
     <button @click="menuToggle"
