@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import secret_key
 import server_config
 
-from pathlib import Path
 from os.path import join as os_path_join
 
 
@@ -51,7 +50,7 @@ INSTALLED_APPS = [
     # third-party
     'rest_framework',
     'timezone_field',
-    #'corsheaders',
+    # 'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -100,18 +99,19 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
+PASS_VAL_PREFIX = 'django.contrib.auth.password_validation'
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': f'{PASS_VAL_PREFIX}.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': f'{PASS_VAL_PREFIX}.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': f'{PASS_VAL_PREFIX}.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': f'{PASS_VAL_PREFIX}.NumericPasswordValidator',
     },
 ]
 
@@ -162,7 +162,7 @@ REST_FRAMEWORK = {
 }
 
 # django-cors-headers
-#CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 
 # testing
 if server_config.SERVER_NAME == 'dev':
