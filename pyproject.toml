@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "django-chat"
+version = "0.1.0"
+description = "A basic chat app made using Django, Django Rest Framework, and a little bit of Vue."
+authors = ["Nicholas Moen <arcanemachine@tutanota.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^4.0.2"
+djangorestframework = "^3.13.1"
+django-cors-headers = "^3.11.0"
+django-timezone-field = "^5.0"
+
+[tool.poetry.dev-dependencies]
+ipython = "^8.1.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
