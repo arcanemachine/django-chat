@@ -1,6 +1,6 @@
 ## Custom ##
 *~
-*.sw*
+*.sw?
 data.dump
 geckodriver.log
 secret_key.py
