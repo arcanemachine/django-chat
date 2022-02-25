@@ -20,9 +20,9 @@ class Profile(models.Model):
         return self.user.get_absolute_url()
 
     def get_localized_timestamp(self, timestamp=None):
-        if not timestamp:
+        if timestamp is None:
             timestamp = timezone.datetime.now()
-        return timezone.utc.localize(timestamp).astimezone(self.timezone)
+        return timestamp.astimezone(self.timezone)
 
     def get_timezone_offset(self, milliseconds=True, seconds=False,
                             minutes=False, hours=False):
@@ -36,6 +36,6 @@ class Profile(models.Model):
         return result.total_seconds() * 1000
 
     def get_timezone_abbreviation(self, timestamp=None):
-        if not timestamp:
+        if timestamp is None:
             timestamp = self.get_localized_timestamp()
         return timestamp.tzname()
