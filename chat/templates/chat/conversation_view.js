@@ -106,7 +106,8 @@ let app = new Vue({
       return (zeroString + String(num)).slice(numLength);
     },
     dateLocalize(dateObj, offset=0) {
-      return new Date(dateObj.getTime() + this.userTimezoneOffset);
+      // return new Date(dateObj.getTime() + this.userTimezoneOffset);
+      return new Date(dateObj.getTime());
     },
     dateFormat(dateString, convertTo) {
       // convert to local time
