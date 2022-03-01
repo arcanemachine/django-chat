@@ -5,6 +5,7 @@ SERVER_NAME = 'prod'
 DEBUG = False
 
 BASE_DIR = str(Path(__file__).resolve().parent)
+ALLOWED_HOSTS = ['django-chat.test.moendigitalservices.com']
 
 STATICFILES_DIRS = [os_path_join(BASE_DIR, 'static')]
 STATIC_ROOT = os_path_join(BASE_DIR, 'staticfiles')
