@@ -3,7 +3,6 @@ from django.core import serializers
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.staticfiles import finders
 from django.http import \
     JsonResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.urls import reverse
@@ -27,7 +26,7 @@ class ConversationListView(ListView):
     template_name = 'chat/chat_list.html'
 
 
-class ConversationCreateView(CreateView):
+class ConversationCreateView(LoginRequiredMixin, CreateView):
     model = Conversation
     form_class = forms.ConversationCreateForm
     template_name = 'chat/conversation_create.html'
