@@ -1,0 +1,18 @@
+---
+version: "3.8"
+
+services:
+  traefik:
+    image: traefik:v2.6
+    ports:
+      - 80:80
+      - 8080
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik.yml:/etc/traefik/traefik.yml"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`monitor.${PROJECT_NAME}.localhost`)"
+      - "traefik.http.routers.api.entrypoints=web"
+      - "traefik.http.routers.api.service=api@internal"
+      - "traefik.port=8080"

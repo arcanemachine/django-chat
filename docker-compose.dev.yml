@@ -10,3 +10,7 @@ services:
                python3 manage.py runserver 0.0.0.0:${CONTAINER_PORT_EXTERNAL}"
     ports:
       - ${CONTAINER_PORT_EXTERNAL}:${CONTAINER_PORT_EXTERNAL}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${PROJECT_NAME}.localhost`, `www.${PROJECT_NAME}.localhost`)"
+      - "traefik.http.routers.${PROJECT_NAME}.entrypoints=web"
