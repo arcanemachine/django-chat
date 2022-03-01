@@ -2,13 +2,19 @@
 
 FROM python:3.9-slim-bullseye
 
-# set python environment variables
+# set work directory
+WORKDIR /app
+
+# set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# work in /code
-WORKDIR /code
+# copy over files for the correct server environment (e.g. dev, test, prod)
+# ADD ./${SERVER_ENVIRONMENT:-dev} /
 
-# copy code to container
-COPY ./src /code
-RUN pip install -r requirements.txt
+# install dependencies
+COPY ./app/requirements.txt .
+RUN python3 -m pip install -r requirements.txt
+
+# copy project to container
+COPY ./app .

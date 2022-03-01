@@ -1,0 +1,9 @@
+---
+version: "3.8"
+
+services:
+  django:
+    command: gunicorn -b 0.0.0.0:${CONTAINER_PORT_EXTERNAL} ${PROJECT_NAME_PYTHON}.wsgi
+    command: >
+      bash -c "python3 manage.py migrate &&
+               python3 manage.py runserver 0.0.0.0:${CONTAINER_PORT_EXTERNAL}"

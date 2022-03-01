@@ -11,6 +11,7 @@ base_template.html
 menus/templatetags/
 staticfiles/
 mediafiles/
+deleteme
 
 # npm #
 node_modules/
@@ -26,7 +27,7 @@ node_modules/
 *.pot
 *.pyc
 __pycache__
-# db.sqlite3
+db.sqlite3
 media
 
 # Backup files # 
@@ -100,6 +101,7 @@ celerybeat-schedule.*
 *.sage.py 
 
 # Environments 
+.envrc.local
 .env 
 .venv 
 env/ 

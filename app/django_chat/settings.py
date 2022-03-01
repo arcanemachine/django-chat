@@ -15,23 +15,11 @@ import server_config
 
 from os.path import join as os_path_join
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = server_config.BASE_DIR
-
-# Django 3.2 compatibility
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = secret_key.SECRET_KEY
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = server_config.DEBUG
-
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['192.168.1.120', 'django-chat.nicholasmoen.com']
 
 
 # Application definition
