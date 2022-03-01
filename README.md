@@ -6,9 +6,6 @@ A basic chat app created using Django, Django Rest Framework, and a little bit o
 ## Instructions
 
 - Install `docker` and `docker-compose`
-- Run `1--secret-key-generate` to generate a new secret key.
-- Run `2--server-config-choose` to select the environment type (dev, test, or prod).
-  - e.g. `2--server-config-choose dev` to use a dev environment
 - Start the container:
   - For development environments:
     - Run `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up`

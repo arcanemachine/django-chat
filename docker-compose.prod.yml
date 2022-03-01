@@ -5,4 +5,25 @@ services:
   django:
     command: >
       bash -c "python3 manage.py migrate &&
-               python3 manage.py runserver 0.0.0.0:${CONTAINER_PORT_EXTERNAL}"
+               ./1--secret-key-create-if-not-exists &&
+               ./2--server-config-choose prod &&
+               python3 manage.py collectstatic --no-input
+               gunicorn -b 0.0.0.0:8000 $PROJECT_NAME_PYTHON.wsgi"
+    expose:
+      - 8000
+    networks:
+      - django_chat
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx/${SERVER_ENVIRONMENT}/conf.d:/etc/nginx/conf.d
+    ports:
+      - 80:80
+    depends_on:
+      - django
+    networks:
+      - django_chat
+
+networks:
+  django_chat:
+    driver: bridge

@@ -5,4 +5,8 @@ services:
   django:
     command: >
       bash -c "python3 manage.py migrate &&
+               ./1--secret-key-create-if-not-exists &&
+               ./2--server-config-choose dev &&
                python3 manage.py runserver 0.0.0.0:${CONTAINER_PORT_EXTERNAL}"
+    ports:
+      - ${CONTAINER_PORT_EXTERNAL}:${CONTAINER_PORT_EXTERNAL}

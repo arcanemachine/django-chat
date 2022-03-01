@@ -6,5 +6,3 @@ services:
     build: .
     volumes:
       - ./app:/app
-    ports:
-      - ${CONTAINER_PORT_EXTERNAL}:${CONTAINER_PORT_EXTERNAL}
