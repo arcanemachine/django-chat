@@ -6,7 +6,6 @@ services:
     image: traefik:v2.6
     ports:
       - "${PORT_EXTERNAL}:80"
-      - 8080
     networks:
       - traefik-dev-proxy
     volumes:
@@ -17,7 +16,6 @@ services:
       - "traefik.http.routers.api.rule=Host(`monitor.${PROJECT_NAME}.localhost`)"
       - "traefik.http.routers.api.entrypoints=web"
       - "traefik.http.routers.api.service=api@internal"
-      - "traefik.port=8080"
 
   django:
     command: >
