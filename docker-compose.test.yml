@@ -29,7 +29,6 @@ services:
       - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${DOMAIN_NAME}.${TEST_DOMAIN_NAME}`)"
       - "traefik.http.routers.${PROJECT_NAME}.entrypoints=websecure"
       - "traefik.http.routers.${PROJECT_NAME}.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.${PROJECT_NAME}.middlewares=redirect-non-www-to-www@file"
 
 networks:
   traefik-global-proxy:
