@@ -1,1 +1,33 @@
-docker-compose.prod.yml
+---
+version: "3.8"
+
+services:
+  django:
+    command: >
+      bash -c "./1--secret-key-create-if-not-exists &&
+               ./2--server-config-choose prod &&
+               python3 manage.py migrate &&
+               python3 manage.py collectstatic --no-input
+               gunicorn -b 0.0.0.0:8000 $PROJECT_NAME_PYTHON.wsgi"
+    expose:
+      - "8000"
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx/${SERVER_ENVIRONMENT}/conf.d:/etc/nginx/conf.d
+    # ports:
+    #   - "${PORT_EXTERNAL}:${PORT_EXTERNAL}"
+    depends_on:
+      - django
+    networks:
+      - traefik-global-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${DOMAIN_NAME}.${TEST_DOMAIN_NAME}`, `www.${DOMAIN_NAME}.${TEST_DOMAIN_NAME}`)"
+      - "traefik.http.routers.${PROJECT_NAME}.entrypoints=websecure"
+      - "traefik.http.routers.${PROJECT_NAME}.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.${PROJECT_NAME}.middlewares=redirect-non-www-to-www@file"
+
+networks:
+  traefik-global-proxy:
+    external: true
