@@ -14,7 +14,7 @@ services:
   nginx:
     image: nginx
     volumes:
-      - ./nginx/${SERVER_ENVIRONMENT}/conf.d:/etc/nginx/conf.d
+      - ./nginx/prod/conf.d:/etc/nginx/conf.d
     # ports:
     #   - "${PORT_EXTERNAL}:${PORT_EXTERNAL}"
     depends_on:
@@ -23,7 +23,7 @@ services:
       - traefik-global-proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${DOMAIN_NAME}`, `www.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${DOMAIN_NAME}.${TEST_DOMAIN_NAME}`, `www.${DOMAIN_NAME}.${TEST_DOMAIN_NAME}`)"
       - "traefik.http.routers.${PROJECT_NAME}.entrypoints=websecure"
       - "traefik.http.routers.${PROJECT_NAME}.tls.certresolver=letsencrypt"
       - "traefik.http.routers.${PROJECT_NAME}.middlewares=redirect-non-www-to-www@file"

@@ -14,7 +14,7 @@ services:
   nginx:
     image: nginx
     volumes:
-      - ./nginx/${SERVER_ENVIRONMENT}/conf.d:/etc/nginx/conf.d
+      - ./nginx/test/conf.d:/etc/nginx/conf.d
     # ports:
     #   - "${PORT_EXTERNAL}:${PORT_EXTERNAL}"
     depends_on:
