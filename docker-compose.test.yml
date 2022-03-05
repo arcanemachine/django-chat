@@ -18,15 +18,15 @@ services:
     image: nginx
     depends_on:
       - django
+    expose:
+      - "${PROJECT_PORT}"
     networks:
       - traefik-global-proxy
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
-    expose:
-      - "${PROJECT_PORT}"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${DOMAIN_NAME}.${TEST_DOMAIN_NAME}`, `www.${DOMAIN_NAME}.${TEST_DOMAIN_NAME}`)"
+      - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${DOMAIN_NAME}.${TEST_DOMAIN_NAME}`)"
       - "traefik.http.routers.${PROJECT_NAME}.entrypoints=websecure"
       - "traefik.http.routers.${PROJECT_NAME}.tls.certresolver=letsencrypt"
       - "traefik.http.routers.${PROJECT_NAME}.middlewares=redirect-non-www-to-www@file"
