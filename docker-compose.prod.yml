@@ -12,17 +12,18 @@ services:
     networks:
       - traefik-global-proxy
     expose:
-      - "8000"
+      - 8000
+
   nginx:
     image: nginx
-    volumes:
-      - ./nginx/prod/conf.d:/etc/nginx/conf.d
-    # ports:
-    #   - "${PORT_EXTERNAL}:${PORT_EXTERNAL}"
     depends_on:
       - django
     networks:
       - traefik-global-proxy
+    expose:
+      - "${PROJECT_PORT}"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${DOMAIN_NAME}.${TEST_DOMAIN_NAME}`, `www.${DOMAIN_NAME}.${TEST_DOMAIN_NAME}`)"

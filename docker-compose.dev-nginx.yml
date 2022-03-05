@@ -5,10 +5,9 @@ services:
   django:
     command: >
       bash -c "./1--secret-key-create-if-not-exists &&
-               ./2--server-config-choose prod &&
+               ./2--server-config-choose dev &&
                python3 manage.py migrate &&
-               python3 manage.py collectstatic --no-input
-               gunicorn -b 0.0.0.0:8000 $PROJECT_NAME_PYTHON.wsgi"
+               python3 manage.py runserver 0.0.0.0:8000"
     networks:
       - traefik-global-proxy
     expose:
@@ -20,17 +19,17 @@ services:
       - django
     networks:
       - traefik-global-proxy
+    ports:
+      - "${PROJECT_PORT}:80"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
-    expose:
-      - "${PROJECT_PORT}"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${DOMAIN_NAME}.${TEST_DOMAIN_NAME}`, `www.${DOMAIN_NAME}.${TEST_DOMAIN_NAME}`)"
-      - "traefik.http.routers.${PROJECT_NAME}.entrypoints=websecure"
-      - "traefik.http.routers.${PROJECT_NAME}.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${DOMAIN_NAME}.localhost`, `www.${DOMAIN_NAME}.localhost`)"
+      - "traefik.http.routers.${PROJECT_NAME}.entrypoints=web"
       - "traefik.http.routers.${PROJECT_NAME}.middlewares=redirect-non-www-to-www@file"
 
 networks:
   traefik-global-proxy:
+    driver: bridge
     external: true
