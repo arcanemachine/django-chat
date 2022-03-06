@@ -137,6 +137,7 @@ REST_FRAMEWORK = {
 # django-cors-headers
 CORS_ALLOW_ALL_ORIGINS = server_config.CORS_ALLOW_ALL_ORIGINS
 CORS_ALLOWED_ORIGINS = server_config.CORS_ALLOWED_ORIGINS
+CSRF_TRUSTED_ORIGINS = server_config.CSRF_TRUSTED_ORIGINS
 
 # testing
 if server_config.SERVER_NAME == 'dev':

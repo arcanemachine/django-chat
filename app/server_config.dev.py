@@ -9,6 +9,8 @@ ALLOWED_HOSTS = ['*']
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS =\
     None
+CSRF_TRUSTED_ORIGINS =\
+    None
 
 STATICFILES_DIRS = [os_path_join(BASE_DIR, 'static')]
 STATIC_ROOT = os_path_join(BASE_DIR, 'staticfiles')
