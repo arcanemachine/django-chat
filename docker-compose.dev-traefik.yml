@@ -21,12 +21,12 @@ services:
                python3 manage.py migrate &&
                python3 manage.py runserver 0.0.0.0:${PROJECT_PORT_INTERNAL}"
     expose:
-      - ${PROJECT_PORT_INTERNAL}
+      - "${PROJECT_PORT_INTERNAL}"
     networks:
       - traefik-dev-proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${PROJECT_NAME}.localhost`, `www.${PROJECT_NAME}.localhost`)"
+      - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${DEV_DOMAIN_NAME}`, `www.${DEV_DOMAIN_NAME}`)"
       - "traefik.http.routers.${PROJECT_NAME}.entrypoints=web"
     depends_on:
       - traefik
