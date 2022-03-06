@@ -20,10 +20,10 @@ services:
                ./2--server-config-choose dev &&
                python3 manage.py migrate &&
                python3 manage.py runserver 0.0.0.0:8000"
-    expose:
-      - 8000
     networks:
       - traefik-dev-proxy
+    expose:
+      - 8000
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${DEV_DOMAIN_NAME}`)"

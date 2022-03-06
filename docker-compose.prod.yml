@@ -3,27 +3,27 @@ version: "3.8"
 
 services:
   django:
+    networks:
+      - traefik-global-proxy
+    expose:
+      - 8000
     command: >
       bash -c "./1--secret-key-create-if-not-exists &&
                ./2--server-config-choose prod &&
                python3 manage.py migrate &&
                python3 manage.py collectstatic --no-input
                gunicorn -b 0.0.0.0:8000 $PROJECT_NAME_PYTHON.wsgi"
-    networks:
-      - traefik-global-proxy
-    expose:
-      - 8000
 
   nginx:
     image: nginx
-    depends_on:
-      - django
-    expose:
-      - "${PROJECT_PORT}"
     networks:
       - traefik-global-proxy
+    expose:
+      - "${PROJECT_PORT}"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - django
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${DOMAIN_NAME}`)"
