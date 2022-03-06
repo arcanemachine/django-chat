@@ -5,11 +5,11 @@ services:
   django:
     networks:
       - traefik-global-proxy
-    expose:
-      - 8000
+    ports:
+      - "${PROJECT_PORT_INTERNAL}:8000"
     command: >
       bash -c "./1--secret-key-create-if-not-exists &&
-               ./2--server-config-choose prod &&
+               ./2--server-config-choose test &&
                python3 manage.py migrate &&
                python3 manage.py collectstatic --no-input
                gunicorn -b 0.0.0.0:8000 $PROJECT_NAME_PYTHON.wsgi"
@@ -21,9 +21,11 @@ services:
     networks:
       - traefik-global-proxy
     expose:
-      - "${PROJECT_PORT}"
+      - "${PROJECT_PORT_INTERNAL}"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./app/staticfiles:/staticfiles:ro
+      - ./app/media:/media:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${DOMAIN_NAME}.${TEST_DOMAIN_NAME}`)"
