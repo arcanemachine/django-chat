@@ -1,7 +1,7 @@
 from os.path import join as os_path_join
 from pathlib import Path
 
-SERVER_NAME = 'prod'
+SERVER_NAME = 'test'
 DEBUG = False
 
 BASE_DIR = str(Path(__file__).resolve().parent)
