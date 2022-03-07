@@ -33,7 +33,7 @@ fi
 
 echo "[Unit]
 Description=$service_name
-Requires=docker.service
+Requires=traefik-misc.service
 After=docker.service
 
 [Service]
