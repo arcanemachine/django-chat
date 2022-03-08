@@ -10,6 +10,12 @@ if [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
   echo "This script generates a systemd service file.
 The output should be sent here: '$service_file'
 
+Environment variables:
+  - SERVER_ENVIRONMENT: Must be one of: dev, test, prod
+  - USER: Name of user that will start this service.
+    - Defaults to current user
+    - User must be in group 'docker'
+
 To enable this service:
   - sudo systemctl enable $service_name.service
 
@@ -38,7 +44,7 @@ After=docker.service
 
 [Service]
 Restart=always
-User=root
+User=$USER
 Group=docker
 WorkingDirectory=$(pwd)
 
