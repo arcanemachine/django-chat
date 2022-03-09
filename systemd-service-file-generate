@@ -12,9 +12,9 @@ The output should be sent here: '$service_file'
 
 Environment variables:
   - SERVER_ENVIRONMENT: Must be one of: dev, test, prod
-  - USER: Name of user that will start this service.
-    - Defaults to current user
-    - User must be in group 'docker'
+  - service_user: Name of user that will start this service.
+    - Defaults to root
+    - User must be in group 'docker' (unless using root)
 
 To enable this service:
   - sudo systemctl enable $service_name.service
@@ -37,6 +37,10 @@ if [ "$SERVER_ENVIRONMENT" == "" ]; then
   fi
 fi
 
+if [ "$service_user" == "" ]; then
+  service_user=root
+fi
+
 echo "[Unit]
 Description=$service_name
 Requires=traefik-misc.service
@@ -44,7 +48,7 @@ After=docker.service
 
 [Service]
 Restart=always
-User=$USER
+User=$service_user
 Group=docker
 WorkingDirectory=$(pwd)
 
