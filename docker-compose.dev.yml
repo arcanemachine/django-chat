@@ -5,8 +5,6 @@ services:
   django:
     networks:
       - traefik-global-proxy
-    expose:
-      - "${PROJECT_PORT_INTERNAL}"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${DEV_DOMAIN_NAME}`)"

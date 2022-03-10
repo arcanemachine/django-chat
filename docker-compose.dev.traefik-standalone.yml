@@ -2,6 +2,16 @@
 version: "3.8"
 
 services:
+  django:
+    networks:
+      - traefik-dev-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${DEV_DOMAIN_NAME}`, `www.${DEV_DOMAIN_NAME}`)"
+      - "traefik.http.routers.${PROJECT_NAME}.entrypoints=web"
+    depends_on:
+      - traefik
+
   traefik:
     image: traefik:v2.6
     ports:
@@ -13,18 +23,6 @@ services:
       - "./traefik.dev.yml:/etc/traefik/traefik.yml"
     labels:
       - "traefik.enable=true"
-
-  django:
-    expose:
-      - "${PROJECT_PORT_INTERNAL}"
-    networks:
-      - traefik-dev-proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.${PROJECT_NAME}.rule=Host(`${DEV_DOMAIN_NAME}`, `www.${DEV_DOMAIN_NAME}`)"
-      - "traefik.http.routers.${PROJECT_NAME}.entrypoints=web"
-    depends_on:
-      - traefik
 
 networks:
   traefik-dev-proxy:

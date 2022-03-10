@@ -2,10 +2,6 @@
 version: "3.8"
 
 services:
-  django:
-    expose:
-      - "${PROJECT_PORT_INTERNAL}"
-
   nginx:
     image: bitnami/nginx
     depends_on:

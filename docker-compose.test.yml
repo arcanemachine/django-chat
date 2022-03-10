@@ -5,8 +5,6 @@ services:
   django:
     networks:
       - traefik-global-proxy
-    expose:
-      - "${PROJECT_PORT_INTERNAL}"
 
   nginx:
     image: nginx
