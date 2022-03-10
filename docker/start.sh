@@ -23,19 +23,19 @@ if [ "$PROCESS_TYPE" = "server" ]; then
       $PROJECT_NAME_PYTHON.wsgi
   fi
 elif [ "$PROCESS_TYPE" = "beat" ]; then
-  celery \
+  exec celery \
     --app dockerapp.celery_app \
     beat \
     --loglevel INFO \
     --scheduler django_celery_beat.schedulers:DatabaseScheduler
 elif [ "$PROCESS_TYPE" = "flower" ]; then
-  celery \
+  exec celery \
     --app dockerapp.celery_app \
     flower \
     --basic_auth="${CELERY_FLOWER_USER}:${CELERY_FLOWER_PASSWORD}" \
     --loglevel INFO
 elif [ "$PROCESS_TYPE" = "worker" ]; then
-  celery \
+  exec celery \
     --app dockerapp.celery_app \
     worker \
     --loglevel INFO
