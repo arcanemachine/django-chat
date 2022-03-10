@@ -33,5 +33,3 @@ fi
 # use proper server_config_file
 echo "Using '$SERVER_ENVIRONMENT' settings for server config..."
 cp $environment_config_file_path $django_config_file_path
-
-exit 0

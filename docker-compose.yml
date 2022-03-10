@@ -4,15 +4,9 @@ version: "3.8"
 services:
   django:
     build: .
-    user: "1001:1001"
     environment:
       PROJECT_NAME_PYTHON: "${PROJECT_NAME_PYTHON:?}"
       PROJECT_PORT_INTERNAL: "${PROJECT_PORT_INTERNAL:-8000}"
       SERVER_ENVIRONMENT: "${SERVER_ENVIRONMENT:-dev}"
-    volumes:
-      - data_app:/app
     expose:
       - "${PROJECT_PORT_INTERNAL}"
-
-volumes:
-  data_app:

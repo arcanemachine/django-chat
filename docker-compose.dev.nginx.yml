@@ -11,4 +11,4 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./app/staticfiles:/staticfiles:ro
-      - ./app/media:/media:ro
+      # - ./app/media:/media:ro
