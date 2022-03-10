@@ -11,9 +11,9 @@ PROCESS_TYPE=$1
 
 if [ "$PROCESS_TYPE" = "server" ]; then
   if [ "$SERVER_ENVIRONMENT" = "dev" ]; then
-    python3 manage.py runserver 0.0.0.0:$PROJECT_PORT_INTERNAL
+    exec python3 manage.py runserver 0.0.0.0:$PROJECT_PORT_INTERNAL
   elif [ "$SERVER_ENVIRONMENT" = "test" ] || [ "$SERVER_ENVIRONMENT" = "prod" ]; then
-    gunicorn \
+    exec gunicorn \
       --bind 0.0.0.0:8000 \
       --workers 1 \
       --worker-class eventlet \
