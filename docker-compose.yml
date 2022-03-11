@@ -12,3 +12,4 @@ services:
       - "${PROJECT_PORT_INTERNAL}"
     volumes:
       - ./app:/app
+      - ./docker:/docker

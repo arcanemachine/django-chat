@@ -11,4 +11,12 @@ ENV PYTHONUNBUFFERED=1
 
 # install dependencies
 COPY ./app/requirements.txt .
-RUN python3 -m pip install -r requirements.txt
+RUN python3 -m pip install -r requirements.txt --no-cache-dir 
+
+# copy files and set permissions
+COPY ./app /app
+COPY ./docker /docker
+RUN chmod +x /docker/*.sh
+
+ENTRYPOINT [ "/docker/entrypoint.sh" ]
+CMD [ "/docker/start.sh", "server" ]
