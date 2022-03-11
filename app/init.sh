@@ -15,8 +15,9 @@ if [ "$SERVER_ENVIRONMENT" == "" ]; then
 fi
 
 if [ "$SERVER_ENVIRONMENT" != "dev" ] && [ "$SERVER_ENVIRONMENT" != "test" ] && [ "$SERVER_ENVIRONMENT" != "prod" ]; then
-  echo "SERVER_ENVIRONMENT must be one of: dev, test, prod"
-  exit 1
+  SERVER_ENVIRONMENT=dev
+  echo "SERVER_ENVIRONMENT expected one of: dev, test, prod"
+  echo "*** Using SERVER_ENVIRONMENT: '$SERVER_ENVIRONMENT' ***"
 fi
 
 cd $app_path
