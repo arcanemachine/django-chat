@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile
 
-FROM python:3.9-slim-bullseye
+FROM docker.io/python:3.9-slim-bullseye
 
 # set work directory
 WORKDIR /app
