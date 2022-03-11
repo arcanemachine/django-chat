@@ -2,15 +2,6 @@
 version: "3.8"
 
 services:
-  django:
-    command: >
-      bash -c "./1--secret-key-create-if-not-exists &&
-               ./2--server-config-choose dev &&
-               python3 manage.py migrate &&
-               python3 manage.py runserver 0.0.0.0:${PROJECT_PORT_INTERNAL}"
-    expose:
-      - "${PROJECT_PORT_INTERNAL}"
-
   nginx:
     image: nginx
     depends_on:

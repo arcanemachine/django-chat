@@ -5,16 +5,7 @@ environment_config_file_path="$app_path/server_config.$SERVER_ENVIRONMENT.py"
 django_config_file_path="$app_path/server_config.py"
 
 
-if [ "$SERVER_ENVIRONMENT" == "" ]; then
-  if [ "$1" != "" ]; then
-    $SERVER_ENVIRONMENT=$1
-  else
-    echo "SERVER_ENVIRONMENT not set. Aborting..."
-    exit 1
-  fi
-fi
-
-if [ "$SERVER_ENVIRONMENT" != "dev" ] && [ "$SERVER_ENVIRONMENT" != "test" ] && [ "$SERVER_ENVIRONMENT" != "prod" ]; then
+if [ "$SERVER_ENVIRONMENT" == "" ] || [ "$SERVER_ENVIRONMENT" != "dev" ] && [ "$SERVER_ENVIRONMENT" != "test" ] && [ "$SERVER_ENVIRONMENT" != "prod" ]; then
   SERVER_ENVIRONMENT=dev
   echo "SERVER_ENVIRONMENT expected one of: dev, test, prod"
   echo "*** Using SERVER_ENVIRONMENT: '$SERVER_ENVIRONMENT' ***"

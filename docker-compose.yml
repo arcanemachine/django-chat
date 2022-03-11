@@ -10,3 +10,5 @@ services:
       SERVER_ENVIRONMENT: "${SERVER_ENVIRONMENT:-dev}"
     expose:
       - "${PROJECT_PORT_INTERNAL}"
+    volumes:
+      - ./app:/app
