@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile
 
-FROM python:3.9-slim as base
+FROM docker.io/python:3.9-slim as base
 
 # set args
 ARG app_home=/app
