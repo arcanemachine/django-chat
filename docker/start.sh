@@ -10,9 +10,12 @@ fi
 PROCESS_TYPE=$1
 
 if [ "$PROCESS_TYPE" = "server" ]; then
-  if [ "$SERVER_ENVIRONMENT" = "dev" ]; then
-    exec python3 manage.py runserver 0.0.0.0:$PROJECT_PORT_INTERNAL
-  elif [ "$SERVER_ENVIRONMENT" = "test" ] || [ "$SERVER_ENVIRONMENT" = "prod" ]; then
+  case "$SERVER_ENVIRONMENT" in
+    dev*)
+      exec python3 manage.py runserver 0.0.0.0:$PROJECT_PORT_INTERNAL
+      ;;
+  esac
+  if [ "$SERVER_ENVIRONMENT" = "test" ] || [ "$SERVER_ENVIRONMENT" = "prod" ]; then
     exec gunicorn \
       --bind 0.0.0.0:8000 \
       --workers 1 \
@@ -21,6 +24,9 @@ if [ "$PROCESS_TYPE" = "server" ]; then
       --access-logfile "-" \
       --error-logfile "-" \
       $PROJECT_NAME_PYTHON.wsgi
+  else
+    echo "*** SERVER_ENVIRONMENT must be one of: dev, test, prod"
+    exit 1
   fi
 elif [ "$PROCESS_TYPE" = "beat" ]; then
   exec celery \
