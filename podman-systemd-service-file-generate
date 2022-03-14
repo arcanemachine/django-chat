@@ -47,6 +47,7 @@ RequiresMountsFor=/run/user/$(id -u)/containers
 
 [Service]
 # Environment=PODMAN_SYSTEMD_UNIT=%n
+Environment=COMPOSE_DOCKER_CLI_BUILD=0
 Restart=on-failure
 WorkingDirectory=$(pwd)
 # Type=forking

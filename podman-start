@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# disable native docker builds
+export COMPOSE_DOCKER_CLI_BUILD=0
+
 # ensure the podman user service has been started
 if systemctl --user list-units --all | grep -Fq podman.service | grep -Fq inactive; then
   systemctl --user start podman.service
