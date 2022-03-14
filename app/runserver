@@ -1,4 +1,4 @@
 #!/bin/bash
 
 stty sane
-python3 $(dirname "$0")/manage.py runserver 0.0.0.0:8000
+python3 $(dirname "$0")/manage.py runserver 0.0.0.0:8001
