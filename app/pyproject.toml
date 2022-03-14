@@ -14,6 +14,7 @@ django-timezone-field = "^5.0"
 tzdata = "^2021.5"
 django-environ = "^0.8.1"
 gunicorn = "^20.1.0"
+eventlet = "^0.33.0"
 
 [tool.poetry.dev-dependencies]
 ipython = "^8.1.0"
