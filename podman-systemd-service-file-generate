@@ -4,23 +4,24 @@ cd $(dirname "$0")
 
 # use the name of the project directory as the name of the service
 service_name=$(basename $(pwd))
-service_file="/etc/systemd/system/$service_name.service"
+service_file="$HOME/systemd/user/$service_name.service"
 
 if [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
   echo "This script generates a systemd service file.
 The output should be sent here: '$service_file'
 
+In order to start this service on boot, you must enabling lingering for this user:
+  - sudo loginctl enable-linger $USER
+
 Environment variables:
   - SERVER_ENVIRONMENT: Must be one of: dev, test, prod
-  - service_user: Name of user that will start this service.
-    - Defaults to root
-    - User must be in group 'docker' (unless using root)
 
 To enable this service:
-  - sudo systemctl enable $service_name.service
+  - systemctl --user enable $service_name.service
 
 To start this service:
-  - sudo systemctl start $service_name.service"
+  - systemctl --user start $service_name.service"
+  exit 0
 fi
 
 # require SERVER_ENVIRONMENT to be set
@@ -37,29 +38,27 @@ if [ "$SERVER_ENVIRONMENT" == "" ]; then
   fi
 fi
 
-if [ "$service_user" == "" ]; then
-  service_user=root
-fi
-
 echo "[Unit]
 Description=$service_name
-Requires=traefik-misc.service
-After=docker.service
+Wants=network-online.target
+After=network-online.target
+Requires=podman.service
+RequiresMountsFor=/run/user/$(id -u)/containers
 
 [Service]
-Restart=always
-User=$service_user
-Group=docker
+# Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=on-failure
 WorkingDirectory=$(pwd)
+# Type=forking
 
 # Shutdown container (if running) when unit is started
-ExecStartPre=$(which docker-compose) -f docker-compose.yml -f docker-compose.$SERVER_ENVIRONMENT.yml down
+ExecStartPre=$(which docker-compose) -H unix:$XDG_RUNTIME_DIR/podman/podman.sock -f docker-compose.yml -f docker-compose.$SERVER_ENVIRONMENT.yml down
 
 # Start container when unit is started
-ExecStart=$(which docker-compose) -f docker-compose.yml -f docker-compose.$SERVER_ENVIRONMENT.yml up --remove-orphans
+ExecStart=$(which docker-compose) -H unix:$XDG_RUNTIME_DIR/podman/podman.sock -f docker-compose.yml -f docker-compose.$SERVER_ENVIRONMENT.yml up --remove-orphans
 
-# Stop container when unit is stopped
-ExecStop=$(which docker-compose) -f docker-compose.yml -f docker-compose.$SERVER_ENVIRONMENT.yml down
+# Stop all services
+ExecStop=$(which docker-compose) -H unix:$XDG_RUNTIME_DIR/podman/podman.sock -f docker-compose.yml -f docker-compose.$SERVER_ENVIRONMENT.yml down
 
 [Install]
-WantedBy=multi-user.target"
+WantedBy=default.target"
