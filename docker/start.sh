@@ -17,7 +17,7 @@ if [ "$PROCESS_TYPE" = "server" ]; then
   esac
   if [ "$SERVER_ENVIRONMENT" = "test" ] || [ "$SERVER_ENVIRONMENT" = "prod" ]; then
     exec gunicorn \
-      --bind 0.0.0.0:8000 \
+      --bind 0.0.0.0:$PROJECT_PORT_INTERNAL \
       --workers 1 \
       --worker-class eventlet \
       --log-level DEBUG \
