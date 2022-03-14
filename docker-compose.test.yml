@@ -7,7 +7,7 @@ services:
       - traefik-global-proxy
 
   nginx:
-    image: docker.io/bitnami/nginx
+    image: docker.io/nginx
     depends_on:
       - django
     networks:

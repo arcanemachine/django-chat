@@ -8,7 +8,7 @@ SECRET_KEY = secret_key.SECRET_KEY
 DEBUG = server_config.DEBUG
 
 BASE_DIR = server_config.BASE_DIR
-ALLOWED_HOSTS = server_config.ALLOWED_HOSTS
+ALLOWED_HOSTS = ['localhost', '127.0.0.1'] + server_config.ALLOWED_HOSTS
 
 # Application definition
 

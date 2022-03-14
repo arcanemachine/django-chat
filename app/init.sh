@@ -3,12 +3,6 @@
 app_path=$(dirname "$0")
 django_config_file_path="$app_path/server_config.py"
 
-if [ "$SERVER_ENVIRONMENT" == "" ] || [ "$SERVER_ENVIRONMENT" != "dev" ] && [ "$SERVER_ENVIRONMENT" != "test" ] && [ "$SERVER_ENVIRONMENT" != "prod" ]; then
-  SERVER_ENVIRONMENT=dev
-  echo "SERVER_ENVIRONMENT expected one of: dev, test, prod"
-  echo "*** Using SERVER_ENVIRONMENT: '$SERVER_ENVIRONMENT' ***"
-fi
-
 environment_config_file_path="$app_path/server_config.$SERVER_ENVIRONMENT.py"
 
 cd $app_path
