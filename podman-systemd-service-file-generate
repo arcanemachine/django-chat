@@ -51,6 +51,7 @@ RequiresMountsFor=/run/user/$(id -u)/containers
 [Service]
 # Environment=PODMAN_SYSTEMD_UNIT=%n
 Environment=COMPOSE_DOCKER_CLI_BUILD=0
+Environment=SERVER_ENVIRONMENT=$SERVER_ENVIRONMENT
 Environment=PROJECT_NAME_PYTHON=$PROJECT_NAME_PYTHON
 Environment=PROJECT_PORT_INTERNAL=$PROJECT_PORT_INTERNAL
 Restart=on-failure
