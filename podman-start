@@ -17,4 +17,4 @@ if ! podman network ls | grep -Fq traefik-global-proxy; then
 fi
 
 # start the container
-docker-compose -H unix:$XDG_RUNTIME_DIR/podman/podman.sock -f docker-compose.yml -f docker-compose.dev.yml up --remove-orphans
+docker-compose -H unix:$XDG_RUNTIME_DIR/podman/podman.sock -f docker-compose.yml -f docker-compose.$SERVER_ENVIRONMENT.yml up --remove-orphans
