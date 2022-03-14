@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# source dotenv
+set -o allexport; source .env; set +o allexport
+
 # disable native docker builds
 export COMPOSE_DOCKER_CLI_BUILD=0
 

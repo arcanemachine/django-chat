@@ -2,6 +2,9 @@
 
 cd $(dirname "$0")
 
+# source dotenv
+set -o allexport; source .env; set +o allexport
+
 # use the name of the project directory as the name of the service
 service_name=$(basename $(pwd))
 service_file="$HOME/systemd/user/$service_name.service"
@@ -48,6 +51,8 @@ RequiresMountsFor=/run/user/$(id -u)/containers
 [Service]
 # Environment=PODMAN_SYSTEMD_UNIT=%n
 Environment=COMPOSE_DOCKER_CLI_BUILD=0
+Environment=PROJECT_NAME_PYTHON=$PROJECT_NAME_PYTHON
+Environment=PROJECT_PORT_INTERNAL=$PROJECT_PORT_INTERNAL
 Restart=on-failure
 WorkingDirectory=$(pwd)
 # Type=forking
