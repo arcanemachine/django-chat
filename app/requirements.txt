@@ -2,7 +2,7 @@ asgiref==3.5.0; python_version >= "3.8"
 django-cors-headers==3.11.0; python_version >= "3.7"
 django-environ==0.8.1; python_version >= "3.4" and python_version < "4"
 django-timezone-field==5.0; python_version >= "3.7" and python_version < "4.0"
-django==3.2; python_version >= "3.8"
+django~=3.2; python_version >= "3.8"
 djangorestframework==3.13.1; python_version >= "3.6"
 dnspython==1.16.0; python_version >= "3.6" and python_version < "4.0"
 eventlet==0.30.2
